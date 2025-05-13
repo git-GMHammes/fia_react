@@ -614,6 +614,7 @@
             }
         };
 
+        {/* REACT 001 */ }
         React.useEffect(() => {
             // console.log('-------------------------');
             // console.log('useEffect');
@@ -635,7 +636,6 @@
             loadData();
 
         }, []);
-
         React.useEffect(() => {
             let animationFrame;
             const startAnimation = () => {
@@ -656,7 +656,7 @@
             startAnimation();
             return () => cancelAnimationFrame(animationFrame); // Cleanup da animação
         }, []);
-
+        {/* REACT 002 */ }
         React.useEffect(() => {
             console.log('-------------------------');
             console.log('useEffect');
@@ -668,13 +668,13 @@
                 }
             }
         }, [formData[nameField], listSelect]);
-
+        {/* REACT 003 */ }
         React.useEffect(() => {
             if (formData[nameField]) {
                 setSelectedIds(formData[nameField].split(',').map((id) => id.trim()));
             }
         }, [formData[nameField]]);
-
+        {/* REACT 004 */ }
         React.useEffect(() => {
             if (formData[nameField]) {
                 const initialValues = stringToArray(formData[nameField]);
@@ -752,14 +752,14 @@
                                             <input
                                                 type="checkbox"
                                                 className="btn-check"
-                                                name={nameField} // O name pode ser igual para todos checkboxes, sem problemas
+                                                name={nameField}
                                                 id={`${nameField}${index}`}
-                                                checked={selectedIds.includes(item.id.toString())}
+                                                value={item.id}
                                                 onFocus={handleFocus}
                                                 onChange={handleChange}
                                                 onBlur={handleBlur}
                                                 autoComplete="off"
-                                                checked={stringToArray(formData[nameField]).includes(item.id.toString())}
+                                                checked={selectedIds.includes(item.id.toString())}
                                             />
                                             <label
                                                 className="btn w-100 text-start"
