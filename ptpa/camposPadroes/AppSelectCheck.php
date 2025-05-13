@@ -19,6 +19,7 @@
         });
         const [selectedLabel, setSelectedLabel] = React.useState('Escolha uma opção');
         const [listSelect, setListSelect] = React.useState([]);
+        const [selectedIds, setSelectedIds] = React.useState([]);
         const [choice, setChoice] = React.useState(false);
         const [other, setOther] = React.useState('');
         const debounceTimeout = React.useRef(null);
@@ -81,70 +82,16 @@
             console.log('-------------------------');
             console.log('formData :: ', formData);
 
-            // Atualiza o filtro dinamicamente
-            if (name === 'filtroSelect') {
-                setFormData((prev) => ({
-                    ...prev,
-                    [name]: value,
-                }));
-
-                setApplyFilters((prev) => ({
-                    ...prev,
-                    [name]: value,
-                }));
-
-                clearTimeout(debounceTimeout.current);
-                debounceTimeout.current = setTimeout(() => {
-                    const formFilter = {
-                        [attributeFieldValue]: value,
-                    };
-                    fetchFilter(formFilter);
-                }, 1000);
-            }
-            // Lógica para checkboxes
-            else if (name === nameField && type === 'checkbox') {
-                setFormData((prev) => {
-                    console.log(`------------------------`);
-                    console.log(`name === nameField && type === 'checkbox'`);
-                    const currentValues = stringToArray(prev[name] || '');
-                    console.log(`currentValues :: `, currentValues);
-
+            if (type === 'checkbox') {
+                setSelectedIds((prev) => {
                     if (checked) {
-                        // Adiciona o valor se não existir
-                        if (!currentValues.includes(value)) {
-                            console.log(`IF - !currentValues.includes(value)`);
-                            return {
-                                ...prev,
-                                [name]: arrayToString([...currentValues, value])
-                            };
-                        }
+                        return [...prev, value];
                     } else {
-                        console.log(`ELSE - !currentValues.includes(value)`);
-                        // Remove o valor
-                        return {
-                            ...prev,
-                            [name]: arrayToString(currentValues.filter(v => v !== value))
-                        };
+                        return prev.filter((id) => id !== value);
                     }
-                    return prev;
                 });
             }
-            // Para a opção "Outro" e outros campos
-            else if (choice) {
-                setFormData((prev) => ({
-                    ...prev,
-                    [name]: value,
-                }));
-            }
-            // Para outros casos
-            else {
-                setFormData((prev) => ({
-                    ...prev,
-                    [name]: value,
-                }));
-            }
 
-            // Reseta mensagens de feedback
             setMessage({ show: false, type: null, message: null });
         };
 
@@ -159,7 +106,7 @@
 
             setFormData((prev) => ({
                 ...prev,
-                [name]: value
+                [name]: selectedIds.join(','),
             }));
 
             setMessage({ show: false, type: null, message: null });
@@ -185,7 +132,7 @@
             // Se há múltiplos itens selecionados
             setSelectedLabel(`${selectedValues.length} itens selecionados`);
         };
-        
+
         const stringToArray = (value) => {
             if (!value) return [];
             if (Array.isArray(value)) return value;
@@ -688,9 +635,9 @@
         }, []);
 
         React.useEffect(() => {
-            // console.log('-------------------------');
-            // console.log('useEffect');
-            // console.log('listSelect :: ', listSelect);
+            console.log('-------------------------');
+            console.log('useEffect');
+            console.log('listSelect :: ', listSelect);
             if (listSelect && listSelect.length > 0) {
                 if (listSelect && listSelect.length > 0) {
                     const values = stringToArray(formData[nameField] || '');
@@ -698,6 +645,12 @@
                 }
             }
         }, [formData[nameField], listSelect]);
+
+        React.useEffect(() => {
+            if (formData[nameField]) {
+                setSelectedIds(formData[nameField].split(',').map((id) => id.trim()));
+            }
+        }, [formData[nameField]]);
 
         return (
             <div>
@@ -771,7 +724,7 @@
                                                 className="btn-check"
                                                 name={nameField} // O name pode ser igual para todos checkboxes, sem problemas
                                                 id={`${nameField}${index}`}
-                                                value={item.id}
+                                                checked={selectedIds.includes(item.id.toString())}
                                                 onFocus={handleFocus}
                                                 onChange={handleChange}
                                                 onBlur={handleBlur}
