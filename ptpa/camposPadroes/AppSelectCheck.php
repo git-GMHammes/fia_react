@@ -83,14 +83,39 @@
             console.log('formData :: ', formData);
 
             if (type === 'checkbox') {
-                setSelectedIds((prev) => {
+                setFormData((prev) => {
+                    const currentValues = stringToArray(prev[name] || '');
                     if (checked) {
-                        return [...prev, value];
+                        // Adicionar o valor selecionado
+                        return {
+                            ...prev,
+                            [name]: arrayToString([...currentValues, value]),
+                        };
                     } else {
-                        return prev.filter((id) => id !== value);
+                        // Remover o valor desmarcado
+                        return {
+                            ...prev,
+                            [name]: arrayToString(
+                                currentValues.filter((v) => v !== value)
+                            ),
+                        };
                     }
                 });
             }
+
+            console.log('handleChange:', {
+                name,
+                value,
+                formData: formData[name],
+                selectedItems: stringToArray(formData[name]),
+            });
+
+            setTimeout(() => {
+                console.log('-------------------------');
+                console.log('setTimeout');
+                console.log('formData[name] :: ', formData[name]);
+            }, 1000);
+
 
             setMessage({ show: false, type: null, message: null });
         };
@@ -135,14 +160,12 @@
 
         const stringToArray = (value) => {
             if (!value) return [];
-            if (Array.isArray(value)) return value;
-            return value.split(',').map(item => item.trim());
+            return Array.isArray(value) ? value : value.split(',').map((item) => item.trim());
         };
 
         const arrayToString = (array) => {
             if (!array) return '';
-            if (typeof array === 'string') return array;
-            return array.join(',');
+            return Array.isArray(array) ? array.join(',') : array;
         };
 
         const makeSelectedLabel = () => {
@@ -649,6 +672,13 @@
         React.useEffect(() => {
             if (formData[nameField]) {
                 setSelectedIds(formData[nameField].split(',').map((id) => id.trim()));
+            }
+        }, [formData[nameField]]);
+
+        React.useEffect(() => {
+            if (formData[nameField]) {
+                const initialValues = stringToArray(formData[nameField]);
+                setSelectedIds(initialValues); // Sincronizar com o estado local
             }
         }, [formData[nameField]]);
 
