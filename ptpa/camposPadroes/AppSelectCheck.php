@@ -86,13 +86,13 @@
                 setFormData((prev) => {
                     const currentValues = stringToArray(prev[name] || '');
                     if (checked) {
-                        // Adicionar o valor selecionado
+                        // Adiciona valor
                         return {
                             ...prev,
-                            [name]: arrayToString([...currentValues, value]),
+                            [name]: arrayToString(Array.from(new Set([...currentValues, value]))),
                         };
                     } else {
-                        // Remover o valor desmarcado
+                        // Remove valor
                         return {
                             ...prev,
                             [name]: arrayToString(
@@ -103,17 +103,10 @@
                 });
             }
 
-            console.log('handleChange:', {
-                name,
-                value,
-                formData: formData[name],
-                selectedItems: stringToArray(formData[name]),
-            });
-
             setTimeout(() => {
                 console.log('-------------------------');
                 console.log('setTimeout');
-                console.log('formData[name] :: ', formData[name]);
+                console.log('formData[name] :: ', formData[nameField]);
             }, 1000);
 
 
@@ -129,10 +122,10 @@
             // console.log('name :: ', name);
             // console.log('value :: ', value);
 
-            setFormData((prev) => ({
-                ...prev,
-                [name]: selectedIds.join(','),
-            }));
+            // setFormData((prev) => ({
+            // ...prev,
+            // [name]: selectedIds.join(','),
+            // }));
 
             setMessage({ show: false, type: null, message: null });
         };
@@ -636,6 +629,8 @@
             loadData();
 
         }, []);
+
+        {/* REACT 002 */ }
         React.useEffect(() => {
             let animationFrame;
             const startAnimation = () => {
@@ -656,7 +651,8 @@
             startAnimation();
             return () => cancelAnimationFrame(animationFrame); // Cleanup da animação
         }, []);
-        {/* REACT 002 */ }
+
+        {/* REACT 003 */ }
         React.useEffect(() => {
             console.log('-------------------------');
             console.log('useEffect');
@@ -668,17 +664,11 @@
                 }
             }
         }, [formData[nameField], listSelect]);
-        {/* REACT 003 */ }
-        React.useEffect(() => {
-            if (formData[nameField]) {
-                setSelectedIds(formData[nameField].split(',').map((id) => id.trim()));
-            }
-        }, [formData[nameField]]);
+
         {/* REACT 004 */ }
         React.useEffect(() => {
             if (formData[nameField]) {
-                const initialValues = stringToArray(formData[nameField]);
-                setSelectedIds(initialValues); // Sincronizar com o estado local
+                setSelectedIds(formData[nameField].split(',').map((id) => id.trim()));
             }
         }, [formData[nameField]]);
 
