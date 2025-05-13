@@ -71,39 +71,19 @@
         const handleChange = (event) => {
             // Adicione "type" na desestruturação para resolver o erro
             const { name, value, type, checked } = event.target;
-            console.log('-------------------------');
-            console.log('handleChange');
-            console.log('-------------------------');
-            console.log('src/ app/ Views/ fia/ ptpa/ camposPadroes/ AppSelectCheck.php');
-            console.log('name :: ', name);
-            console.log('value :: ', value);
-            console.log('type :: ', type);
-            console.log('checked :: ', checked);
-            console.log('-------------------------');
-            console.log('formData :: ', formData);
+            // console.log('-------------------------');
+            // console.log('handleChange');
+            // console.log('-------------------------');
+            // console.log('src/ app/ Views/ fia/ ptpa/ camposPadroes/ AppSelectCheck.php');
+            // console.log('name :: ', name);
+            // console.log('value :: ', value);
+            // console.log('type :: ', type);
+            // console.log('checked :: ', checked);
 
-            if (type === 'checkbox') {
-                setFormData((prev) => {
-                    const currentValues = stringToArray(prev[name] || '');
-                    let newValues;
-                    if (checked) {
-                        newValues = Array.from(new Set([...currentValues, value]));
-                    } else {
-                        newValues = currentValues.filter((v) => v !== value);
-                    }
-                    return {
-                        ...prev,
-                        [name]: arrayToString(newValues),
-                    };
-                });
-            }
-
-            setTimeout(() => {
-                console.log('-------------------------');
-                console.log('setTimeout');
-                console.log('formData[name] :: ', formData[nameField]);
-            }, 1000);
-
+            setSelectedIds(prev => checked
+                ? [...prev, value]
+                : prev.filter(id => id !== value)
+            );
 
             setMessage({ show: false, type: null, message: null });
         };
@@ -602,7 +582,7 @@
             }
         };
 
-        {/* REACT 001 */ }
+        {/* REACT PRINCIPAL */ }
         React.useEffect(() => {
             // console.log('-------------------------');
             // console.log('useEffect');
@@ -625,7 +605,7 @@
 
         }, []);
 
-        {/* REACT 002 */ }
+        {/* REACT - LOADING */ }
         React.useEffect(() => {
             let animationFrame;
             const startAnimation = () => {
@@ -647,11 +627,11 @@
             return () => cancelAnimationFrame(animationFrame); // Cleanup da animação
         }, []);
 
-        {/* REACT 003 */ }
+        {/* REACT formData[nameField], listSelect */ }
         React.useEffect(() => {
-            console.log('-------------------------');
-            console.log('useEffect');
-            console.log('listSelect :: ', listSelect);
+            // console.log('-------------------------');
+            // console.log('useEffect');
+            // console.log('listSelect :: ', listSelect);
             if (listSelect && listSelect.length > 0) {
                 if (listSelect && listSelect.length > 0) {
                     const values = stringToArray(formData[nameField] || '');
@@ -663,9 +643,22 @@
         {/* REACT 004 */ }
         React.useEffect(() => {
             if (formData[nameField]) {
-                setSelectedIds(formData[nameField].split(',').map((id) => id.trim()));
+                setSelectedIds(formData[nameField].split(',').map(id => id.trim()));
+            } else {
+                setSelectedIds([]);
             }
-        }, [formData[nameField]]);
+            // Só rode na montagem e se trocar o campo
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, [nameField]);
+
+        {/* REACT 005 */ }
+        React.useEffect(() => {
+            setFormData(prev => ({
+                ...prev,
+                [nameField]: selectedIds.join(','),
+            }));
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, [selectedIds, nameField]);
 
         return (
             <div>

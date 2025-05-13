@@ -832,14 +832,6 @@
             }
         };
 
-        React.useEffect(() => {
-            // Só executa se houver um CEP válido no formData
-            if (formData.CEP && formData.CEP.length >= 8) {
-                // console.log("Ordenando unidades pelo CEP:", formData.CEP);
-                orderUnitsByCEPProximity(formData.CEP);
-            }
-        }, [formData.CEP]);
-
         // POST Padrão 
         const fetchPostconfirmaEmail = async (custonBaseURL = base_url, custonApiPostObjeto = api_post_confirma_email) => {
             // console.log('fetchPostconfirmaEmail...');
@@ -881,96 +873,6 @@
                 return null;
             }
         };
-
-        // useEffect para sincronizar os campos unit e unidade_id
-        React.useEffect(() => {
-            // Verificar qual campo foi alterado por último e sincronizar o outro
-            const lastChanged = formData.unit !== formData.unidade_id ? 'unit' : 'unidade_id';
-
-            if (lastChanged === 'unit' && formData.unit !== formData.unidade_id) {
-                setFormData(prevData => ({
-                    ...prevData,
-                    unidade_id: formData.unit
-                }));
-            } else if (lastChanged === 'unidade_id' && formData.unidade_id !== formData.unit) {
-                setFormData(prevData => ({
-                    ...prevData,
-                    unit: formData.unidade_id
-                }));
-            }
-        }, [formData.unit, formData.unidade_id]);
-
-        // formData.termo
-        React.useEffect(() => {
-            setTermoAceito(formData.termo || false);
-        }, [formData.termo]);
-
-        // [ListPeriodos, formData.Nascimento]
-        React.useEffect(() => {
-            if (ListPeriodos.length > 0) {
-                ListPeriodos.forEach((periodo) => {
-                    let data_periodo = periodo.periodo_data_inicio
-                        ? periodo.periodo_data_inicio
-                        : '';
-
-                    if (formData.Nascimento) {
-                        let recebe_data_15_165 = funcCalculateDates(formData.Nascimento);
-
-                        // Convertendo as datas corretamente
-                        let dataPeriodo = new Date(data_periodo);
-                        // Convertendo de DD/MM/YYYY para Date
-                        let minDate = new Date(recebe_data_15_165.minDate.split('/').reverse().join('-'));
-                        let maxDate = new Date(recebe_data_15_165.maxDate.split('/').reverse().join('-'));
-
-                        // Normalizar as datas removendo o horário
-                        dataPeriodo.setHours(0, 0, 0, 0);
-                        minDate.setHours(0, 0, 0, 0);
-                        maxDate.setHours(0, 0, 0, 0);
-
-                        if (dataPeriodo >= minDate && dataPeriodo <= maxDate) {
-                            // console.log('Data está no período válido (15 a 16.5 anos)')
-                        } else {
-                            setMessage({
-                                show: true,
-                                type: 'light',
-                                message: 'A Unidade selecionada não possui vagas para a idade de nascimento informado'
-                            });
-                        }// console.log
-                    }
-                });
-            }
-        }, [ListPeriodos, formData.Nascimento]);
-
-        // useEffect PRINCIPAL
-        React.useEffect(() => {
-            const loadData = async () => {
-                // console.log('React.useEffect(() => {}...');
-                setIsLoading(true);
-
-                try {
-                    // Usar Promise.all para fazer todas as chamadas em paralelo
-                    const [adolescentesData, sexosData, unidadesData, generosData, municipiosData] =
-                        await Promise.all([
-                            fetchAdolescentes(),
-                            fetchSexos(),
-                            fetchPostUnidade(),
-                            fetchGeneros(),
-                            fetchMunicipios(),
-                            // fetchEscolaridade() - DECREPTO
-                        ]);
-                    // console.log('Proicessados: fetchAdolescentes(), etchSexos(), fetchPostUnidade(), fetchGeneros(), fetchMunicipios()...');
-                } catch (error) {
-                    console.error('Erro ao carregar dados:', error);
-                } finally {
-                    setTimeout(() => {
-                        setIsLoading(false);
-                    }, 500);
-
-                }
-            };
-
-            loadData();
-        }, []); // Array vazio para executar apenas uma vez
 
         // POST fetchPostUnidade
         const fetchPostUnidade = async (formData = {}, custonBaseURL = base_url, custonApiPostObjeto = api_filter_unidades, customPage = '') => {
@@ -4307,6 +4209,107 @@
                 </div>
             );
         }
+
+        {/* useEffect PRINCIPAL */ }
+        React.useEffect(() => {
+            const loadData = async () => {
+                // console.log('React.useEffect(() => {}...');
+                setIsLoading(true);
+
+                try {
+                    // Usar Promise.all para fazer todas as chamadas em paralelo
+                    const [adolescentesData, sexosData, unidadesData, generosData, municipiosData] =
+                        await Promise.all([
+                            fetchAdolescentes(),
+                            fetchSexos(),
+                            fetchPostUnidade(),
+                            fetchGeneros(),
+                            fetchMunicipios(),
+                            // fetchEscolaridade() - DECREPTO
+                        ]);
+                    // console.log('Proicessados: fetchAdolescentes(), etchSexos(), fetchPostUnidade(), fetchGeneros(), fetchMunicipios()...');
+                } catch (error) {
+                    console.error('Erro ao carregar dados:', error);
+                } finally {
+                    setTimeout(() => {
+                        setIsLoading(false);
+                    }, 500);
+
+                }
+            };
+
+            loadData();
+        }, []);
+        {/* formData.unit, formData.unidade_id */ }
+        React.useEffect(() => {
+            // Verificar qual campo foi alterado por último e sincronizar o outro
+            const lastChanged = formData.unit !== formData.unidade_id ? 'unit' : 'unidade_id';
+
+            if (lastChanged === 'unit' && formData.unit !== formData.unidade_id) {
+                setFormData(prevData => ({
+                    ...prevData,
+                    unidade_id: formData.unit
+                }));
+            } else if (lastChanged === 'unidade_id' && formData.unidade_id !== formData.unit) {
+                setFormData(prevData => ({
+                    ...prevData,
+                    unit: formData.unidade_id
+                }));
+            }
+        }, [formData.unit, formData.unidade_id]);
+        {/* formData.termo */ }
+        React.useEffect(() => {
+            setTermoAceito(formData.termo || false);
+        }, [formData.termo]);
+        {/* ListPeriodos - formData.Nascimento */ }
+        React.useEffect(() => {
+            if (ListPeriodos.length > 0) {
+                ListPeriodos.forEach((periodo) => {
+                    let data_periodo = periodo.periodo_data_inicio
+                        ? periodo.periodo_data_inicio
+                        : '';
+
+                    if (formData.Nascimento) {
+                        let recebe_data_15_165 = funcCalculateDates(formData.Nascimento);
+
+                        // Convertendo as datas corretamente
+                        let dataPeriodo = new Date(data_periodo);
+                        // Convertendo de DD/MM/YYYY para Date
+                        let minDate = new Date(recebe_data_15_165.minDate.split('/').reverse().join('-'));
+                        let maxDate = new Date(recebe_data_15_165.maxDate.split('/').reverse().join('-'));
+
+                        // Normalizar as datas removendo o horário
+                        dataPeriodo.setHours(0, 0, 0, 0);
+                        minDate.setHours(0, 0, 0, 0);
+                        maxDate.setHours(0, 0, 0, 0);
+
+                        if (dataPeriodo >= minDate && dataPeriodo <= maxDate) {
+                            // console.log('Data está no período válido (15 a 16.5 anos)')
+                        } else {
+                            setMessage({
+                                show: true,
+                                type: 'light',
+                                message: 'A Unidade selecionada não possui vagas para a idade de nascimento informado'
+                            });
+                        }// console.log
+                    }
+                });
+            }
+        }, [ListPeriodos, formData.Nascimento]);
+        {/* formData.CEP */ }
+        React.useEffect(() => {
+            // Só executa se houver um CEP válido no formData
+            if (formData.CEP && formData.CEP.length >= 8) {
+                // console.log("Ordenando unidades pelo CEP:", formData.CEP);
+                orderUnitsByCEPProximity(formData.CEP);
+            }
+        }, [formData.CEP]);
+        {/* formData */ }
+        React.useEffect(() => {
+            console.log("-------------------");
+            console.log("src/ app/ Views/ fia/ ptpa/ adolescentes/ AppForm.php");
+            console.log("FormData atualizado:", formData);
+        }, [formData]);
 
         {/* Styles */ }
         const formGroupStyle = {

@@ -254,7 +254,7 @@
                 return;
             }
             const getOuther = formData[nameField] || '';
-            console.log('getOuther :: ', getOuther);
+            // console.log('getOuther :: ', getOuther);
             parameter.map((item, index) => {
                 addDataStack.push(item[attributeFieldValue]);
             });
