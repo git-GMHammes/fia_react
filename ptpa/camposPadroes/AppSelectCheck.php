@@ -85,21 +85,16 @@
             if (type === 'checkbox') {
                 setFormData((prev) => {
                     const currentValues = stringToArray(prev[name] || '');
+                    let newValues;
                     if (checked) {
-                        // Adiciona valor
-                        return {
-                            ...prev,
-                            [name]: arrayToString(Array.from(new Set([...currentValues, value]))),
-                        };
+                        newValues = Array.from(new Set([...currentValues, value]));
                     } else {
-                        // Remove valor
-                        return {
-                            ...prev,
-                            [name]: arrayToString(
-                                currentValues.filter((v) => v !== value)
-                            ),
-                        };
+                        newValues = currentValues.filter((v) => v !== value);
                     }
+                    return {
+                        ...prev,
+                        [name]: arrayToString(newValues),
+                    };
                 });
             }
 
