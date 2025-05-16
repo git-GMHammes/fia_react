@@ -61,8 +61,8 @@
         const handleFocus = (event) => {
             const { name, value } = event.target;
 
-            // console.log('handleFocus: ', name);
-            // console.log('handleFocus: ', value);
+            //  console.log('handleFocus: ', name);
+            //  console.log('handleFocus: ', value);
 
             setMessage({ show: false, type: null, message: null });
 
@@ -74,7 +74,7 @@
 
         // Função handleChange simplificada
         const handleChange = async (event) => {
-            console.log("handleChange...");
+            // console.log("handleChange...");
 
             const { name, value, checked, type } = event.target;
 
@@ -110,11 +110,11 @@
 
             // Lógica para o campo filtroSelect
             if (name === 'filtroSelect') {
-                console.log('handleChange - filtroSelect:', value);
+                // console.log('handleChange - filtroSelect:', value);
 
                 // Se o comprimento do valor for 1 ou menos, redefine o estado
                 if (value.length <= 1) {
-                    // console.log('value.length <= 1, redefinindo...');
+                    //  console.log('value.length <= 1, redefinindo...');
                     setObjetoMapKey(objetoArrayKey);
                     setSetFilter((prev) => ({
                         ...prev,
@@ -144,7 +144,7 @@
                     clearTimeout(debounceTimeout.current);
                 }
                 debounceTimeout.current = setTimeout(() => {
-                    // console.log('Chamando fetchFilter com:', value);
+                    //  console.log('Chamando fetchFilter com:', value);
                     fetchFilter();
                 }, 300);
             }
@@ -176,18 +176,18 @@
 
         // POST Padrão 
         const fetchPost = async (custonBaseURL = base_url, custonApiPostObjeto = api_post, customPage = getVar_page) => {
-            console.log('-------------------------------------');
+            // console.log('-------------------------------------');
             if (custonApiPostObjeto === 'api/post') {
                 return false;
             } else {
                 setObjetoMapKey([{ key: '', value: 'carregando...' }]);
             }
             let message = errorMessage === '' ? `Não foram encontrados(as) ${labelField} cadastrados(as)` : errorMessage;
-            // console.log('fetchPost - getVar_page: ', getVar_page);
+            //  console.log('fetchPost - getVar_page: ', getVar_page);
             const url = custonBaseURL + custonApiPostObjeto + customPage;
-            console.log('fetchPost - url: ', url);
+            // console.log('fetchPost - url: ', url);
             const SetData = { setFormData };
-            // console.log('fetchPost - SetData: ', SetData);
+            //  console.log('fetchPost - SetData: ', SetData);
             try {
                 const response = await fetch(url, {
                     method: 'POST',
@@ -196,16 +196,64 @@
                     },
                     body: JSON.stringify(SetData),
                 });
-                console.log('fetchPost - response :: ', response);
+                // console.log('fetchPost - response :: ', response);
                 // Verificação de erros HTTP
                 if (!response.ok) {
                     throw new Error(`Erro HTTP: ${response.status}`);
                 }
                 const data = await response.json();
-                // console.log('fetchPost - data: ', data);
+                //  console.log('fetchPost - data: ', data);
                 if (data.result && data.result.dbResponse && data.result.dbResponse.length > 0) {
-                    // console.log('fetchPost - data.result.dbResponse: ', data.result.dbResponse);
+                    //  console.log('fetchPost - data.result.dbResponse: ', data.result.dbResponse);
                     const dbResponse = data.result.dbResponse;
+                    // 
+                    const mappedResponse = dbResponse.map((item) => ({
+                        [attributeFieldKey[1]]: item[attributeFieldKey[0]], // Mapeia a chave
+                        [attributeFieldName[1]]: item[attributeFieldName[0]], // Mapeia o valor
+                    }));
+                    //  console.log('fetchFilter - mappedResponse: ', mappedResponse);
+                    setObjetoMapKey(mappedResponse);
+                    //
+                } else {
+                    setMessage({
+                        show: true,
+                        type: 'light',
+                        message: message
+                    });
+                    setMsgError(message);
+                    setIsLoading(false);
+                    setObjetoMapKey([]);
+                }
+            } catch (error) {
+                console.error('Erro ao enviar dados:', error);
+                // Aqui você pode adicionar lógica adicional para exibir o erro para o usuário
+                return null;
+            }
+        };
+
+        // Filtro Padrão
+        const fetchFilter = async (custonBaseURL = base_url, custonApiPostObjeto = api_filter, customPage = getVar_page) => {
+            // console.log('fetchFilter... ');
+            const url = custonBaseURL + custonApiPostObjeto + customPage;
+            // console.log('----------------------------------------------');
+            // console.log('fetchFilter - url: ', url);
+            let message = errorMessage === '' ? `Não foram encontrados(as) ${labelField} cadastrados(as)` : errorMessage;
+            const setData = setFilter;
+            // console.log("setData :: ", setData);
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(setData),
+                });
+                //  console.log("response :: ", response);
+                const data = await response.json();
+                //  console.log("data :: ", data);
+                if (data.result && data.result.dbResponse && data.result.dbResponse.length > 0) {
+                    const dbResponse = data.result.dbResponse;
+                    //  console.log('fetchFilter - dbResponse: ', dbResponse);
                     // 
                     const mappedResponse = dbResponse.map((item) => ({
                         [attributeFieldKey[1]]: item[attributeFieldKey[0]], // Mapeia a chave
@@ -231,61 +279,13 @@
             }
         };
 
-        // Filtro Padrão
-        const fetchFilter = async (custonBaseURL = base_url, custonApiPostObjeto = api_filter, customPage = getVar_page) => {
-            console.log('fetchFilter... ');
-            const url = custonBaseURL + custonApiPostObjeto + customPage;
-            console.log('----------------------------------------------');
-            console.log('fetchFilter - url: ', url);
-            let message = errorMessage === '' ? `Não foram encontrados(as) ${labelField} cadastrados(as)` : errorMessage;
-            const setData = setFilter;
-            console.log("setData :: ", setData);
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(setData),
-                });
-                // console.log("response :: ", response);
-                const data = await response.json();
-                // console.log("data :: ", data);
-                if (data.result && data.result.dbResponse && data.result.dbResponse.length > 0) {
-                    const dbResponse = data.result.dbResponse;
-                    // console.log('fetchFilter - dbResponse: ', dbResponse);
-                    // 
-                    const mappedResponse = dbResponse.map((item) => ({
-                        [attributeFieldKey[1]]: item[attributeFieldKey[0]], // Mapeia a chave
-                        [attributeFieldName[1]]: item[attributeFieldName[0]], // Mapeia o valor
-                    }));
-                    console.log('fetchFilter - mappedResponse: ', mappedResponse);
-                    setObjetoMapKey(mappedResponse);
-                    //
-                } else {
-                    setMessage({
-                        show: true,
-                        type: 'light',
-                        message: message
-                    });
-                    setMsgError(message);
-                    setIsLoading(false);
-                    setObjetoMapKey([]);
-                }
-            } catch (error) {
-                console.error('Erro ao enviar dados:', error);
-                // Aqui você pode adicionar lógica adicional para exibir o erro para o usuário
-                return null;
-            }
-        };
-
         // React.useEffect
         React.useEffect(() => {
-            // console.log('React.useEffect - Carregar Dados Iniciais');
+            //  console.log('React.useEffect - Carregar Dados Iniciais');
 
             // Função para carregar todos os dados necessários
             const loadData = async () => {
-                // console.log('loadData iniciando...');
+                //  console.log('loadData iniciando...');
 
                 try {
                     await fetchPost();
@@ -295,7 +295,7 @@
                     setIsLoading(false);
                 }
             };
-            // console.log(formData);
+            //  console.log(formData);
             loadData();
         }, []);
 

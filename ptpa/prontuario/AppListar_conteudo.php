@@ -220,7 +220,7 @@
         const validateFormData = () => {
             // Lista de campos que devem ser validados
             const fieldsToValidate = [
-                'prontuario_data_inicio', 
+                'prontuario_data_inicio',
                 'prontuario_data_fim',
                 'adolescente_bairro',
                 'adolescente_CPF',
@@ -239,7 +239,7 @@
                 'adolescente_nome_mae',
                 'adolescente_numero_matricula',
                 'adolescente_rg',
-                'Responsavel_TelefoneMovel',
+                'responsavel_TelefoneMovel',
                 'adolescente_telefone_movel',
                 'adolescente_telefone_recado',
                 'adolescente_tipo_escola',
@@ -563,7 +563,7 @@
 
         // POST Padrão 
         const fetchPostProntuarioFiltrar = async (custonBaseURL = base_url, custonApiPostObjeto = api_post_filter_prontuario, customPage = getVar_page) => {
-            const url = custonBaseURL + custonApiPostObjeto + customPage + '&limit=90000';      
+            const url = custonBaseURL + custonApiPostObjeto + customPage + '&limit=90000';
             const SetData = formData;
             // console.log('url :: ', url);
 
@@ -894,7 +894,7 @@
                                 </th>
                                 <th scope="col" className="text-nowrap">
                                     <div className="d-flex justify-content-center">
-                                        CPF
+                                        CPF/Certidao
                                     </div>
                                 </th>
                                 <th scope="col" className="text-nowrap">
@@ -956,17 +956,21 @@
                                             </td>
                                             <td>
                                                 <div className="d-flex justify-content-center">
-                                                    {prontuario_value.adolescente_CPF}
+                                                    {(prontuario_value.adolescente_CPF !== '') ? (
+                                                        <div>{prontuario_value.adolescente_CPF}</div>
+                                                    ) : (
+                                                        <div>{prontuario_value.adolescente_Certidao}</div>
+                                                    )}
                                                 </div>
                                             </td>
                                             <td>
                                                 <div className="d-flex justify-content-center">
-                                                    {formatarVulnerabilidade(prontuario_value.prontuario_referenciado_na_rede)}
+                                                    {formatarVulnerabilidade(prontuario_value.prontuario_Vulnerabilidade)}
                                                 </div>
                                             </td>
                                             <td>
                                                 <div className="d-flex justify-content-center">
-                                                    {prontuario_value.Responsavel_TelefoneMovel}
+                                                    {prontuario_value.responsavel_TelefoneMovel}
                                                 </div>
                                             </td>
                                             <td>

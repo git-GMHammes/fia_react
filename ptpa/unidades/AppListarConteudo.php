@@ -677,7 +677,7 @@
                                                         errorMessage: '', // Mensagem de Erro personalizada
                                                         attributePlaceholder: '', // placeholder 
                                                         attributeMinlength: 4, // minlength 
-                                                        attributeMaxlength: 50, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
+                                                        attributeMaxlength: 10, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
                                                         attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
                                                         attributeAutocomplete: 'on', // on, off ]
                                                         attributeRequired: false,

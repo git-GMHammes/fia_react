@@ -50,8 +50,8 @@
         const handleFocus = (event) => {
             const { name, value } = event.target;
 
-            console.log('handleFocus: ', name);
-            console.log('handleFocus: ', value);
+            // console.log('handleFocus: ', name);
+            // console.log('handleFocus: ', value);
 
             setMessage({ show: false, type: null, message: null });
 
@@ -62,7 +62,7 @@
 
             // Verifica se a mudança de campo
             if (name === 'variavel_001') {
-                console.log('variavel_001');
+                // console.log('variavel_001');
                 // submitAllForms('filtro-api');
             }
         };
@@ -71,8 +71,8 @@
         const handleChange = (event) => {
             const { name, value } = event.target;
 
-            console.log('name handleChange: ', name);
-            console.log('value handleChange: ', value);
+            // console.log('name handleChange: ', name);
+            // console.log('value handleChange: ', value);
 
             setFormData((prev) => ({
                 ...prev,
@@ -84,8 +84,8 @@
         const handleBlur = (event) => {
             const { name, value } = event.target;
 
-            console.log('name handleBlur: ', name);
-            console.log('value handleBlur: ', value);
+            // console.log('name handleBlur: ', name);
+            // console.log('value handleBlur: ', value);
 
             setFormData((prev) => ({
                 ...prev,
@@ -94,7 +94,7 @@
 
             // Verifica se a mudança é no campo 'variavel_001'
             if (name === 'variavel_001') {
-                console.log('variavel_001');
+                // console.log('variavel_001');
                 // submitAllForms('filtro-api');
             }
         }
@@ -207,13 +207,13 @@
         {/* SUBMITALLFORMS FILTRAR BK */ }
         const submitAllForms = async (filtro, paginacao) => {
             const setData = formData;
-            console.log('----------------------------------');
-            console.log('SUBMITALLFORMS');
-            console.log('----------------------------------');
-            console.log('src/app/Views/fia/ptpa/adolescentes/AppListar_conteudo.php');
-            console.log('filtro: ', filtro);
-            console.log('paginacao: ', paginacao);
-            console.log('setData: ', setData);
+            // console.log('----------------------------------');
+            // console.log('SUBMITALLFORMS');
+            // console.log('----------------------------------');
+            // console.log('src/app/Views/fia/ptpa/adolescentes/AppListar_conteudo.php');
+            // console.log('filtro: ', filtro);
+            // console.log('paginacao: ', paginacao);
+            // console.log('setData: ', setData);
             setMessage({ show: false, type: null, message: null });
             setTimeout(() => {
                 // Validação
@@ -230,11 +230,11 @@
 
         // useEffect para carregar os dados na inicialização do componente
         React.useEffect(() => {
-            console.log('React.useEffect - Carregar Dados Iniciais');
+            // console.log('React.useEffect - Carregar Dados Iniciais');
 
             // Função para carregar todos os dados necessários
             const loadData = async () => {
-                console.log('loadData iniciando...');
+                // console.log('loadData iniciando...');
 
                 try {
                     // Chama as funções de fetch para carregar os dados
@@ -346,13 +346,13 @@
         const fetchPostAdolescentes = async (custonBaseURL = base_url, custonApiPostObjeto = api_post_filter_adolescente, customPage = getVar_page) => {
             const url = custonBaseURL + custonApiPostObjeto + customPage;
             const SetData = formData;
-            console.log('---------------------');
-            console.log('FILTRO ADOLESCENTE');
-            console.log('---------------------');
-            console.log('src/app/Views/fia/ptpa/adolescentes/AppListar_conteudo.php');
-            console.log('url :: ', url);
-            console.log('customPage :: ', customPage);
-            console.log('SetData :: ', SetData);
+            // console.log('---------------------');
+            // console.log('FILTRO ADOLESCENTE');
+            // console.log('---------------------');
+            // console.log('src/app/Views/fia/ptpa/adolescentes/AppListar_conteudo.php');
+            // console.log('url :: ', url);
+            // console.log('customPage :: ', customPage);
+            // console.log('SetData :: ', SetData);
             try {
                 const response = await fetch(url, {
                     method: 'POST',

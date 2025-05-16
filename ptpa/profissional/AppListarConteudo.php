@@ -653,7 +653,7 @@
                                                         nameField: 'CPF',
                                                         attributePlaceholder: '', // placeholder 
                                                         attributeMinlength: 2, // minlength 
-                                                        attributeMaxlength: 100, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
+                                                        attributeMaxlength: 15, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
                                                         attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
                                                         attributeAutocomplete: 'on', // on, off ]
                                                         attributeRequired: false,

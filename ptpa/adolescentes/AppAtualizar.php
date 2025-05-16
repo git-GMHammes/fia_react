@@ -18,12 +18,7 @@ $parametros_backend = array(
     'api_get_responsavel' => 'index.php/fia/ptpa/responsavel/api/filtrar',
     'api_get_sexo' => 'index.php/fia/ptpa/sexobiologico/api/filtrar',
     'api_get_municipio' => 'index.php/fia/ptpa/municipio/api/filtrar',
-    'api_get_unidade' => 'index.php/fia/ptpa/unidade/api/filtrar',
-    'api_filter_unidades' => 'index.php/fia/ptpa/unidade/api/filtrar',
     'api_get_periodo' => 'index.php/fia/ptpa/periodo/api/filtrar',
-    'api_post_filter_unidade' => 'index.php/fia/ptpa/unidade/api/filtrar',
-    'api_post_atualizar_adolescente' => 'index.php/fia/ptpa/adolescente/api/atualizar',
-    'api_post_cadastrar_adolescente' => 'index.php/fia/ptpa/adolescente/api/cadastrar',
     'api_post_cadastrar_responsavel' => 'index.php/fia/ptpa/responsavel/api/cadastrar',
     'api_post_filter_responsaveis' => 'index.php/fia/ptpa/responsavel/api/filtrar',
     'api_get_escolaridade' => 'index.php/fia/ptpa/escolaridade/api/exibir',
@@ -32,6 +27,12 @@ $parametros_backend = array(
     'api_get_genero' => 'index.php/fia/ptpa/genero/api/filtrar',
     'api_post_genero_filtrar' => 'index.php/fia/ptpa/genero/api/filtrar',
     'api_post_genero_cadastrar' => 'index.php/fia/ptpa/genero/api/cadastrar',
+    'api_post_atualizar_adolescente' => 'index.php/fia/ptpa/adolescente/api/atualizar',
+    'api_post_cadastrar_adolescente' => 'index.php/fia/ptpa/adolescente/api/cadastrar',
+    'api_get_selectunidade' => 'index.php/fia/ptpa/unidade/api/selectunidade',
+    'api_get_unidade' => 'index.php/fia/ptpa/unidade/api/filtrar',
+    'api_post_filter_unidade' => 'index.php/fia/ptpa/unidade/api/filtrar',
+    'api_filter_unidades' => 'index.php/fia/ptpa/unidade/api/filtrar',
 );
 $parametros_backend['api_get_atualizar_adolescente'] = ($atualizar_id !== 'erro') ? ('index.php/fia/ptpa/adolescente/api/exibir' . $atualizar_id) : ('index.php/fia/ptpa/adolescente/api/exibir/erro');
 

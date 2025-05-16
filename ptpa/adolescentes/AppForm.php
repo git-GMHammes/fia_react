@@ -15,8 +15,6 @@
         const api_get_sexo = parametros.api_get_sexo;
         const api_get_municipio = parametros.api_get_municipio;
         const api_get_periodo = parametros.api_get_periodo;
-        const api_post_filter_unidade = parametros.api_post_filter_unidade || '';
-        const api_filter_unidades = parametros.api_filter_unidades || '';
         const api_post_filter_responsaveis = parametros.api_post_filter_responsaveis;
         const api_post_atualizar_adolescente = parametros.api_post_atualizar_adolescente || '';
         const api_post_cadastrar_adolescente = parametros.api_post_cadastrar_adolescente || '';
@@ -30,7 +28,9 @@
         const api_get_genero = parametros.api_get_genero;
         const api_post_genero_cadastrar = parametros.api_post_genero_cadastrar;
         const api_post_genero_filtrar = parametros.api_post_genero_filtrar;
-
+        const api_get_selectunidade = parametros.api_get_selectunidade || '';
+        const api_post_filter_unidade = parametros.api_post_filter_unidade || '';
+        const api_filter_unidades = parametros.api_filter_unidades || '';
 
         const getFormattedDate = () => {
             const options = { day: 'numeric', month: 'long', year: 'numeric' };
@@ -90,7 +90,7 @@
         const randomComplemento = arrayComplemento[gerarIndice(arrayComplemento)];
 
         const ceps = [
-            "23535639", "23520244", "23010392", "21941614", "20000100", "20000300", "20010010", "20020050", "20030060", "20040070", "20060090", "21665300", "21000110", "21010120", "21020130", "21030140", "21040150", "21050160", "21060170", "21070180", "21080190", "21090200", "22010220", "22020230", "22030240", "21645510", "22050260", "22070280", "22080290", "22090300", "23000310", "23010320", "23020330", "23030340", "23040350", "23050360", "23060370", "23070380", "23080390", "21830498", "23090400", "57025041", "24020420", "24040440", "69915455", "24060460", "24070470", "24090490", "24110510", "24120520", "24130530", "24150550", "24160560", "24170570", "24180580", "21725280", "22245030", "21650331", "24200600", "24210610", "24220620", "24230630", "24240640", "24250650", "24260660", "24270670", "24280680", "24290690", "24300700", "24310710", "24320720", "24330730", "24340740", "24350750", "24400760", "24410770", "24420780", "24430790", "24440800", "24450810", "24460820", "24470830", "24480840", "23821730", "24490850", "24510870", "24520880", "24530890", "24540900", "24550910", "24560920", "24570930", "24580940", "24590950", "24600960", "24610970", "24620980", "24630990", "24020150", "24020125", "24030215", "24020071", "24030005", "24020074", "24030000", "24020012", "24020077", "24220031", "24210390", "24210400", "24230051", "24310430", "24310420", "24350310", "24350370", "24350390", "24370025", "24370205", "24370210", "24722220", "24722230", "24740010", "24740015", "24740020", "24740300", "24740305", "24740310", "24740315", "24740320", "24740325", "24740330", "24740335", "24740340", "24740350", "24740355", "24743000", "24743005", "24743010", "24743015", "24743020", "22753690", "24743030", "24743035", "24743040", "24743045", "24743050", "24743055", "24743060", "24743065", "24743070", "21532240", "23042320", "23013350", "24743080", "24743085", "24743090", "24743095", "24743100", "24743105", "24743110", "24743115", "24743120", "24743125", "24743130", "24743135", "24743140", "24743145", "24743150", "24743155", "24743160", "24743165", "24743170", "24743175", "24743180", "24743185", "24743190", "24743195", "24743200", "20766820", "24743210", "24743215", "24743220", "22723225", "24743230", "24743235", "24743240", "24743245", "24743250", "24743255", "24743260", "24743265", "24743270", "24743275", "24743280", "24743285", "24743290", "24743295", "24743300", "20050030", "22410003", "21941590", "20021000", "20031170", "20230010", "22250040", "22410001", "20271110", "20511330", "22631000", "20710130", "20710230", "20930000", "21330630", "21941904", "22210080", "22290240", "22430160", "20040002", "20040006", "20211901", "20520053", "20530350", "20740032", "20921030", "21041010", "21715000", "22010002", "22061020", "22210001", "22250140", "22250901", "22431000", "22460060", "22631050", "22775003", "23020001", "20040020", "20050000", "20050002", "20060050", "21843708", "20071004", "20211160", "20270280", "20511170", "20521160", "20530001", "20710010", "20921430", "21061970", "21210010", "21251080", "21330230", "21351050", "21650001", "21725180", "21941011", "22010010", "22071060", "22221001", "22221020", "22241000", "22250070", "22270000", "22280000", "22290160", "22410160", "22451041", "22461002", "20010000", "20010020", "20011000", "20020050", "20031050", "20040001", "20050001", "20071000", "20081001", "20210010", "20211001", "20299924", "20231050", "20511260", "20530160", "20760040", "20771001", "20930001", "21021190", "21545001", "22010001", "22070010", "22231001", "22240000", "22250010", "22270001", "22281001", "22291001", "22621070", "23030235", "22715580", "21830264", "23042122", "21051510", "21940300", "23575217", "20261235", "21730680", "20940230", "21842420", "21843708"
+            "23535639", "23520244", "23010392", "21941614", "20000100", "20000300", "20010010", "20020050", "20030060", "20040070", "20060090", "21665300", "21000110", "21010120", "21020130", "21030140", "21040150", "21050160", "21060170", "21070180", "21080190", "21090200", "22010220", "22020230", "22030240", "21645510", "22050260", "22070280", "22080290", "22090300", "23000310", "23010320", "23020330", "23030340", "23040350", "23050360", "23060370", "23070380", "23080390", "21830498", "23090400", "57025041", "24020420", "24040440", "69915455", "24060460", "24070470", "24090490", "24110510", "24120520", "24130530", "24150550", "24160560", "24170570", "24180580", "21725280", "22245030", "21650331", "24200600", "24210610", "24220620", "24230630", "24240640", "24250650", "24260660", "24270670", "24280680", "24290690", "24300700", "24310710", "24320720", "24330730", "24340740", "24350750", "24400760", "24410770", "24420780", "24430790", "24440800", "24450810", "24460820", "22763590", "24480840", "23821730", "24490850", "24510870", "24520880", "24530890", "24540900", "24550910", "24560920", "24570930", "24580940", "24590950", "24600960", "24610970", "24620980", "24630990", "24020150", "24020125", "24030215", "24020071", "24030005", "24020074", "24030000", "24020012", "24020077", "24220031", "24210390", "24210400", "24230051", "24310430", "24310420", "24350310", "24350370", "24350390", "24370025", "24370205", "24370210", "24722220", "24722230", "24740010", "24740015", "24740020", "24740300", "24740305", "24740310", "24740315", "24740320", "24740325", "24740330", "24740335", "24740340", "24740350", "24740355", "24743000", "24743005", "24743010", "24743015", "24743020", "22753690", "24743030", "24743035", "24743040", "24743045", "24743050", "24743055", "24743060", "24743065", "24743070", "21532240", "23042320", "23013350", "24743080", "24743085", "24743090", "24743095", "24743100", "24743105", "24743110", "24743115", "24743120", "24743125", "24743130", "24743135", "24743140", "24743145", "24743150", "24743155", "24743160", "24743165", "24743170", "24743175", "24743180", "24743185", "24743190", "24743195", "24743200", "20766820", "24743210", "24743215", "24743220", "22723225", "24743230", "24743235", "24743240", "24743245", "24743250", "24743255", "24743260", "24743265", "24743270", "24743275", "24743280", "24743285", "24743290", "24743295", "24743300", "20050030", "22410003", "21941590", "20021000", "20031170", "20230010", "22250040", "22410001", "20271110", "20511330", "22631000", "20710130", "20710230", "20930000", "21330630", "21941904", "22210080", "22290240", "22430160", "20040002", "20040006", "20211901", "20520053", "20530350", "20740032", "20921030", "21041010", "21715000", "22010002", "22061020", "22210001", "22250140", "22250901", "22431000", "22460060", "22631050", "22775003", "23020001", "20040020", "20050000", "20050002", "20060050", "21843708", "20071004", "20211160", "20270280", "20511170", "20521160", "20530001", "20710010", "20921430", "21061970", "21210010", "21251080", "21330230", "21351050", "21650001", "21725180", "21941011", "22010010", "22071060", "22221001", "22221020", "22241000", "22250070", "22270000", "22280000", "22290160", "22410160", "22451041", "22461002", "20010000", "20010020", "20011000", "20020050", "20031050", "20040001", "20050001", "20071000", "20081001", "20210010", "20211001", "20299924", "20231050", "20511260", "20530160", "20760040", "20771001", "20930001", "21021190", "21545001", "22010001", "22070010", "22231001", "22240000", "22250010", "22270001", "22281001", "22291001", "22621070", "23030235", "22715580", "21830264", "23042122", "21051510", "21940300", "23575217", "20261235", "21730680", "20940230", "21842420", "21843708"
         ];
 
         function getRandomCep() {
@@ -257,7 +257,7 @@
         const [semNumeroValue, setSemNumeroValue] = React.useState("N");
         const [isCheckedSemNumero, setIsCheckedSemNumero] = React.useState(semNumeroValue === "Y");
         const [readOnlyNumero, setReadOnlyNumero] = React.useState(false)
-        1
+
         // Loading
         const [dataLoading, setDataLoading] = React.useState(true);
 
@@ -311,6 +311,8 @@
                 }));
             } else if (option === 'certidao') {
                 {/* CERTIDÃO - CAMPOS OBRIGATÓRIOS */ }
+                console.log(`------------------------`);
+                console.log(`option === 'certidao'`);
                 setFormData((prev) => ({
                     ...prev,
                     CPF: ''
@@ -518,13 +520,15 @@
                 setReadOnlyNumero(false);
             }
 
-            // Atualiza o formData - tanto o valor do checkbox quanto o Numero
-            setFormData(prevData => ({
-                ...prevData,
-                checkSemNumero: value,
-                // Se marcado, coloca "S/N", senão mantém ou gera número
-                Numero: checked ? "S/N" : (prevData.Numero === "S/N" ? randomInt(4).toString() : prevData.Numero)
-            }));
+            if (debugMyPrint) {
+                // Atualiza o formData - tanto o valor do checkbox quanto o Numero
+                setFormData(prevData => ({
+                    ...prevData,
+                    checkSemNumero: value,
+                    // Se marcado, coloca "S/N", senão mantém ou gera número
+                    Numero: checked ? "S/N" : (prevData.Numero === "S/N" ? randomInt(4).toString() : prevData.Numero)
+                }));
+            }
         };
 
         // Função handleFocus para garantir que o modal não seja exibido ao receber o foco
@@ -550,11 +554,11 @@
         const handleChange = (event) => {
             const { name, value } = event.target;
 
-            console.log('--------------------------------');
-            console.log('handleChange');
-            console.log('--------------------------------');
-            console.log('name handleChange: ', name);
-            console.log('value handleChange: ', value);
+            // console.log('--------------------------------');
+            // console.log('handleChange');
+            // console.log('--------------------------------');
+            // console.log('name handleChange: ', name);
+            // console.log('value handleChange: ', value);
 
             setFormData((prev) => ({
                 ...prev,
@@ -744,7 +748,7 @@
             setTabNav(tab); // Atualiza a aba selecionada
         };
 
-        {/* submitAllForms */ }
+        {/* SUBMITALLFORMS */ }
         const submitAllForms = async (filtro) => {
             // console.log('src/app/Views/fia/ptpa/adolescentes/AppForm.php');
             // console.log('filtro: ', filtro);
@@ -875,21 +879,22 @@
         };
 
         // POST fetchPostUnidade
-        const fetchPostUnidade = async (formData = {}, custonBaseURL = base_url, custonApiPostObjeto = api_filter_unidades, customPage = '') => {
-            const url = custonBaseURL + custonApiPostObjeto + customPage + '?limit=90000';
+        const fetchPostUnidade = async (formData = {}, custonBaseURL = base_url, custonApiPostObjeto = api_get_selectunidade, customPage = '') => {
+            // console.log('-------------------');
+            // console.log('fetchPostUnidade...');
+            // console.log('-------------------');
+            const queryParams = new URLSearchParams(formData).toString();
+            const url = `${custonBaseURL}${custonApiPostObjeto}${customPage}?limit=90000&${queryParams}`;
             // console.log('fetchPostUnidade url:', url);
-            const setData = formData;
+
             try {
                 const response = await fetch(url, {
-                    method: 'POST',
+                    method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(setData),
                 });
-                // 
                 const data = await response.json();
-                // 
                 if (data.result && Array.isArray(data.result.dbResponse) && data.result.dbResponse.length > 0) {
                     const dbResponse = data.result.dbResponse;
                     // console.log('fetchPostUnidade dbResponse ::', dbResponse);
@@ -897,7 +902,6 @@
                     setOriginalUnits(dbResponse);
                     setDataLoading(false);
                     return true;
-                    //
                 } else {
                     setMessage({
                         show: false,
@@ -919,7 +923,6 @@
             // console.log('---------------------');
             // console.log('fetchAdolescentes ...');
             // console.log('url: ', url);
-
             try {
                 if (checkWordInArray(getURI, 'cadastrar')) {
                     setFormData((prev) => ({
@@ -933,12 +936,13 @@
                 const data = await response.json();
                 if (data.result && data.result.dbResponse && data.result.dbResponse.length > 0) {
 
-                    console.log('Adolescentes: ', data.result.dbResponse[0]);
+                    // console.log('Adolescentes: ', data.result.dbResponse[0]);
 
                     setFormData((prevFormData) => ({
                         ...prevFormData,
                         ...data.result.dbResponse[0]
                     }));
+
                     setCamposObrigatorios(() => ({
                         Nome: 'Nome Completo',
                         Email: 'Email',
@@ -987,7 +991,7 @@
 
                 if (data.result && data.result.affectedRows && data.result.affectedRows > 0) {
                     const dbResponse = data.result.dbResponse;
-                    console.log('fetchPostAdolescente dbResponse ::', dbResponse);
+                    // console.log('fetchPostAdolescente dbResponse ::', dbResponse);
                     (checkWordInArray(getURI, 'atualizar')) ? (
                         setMessage({
                             show: true,
@@ -1001,7 +1005,11 @@
                             message: 'Adolescente cadastrado com sucesso.'
                         })
                     )
-                    if (debugMyPrint) {
+                    if (checkWordInArray(getURI, 'cadastrar')) {
+                        redirectTo('index.php/fia/ptpa/adolescente/endpoint/sucessocadastro');
+                    } else if (checkWordInArray(getURI, 'drupal')) {
+                        redirectTo('index.php/fia/ptpa/adolescente/endpoint/sucessocadastro');
+                    } else if (checkWordInArray(getURI, 'atualizar')) {
                         redirectTo('index.php/fia/ptpa/adolescente/endpoint/exibir');
                     } else {
                         redirectTo('index.php/fia/ptpa/adolescente/endpoint/sucessocadastro');
@@ -1687,7 +1695,6 @@
                                 e.preventDefault();
                                 submitAllForms(`filtro-${origemForm}`);
                             }}>
-
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
                                         attributeOrigemForm: `${origemForm}`,
@@ -1706,7 +1713,6 @@
                                         attributeMask: 'CPF', // CPF, Telefone, CEP, , SEI, Processo.
                                     }}
                                 />
-
                             </form>
                             {!checkWordInArray(getURI, 'consultar') && !checkWordInArray(getURI, 'atualizar') && (
                                 <>
@@ -2167,8 +2173,7 @@
                                         </div>
                                     ) : (
                                         <div>
-
-                                            {/*IDENTIDADE de GENERO*/}
+                                            {/* V-2 IDENTIDADE de GENERO */}
                                             {typeof AppSelectCheck !== "undefined" ? (
                                                 <div style={formGroupStyle}>
                                                     <label
@@ -2223,7 +2228,6 @@
                                                     <p className="text-danger">AppSelectCheck não lacançado.</p>
                                                 </div>
                                             )}
-
                                         </div>
                                     )
                                 )}
@@ -2929,18 +2933,18 @@
                                 e.preventDefault();
                                 submitAllForms(`filtro-${origemForm}`);
                             }}>
-                                {dataLoading ? (
-                                    <div>
-                                        <div>&nbsp;</div>
-                                        <AppLoading parametros={{
-                                            tipoLoading: "progress",
-                                            carregando: dataLoading
-                                        }} />
-                                    </div>
-                                ) : (
-                                    (checkWordInArray(getURI, 'consultar')) ? (
+                                <div style={formGroupStyle}>
+                                    {dataLoading ? (
                                         <div>
-                                            <div style={formGroupStyle}>
+                                            <div>&nbsp;</div>
+                                            <AppLoading parametros={{
+                                                tipoLoading: "progress",
+                                                carregando: dataLoading
+                                            }} />
+                                        </div>
+                                    ) : (
+                                        (checkWordInArray(getURI, 'consultar')) ? (
+                                            <div>
                                                 <label
                                                     htmlFor="GeneroIdentidadeId"
                                                     style={formLabelStyle}
@@ -2956,39 +2960,67 @@
                                                         : <span className="text-muted">Não informado</span>}
                                                 </div>
                                             </div>
-                                        </div>
-                                    ) : (
-                                        <div>
-                                            {/*IDENTIDADE de GENERO*/}
-                                            < AppSelectMultipleCtr
-                                                parametros={parametros}
-                                                formData={formData}
-                                                setFormData={setFormData}
-                                                fieldAttributes={{
-                                                    attributeOrigemForm: `${origemForm}`,
-                                                    labelField: 'Gênero',
-                                                    nameField: 'genero_identidade',
-                                                    errorMessage: '', // Mensagem de Erro personalizada
-                                                    attributeFieldKey: ['genero', 'key'], // Chave do campo
-                                                    attributeFieldName: ['genero', 'value'], // Nome do campo
-                                                    attributeRequired: true,
-                                                    attributeDisabled: false,
-                                                    objetoArrayKey: [
-                                                        { key: '1', value: 'Opção 1' },
-                                                        { key: '2', value: 'Opção 2' },
-                                                        { key: '3', value: 'Opção 3' },
-                                                        { key: '4', value: 'Opção 4' }
-                                                    ],
-                                                    api_get: `${api_get_genero}`,
-                                                    api_post: `${api_get_genero}`,
-                                                    api_filter: `${api_get_genero}`,
-                                                    api_add: `${api_post_genero_cadastrar}`,
-
-                                                }}
-                                            />
-                                        </div>
-                                    )
-                                )}
+                                        ) : (
+                                            <div>
+                                                {/* V-2 IDENTIDADE de GENERO */}
+                                                {typeof AppSelectCheck !== "undefined" ? (
+                                                    <div>
+                                                        <label
+                                                            htmlFor="dynamicSelect"
+                                                            style={formLabelStyle}
+                                                            className="form-label"
+                                                        >
+                                                            Gênero V-2
+                                                            <strong style={requiredField}>*</strong>
+                                                        </label>
+                                                        {(isLoading) && (
+                                                            <div className="p-2">
+                                                                <AppLoading parametros={{
+                                                                    tipoLoading: "progress",
+                                                                    carregando: isLoading
+                                                                }} />
+                                                            </div>
+                                                        )}
+                                                        {(!isLoading) && (
+                                                            <AppSelectCheck
+                                                                parametros={parametros}
+                                                                formData={formData}
+                                                                setFormData={setFormData}
+                                                                fieldAttributes={{
+                                                                    attributeOrigemForm: `origemForm`,
+                                                                    labelField: 'Gênero V-2',
+                                                                    nameField: 'genero_identidade',
+                                                                    btnCollor: 'danger', // primary, secondary, success, info, warning, danger, light, dark
+                                                                    btnOutline: true, // true ou false
+                                                                    btnSize: 'sm', // sm, lg
+                                                                    btnRounded: '2', // 2, 5, pill
+                                                                    errorMessage: '', // Mensagem de Erro personalizada
+                                                                    attributeFieldValue: 'genero', // O que será capturado da API
+                                                                    attributeFieldLabel: 'genero', // O que será exibido no form = AppSelect
+                                                                    attributeRequired: true,
+                                                                    attributeDisabled: false,
+                                                                    objetoArrayKey: [
+                                                                        { key: '1', value: 'Opção 1' },
+                                                                        { key: '2', value: 'Opção 2' },
+                                                                        { key: '3', value: 'Opção 3' },
+                                                                        { key: '4', value: 'Opção 4' }
+                                                                    ],
+                                                                    api_get: `${api_get_genero}`,
+                                                                    api_post: `${api_post_genero_cadastrar}`,
+                                                                    api_filter: `${api_post_genero_filtrar}`,
+                                                                }}
+                                                            />
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <div>
+                                                        <p className="text-danger">AppSelectCheck não lacançado.</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )
+                                    )}
+                                </div>
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
@@ -3766,33 +3798,61 @@
                                         </div>
                                     ) : (
                                         <div>
-                                            {/*IDENTIDADE de GENERO*/}
-                                            < AppSelectMultipleCtr
-                                                parametros={parametros}
-                                                formData={formData}
-                                                setFormData={setFormData}
-                                                fieldAttributes={{
-                                                    attributeOrigemForm: `${origemForm}`,
-                                                    labelField: 'Gênero',
-                                                    nameField: 'genero_identidade',
-                                                    errorMessage: '', // Mensagem de Erro personalizada
-                                                    attributeFieldKey: ['genero', 'key'], // Chave do campo
-                                                    attributeFieldName: ['genero', 'value'], // Nome do campo
-                                                    attributeRequired: true,
-                                                    attributeDisabled: false,
-                                                    objetoArrayKey: [
-                                                        { key: '1', value: 'Opção 1' },
-                                                        { key: '2', value: 'Opção 2' },
-                                                        { key: '3', value: 'Opção 3' },
-                                                        { key: '4', value: 'Opção 4' }
-                                                    ],
-                                                    api_get: `${api_get_genero}`,
-                                                    api_post: `${api_get_genero}`,
-                                                    api_filter: `${api_get_genero}`,
-                                                    api_add: `${api_post_genero_cadastrar}`,
-
-                                                }}
-                                            />
+                                            {/* V-2 IDENTIDADE de GENERO */}
+                                            {typeof AppSelectCheck !== "undefined" ? (
+                                                <div style={formGroupStyle}>
+                                                    <label
+                                                        htmlFor="dynamicSelect"
+                                                        style={formLabelStyle}
+                                                        className="form-label"
+                                                    >
+                                                        Gênero V-2
+                                                        <strong style={requiredField}>*</strong>
+                                                    </label>
+                                                    {(isLoading) && (
+                                                        <div className="p-2">
+                                                            <AppLoading parametros={{
+                                                                tipoLoading: "progress",
+                                                                carregando: isLoading
+                                                            }} />
+                                                        </div>
+                                                    )}
+                                                    {(!isLoading) && (
+                                                        <AppSelectCheck
+                                                            parametros={parametros}
+                                                            formData={formData}
+                                                            setFormData={setFormData}
+                                                            fieldAttributes={{
+                                                                attributeOrigemForm: `origemForm`,
+                                                                labelField: 'Gênero V-2',
+                                                                nameField: 'genero_identidade',
+                                                                btnCollor: '', // primary, secondary, success, info, warning, danger, light, dark
+                                                                btnOutline: true, // true ou false
+                                                                btnSize: 'sm', // sm, lg
+                                                                btnRounded: '2', // 2, 5, pill
+                                                                errorMessage: '', // Mensagem de Erro personalizada
+                                                                attributeFieldValue: 'genero', // O que será capturado da API
+                                                                attributeFieldLabel: 'genero', // O que será exibido no form = AppSelect
+                                                                attributeRequired: true,
+                                                                attributeDisabled: false,
+                                                                objetoArrayKey: [
+                                                                    { key: '1', value: 'Opção 1' },
+                                                                    { key: '2', value: 'Opção 2' },
+                                                                    { key: '3', value: 'Opção 3' },
+                                                                    { key: '4', value: 'Opção 4' }
+                                                                ],
+                                                                api_get: `${api_get_genero}`,
+                                                                api_post: `${api_post_genero_cadastrar}`,
+                                                                api_filter: `${api_post_genero_filtrar}`,
+                                                            }}
+                                                        />
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <div>
+                                                    <p className="text-danger">AppSelectCheck não lacançado.</p>
+                                                </div>
+                                            )}
                                         </div>
                                     )
                                 )}
@@ -3929,7 +3989,7 @@
                                 ) : (
                                     <div style={formGroupStyle}>
                                         <label htmlFor="TipoEscola" style={formLabelStyle} className="form-label">
-                                            Tipo de escola - DECREPTO<strong style={requiredField}>*</strong>
+                                            Tipo de escola<strong style={requiredField}>*</strong>
                                         </label>
                                         <select
                                             data-api={`filtro-${origemForm}`}
@@ -4078,7 +4138,24 @@
                                 e.preventDefault();
                                 submitAllForms(`filtro-${origemForm}`);
                             }}>
-                                <AppResponsavelNome formData={formData} setFormData={setFormData} parametros={parametros} />
+                                <AppText parametros={parametros} formData={formData} setFormData={setFormData}
+                                    fieldAttributes={{
+                                        attributeOrigemForm: `${origemForm}`,
+                                        labelField: 'Nome',
+                                        labelColor: 'black', // gray, red, black,
+                                        nameField: 'Responsavel_Nome',
+                                        errorMessage: '', // Mensagem de Erro personalizada
+                                        attributePlaceholder: '', // placeholder 
+                                        attributeMinlength: 4, // minlength 
+                                        attributeMaxlength: 150, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22, Processo: 41, Certidão: 38
+                                        attributePattern: 'Caracter', // Inteiro, Caracter, Senha
+                                        attributeAutocomplete: 'on', // on, off ]
+                                        attributeRequired: true,
+                                        attributeReadOnly: false,
+                                        attributeDisabled: false,
+                                        attributeMask: '', // CPF, Telefone, CEP, SEI, Processo, Certidao.
+                                    }}
+                                />
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
@@ -4086,7 +4163,24 @@
                                 e.preventDefault();
                                 submitAllForms(`filtro-${origemForm}`);
                             }}>
-                                <AppResponsavelCPF formData={formData} setFormData={setFormData} parametros={parametros} />
+                                <AppText parametros={parametros} formData={formData} setFormData={setFormData}
+                                    fieldAttributes={{
+                                        attributeOrigemForm: `${origemForm}`,
+                                        labelField: 'CPF',
+                                        labelColor: 'black', // gray, red, black,
+                                        nameField: 'Responsavel_CPF',
+                                        errorMessage: '', // Mensagem de Erro personalizada
+                                        attributePlaceholder: '', // placeholder 
+                                        attributeMinlength: 4, // minlength 
+                                        attributeMaxlength: 14, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22, Processo: 41, Certidão: 38
+                                        attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
+                                        attributeAutocomplete: 'on', // on, off ]
+                                        attributeRequired: true,
+                                        attributeReadOnly: false,
+                                        attributeDisabled: false,
+                                        attributeMask: 'CPF', // CPF, Telefone, CEP, SEI, Processo, Certidao.
+                                    }}
+                                />
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
@@ -4094,7 +4188,24 @@
                                 e.preventDefault();
                                 submitAllForms(`filtro-${origemForm}`);
                             }}>
-                                <AppResponsavelTelefoneMovel formData={formData} setFormData={setFormData} parametros={parametros} />
+                                <AppText parametros={parametros} formData={formData} setFormData={setFormData}
+                                    fieldAttributes={{
+                                        attributeOrigemForm: `${origemForm}`,
+                                        labelField: 'Celular',
+                                        labelColor: 'black', // gray, red, black,
+                                        nameField: 'Responsavel_TelefoneMovel',
+                                        errorMessage: '', // Mensagem de Erro personalizada
+                                        attributePlaceholder: '', // placeholder 
+                                        attributeMinlength: 4, // minlength 
+                                        attributeMaxlength: 14, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22, Processo: 41, Certidão: 38
+                                        attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
+                                        attributeAutocomplete: 'on', // on, off ]
+                                        attributeRequired: true,
+                                        attributeReadOnly: false,
+                                        attributeDisabled: false,
+                                        attributeMask: 'Telefone', // CPF, Telefone, CEP, SEI, Processo, Certidao.
+                                    }}
+                                />
                             </form>
                         </div>
                     </div>
@@ -4306,9 +4417,9 @@
         }, [formData.CEP]);
         {/* formData */ }
         React.useEffect(() => {
-            console.log("-------------------");
-            console.log("src/ app/ Views/ fia/ ptpa/ adolescentes/ AppForm.php");
-            console.log("FormData atualizado:", formData);
+            // console.log("-------------------");
+            // console.log("src/ app/ Views/ fia/ ptpa/ adolescentes/ AppForm.php");
+            // console.log("FormData atualizado:", formData);
         }, [formData]);
 
         {/* Styles */ }

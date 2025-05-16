@@ -74,11 +74,10 @@
         // Função handleChange simplificada
         const handleChange = (event) => {
             const { name, value } = event.target;
-
-            console.log('--------------------');
-            console.log('handleRadioChange');
-            console.log('--------------------');
-            console.log('NOME/VALOR', name, value);
+            // console.log('--------------------');
+            // console.log('handleRadioChange');
+            // console.log('--------------------');
+            // console.log('NOME/VALOR', name, value);
 
             // Forçar atualização imediata
             setFormData((prevFormData) => {
@@ -89,7 +88,7 @@
 
                 // Se necessário, também atualize outros estados dependentes
                 // como por exemplo, no caso de pontuações
-                if (name === "prontuario_referenciado_na_rede") {
+                if (name === "prontuario_Vulnerabilidade") {
                     updatedData.prontuario_PontuacaoTotal = pontuacaoMap[value] || 0;
                 }
 
@@ -97,14 +96,14 @@
             });
         };
 
-        // Função handleChange simplificada
+        // Função handleRadioChange simplificada
         const handleRadioChange = (event) => {
             const { name, value } = event.target;
 
-            console.log('--------------------');
-            console.log('handleRadioChange');
-            console.log('--------------------');
-            console.log('NOME/VALOR', name, value);
+            // console.log('--------------------');
+            // console.log('handleRadioChange');
+            // console.log('--------------------');
+            // console.log('NOME/VALOR', name, value);
 
             /// Abordagem mais direta
             event.target.checked = true;
@@ -114,7 +113,8 @@
                 setFormData((prevFormData) => {
                     return {
                         ...prevFormData,
-                        [name]: value
+                        [name]: value,
+                        prontuario_PontuacaoVulnerabilidade: pontuacaoMap[value] || ''
                     };
                 });
             }, 0);
@@ -149,7 +149,7 @@
             prontuario_UsoDrogasDesc: null,
             prontuario_CadUnico: null,
             prontuario_CadUnico_pts: null,
-            prontuario_CadUnicoDesc: null,
+            prontuario_CadUnicoProgramaSocial: null,
             prontuario_EncaminhamentoOrgao: null,
             prontuario_EncaminhamentoOrgao_pts: null,
             prontuario_EncaminhamentoOrgaoDesc: null,
@@ -158,9 +158,10 @@
             prontuario_DeficienciaDesc: null,
             prontuario_NecesMediador: null,
             prontuario_NecesMediador_pts: null,
-            prontuario_NecesMediadorDesc: null,
+            prontuario_NecesMediadorTipoFamiliar: null,
             prontuario_DataCadPsicoSocial: null,
             prontuario_PontuacaoVulnerabilidade: null,
+            prontuario_Vulnerabilidade: null,
             prontuario_PontuacaoTotal: null,
             created_at: null,
             deleted_at: null,
@@ -309,10 +310,11 @@
                 adolescente_id: 'Selecione um adolescente',
                 prontuario_MedidasSocioEducativas: 'Medidas socioeducativas em branco',
                 prontuario_UsodeDrogas: 'Uso de Drogas em branco',
-                prontuario_EncaminhamentoOrgao: 'Grau de Vulnerabilidade',
+                prontuario_EncaminhamentoOrgao: 'Encaminhamento de Droga',
                 prontuario_Deficiencia: 'Deficie_ncia em branco',
                 prontuario_NecesMediador: 'Necessidade de mediador em branco',
                 prontuario_CadUnico: 'Cadastro Único',
+                prontuario_Vulnerabilidade: 'Grau de Vulnerabilidade',
             };
 
             // Verificar se algum dos campos está vazio ou nulo
@@ -441,16 +443,16 @@
         // Fetch para obter os Prontuário
         const fetchProntuarios = async () => {
             const url = base_url + api_get_atualizar_prontuariopsicosocial;
-            console.log('-------------------------------------');
-            console.log('src/app/Views/fia/ptpa/prontuario/AppForm2.php');
-            console.log('url :: ', url);
+            // console.log('-------------------------------------');
+            // console.log('src/app/Views/fia/ptpa/prontuario/AppForm2.php');
+            // console.log('url :: ', url);
 
             try {
                 const response = await fetch(url);
                 const data = await response.json();
 
                 if (data.result && data.result.dbResponse && data.result.dbResponse.length > 0) {
-                    console.log('fetchProntuarios :: ', data.result.dbResponse[0]);
+                    // console.log('fetchProntuarios :: ', data.result.dbResponse[0]);
 
                     setFormData((prev) => ({
                         ...prev,
@@ -463,6 +465,12 @@
         };
 
         const fetchGetAdolescentes = async (id) => {
+
+            if (formData.adolescente_Nome && formData.adolescente_id === id) {
+                // sconsole.log("Dados já carregados, evitando nova requisição.");
+                return;
+            }
+
             try {
                 const response = await fetch(base_url + api_get_exibir_adolescente + '/' + id, {
                     method: 'POST',
@@ -471,8 +479,8 @@
                     },
                     body: JSON.stringify({})
                 });
-                const data = await response.json();
 
+                const data = await response.json();
                 if (data.result && data.result.dbResponse && data.result.dbResponse.length > 0) {
                     const adolescente = data.result.dbResponse[0];
 
@@ -482,11 +490,16 @@
                             "adolescente_id": id,
                             "adolescente_Nome": adolescente.Nome,
                             "Nascimento": adolescente.Nascimento,
-                            "Escolaridade": adolescente.Escolaridade
+                            "Escolaridade": adolescente.Escolaridade,
+                            "prontuario_Vulnerabilidade": "",   
+                            "PontuacaoIdade": 0,     
+                            "PontuacaoEscolaridade": 0    
+                            "prontuario_PontuacaoTotal": 0
                         };
 
                         return novoFormData;
                     });
+                    // console.log("FormData atualizado:", formData);
                 } else {
                     return false;
                 }
@@ -534,7 +547,7 @@
         React.useEffect(() => {
             if (!checkWordInArray(getURI, 'consultar')) {
                 const totalPontuacao =
-                    (pontuacaoMap[formData.prontuario_referenciado_na_rede] || 0) +
+                    (pontuacaoMap[formData.prontuario_Vulnerabilidade] || 0) +
                     (formData.PontuacaoIdade || 0) +
                     (formData.PontuacaoEscolaridade || 0);
 
@@ -543,7 +556,7 @@
                     prontuario_PontuacaoTotal: totalPontuacao
                 }));
             }
-        }, [formData.prontuario_referenciado_na_rede, formData.PontuacaoIdade, formData.PontuacaoEscolaridade]);
+        }, [formData.prontuario_Vulnerabilidade, formData.PontuacaoIdade, formData.PontuacaoEscolaridade]);
 
         // Função para identificar o usuário
         React.useEffect(() => {
@@ -656,241 +669,299 @@
         {/* SOCIO EDUCATIVA */ }
         const renderQstSocioEducativa = () => {
             return (
-                <div className={`${largura < 415 ? 'd-flex justify-content-evenly p-4' : 'p-2'} `}>
-                    <div className="form-check">
-                        <input
-                            data-api="form-prontuario"
-                            type="radio"
-                            className="form-check-input"
-                            id="prontuario_MedidasSocioEducativas1"
-                            name="prontuario_MedidasSocioEducativas"
-                            value="Y"
-                            checked={formData.prontuario_MedidasSocioEducativas === "Y"}
-                            onChange={handleRadioChange} />
-                        <label className="form-check-label" htmlFor="prontuario_MedidasSocioEducativas1">Sim</label>
+                checkWordInArray(getURI, 'consultar') ? (
+                    <div className="p-2">
+                        {formData.prontuario_MedidasSocioEducativas === "Y" ? "Sim" : "Não"}
                     </div>
-                    <div className="form-check">
-                        <input
-                            data-api="form-prontuario"
-                            type="radio"
-                            className="form-check-input"
-                            id="prontuario_MedidasSocioEducativas2"
-                            name="prontuario_MedidasSocioEducativas"
-                            value="N"
-                            checked={formData.prontuario_MedidasSocioEducativas === "N"}
-                            onChange={handleRadioChange}
-                        />
-                        <label className="form-check-label" htmlFor="prontuario_MedidasSocioEducativas2">Não</label>
+                ) : (
+                    <div className={`${largura < 415 ? 'd-flex justify-content-evenly p-4' : 'p-2'} `}>
+                        <div className="form-check">
+                            <input
+                                data-api="form-prontuario"
+                                type="radio"
+                                className="form-check-input"
+                                id="prontuario_MedidasSocioEducativas1"
+                                name="prontuario_MedidasSocioEducativas"
+                                value="Y"
+                                checked={formData.prontuario_MedidasSocioEducativas === "Y"}
+                                onChange={handleRadioChange}
+                            />
+                            <label className="form-check-label" htmlFor="prontuario_MedidasSocioEducativas1">Sim</label>
+                        </div>
+                        <div className="form-check">
+                            <input
+                                data-api="form-prontuario"
+                                type="radio"
+                                className="form-check-input"
+                                id="prontuario_MedidasSocioEducativas2"
+                                name="prontuario_MedidasSocioEducativas"
+                                value="N"
+                                checked={formData.prontuario_MedidasSocioEducativas === "N"}
+                                onChange={handleRadioChange}
+                            />
+                            <label className="form-check-label" htmlFor="prontuario_MedidasSocioEducativas2">Não</label>
+                        </div>
                     </div>
-                </div>
+                )
             );
         }
 
         {/* TRATAMENTO DE DROGAS */ }
         const renderQstTratamentoDrogas = () => {
             return (
-                <div className={`${largura < 415 ? 'd-flex justify-content-evenly p-4' : 'p-2'} `}>
-                    <div className="form-check">
-                        <input
-                            data-api="form-prontuario"
-                            type="radio"
-                            className="form-check-input"
-                            id="prontuario_UsodeDrogas1"
-                            name="prontuario_UsodeDrogas"
-                            value="Y"
-                            checked={formData.prontuario_UsodeDrogas === "Y"}
-                            onChange={handleRadioChange}
-                        />
-                        <label className="form-check-label" htmlFor="prontuario_UsodeDrogas1">Sim</label>
+                checkWordInArray(getURI, 'consultar') ? (
+                    <div className="p-2">
+                        {formData.prontuario_UsodeDrogas === "Y" ? "Sim" : "Não"}
                     </div>
-                    <div className="form-check">
-                        <input
-                            data-api="form-prontuario"
-                            type="radio"
-                            className="form-check-input"
-                            id="prontuario_UsodeDrogas2"
-                            name="prontuario_UsodeDrogas"
-                            value="N"
-                            checked={formData.prontuario_UsodeDrogas === "N"}
-                            onChange={handleRadioChange}
-                        />
-                        <label className="form-check-label" htmlFor="prontuario_UsodeDrogas2">Não</label>
+                ) : (
+                    <div className={`${largura < 415 ? 'd-flex justify-content-evenly p-4' : 'p-2'} `}>
+                        <div className="form-check">
+                            <input
+                                data-api="form-prontuario"
+                                type="radio"
+                                className="form-check-input"
+                                id="prontuario_UsodeDrogas1"
+                                name="prontuario_UsodeDrogas"
+                                value="Y"
+                                checked={formData.prontuario_UsodeDrogas === "Y"}
+                                onChange={handleRadioChange}
+                            />
+                            <label className="form-check-label" htmlFor="prontuario_UsodeDrogas1">Sim</label>
+                        </div>
+                        <div className="form-check">
+                            <input
+                                data-api="form-prontuario"
+                                type="radio"
+                                className="form-check-input"
+                                id="prontuario_UsodeDrogas2"
+                                name="prontuario_UsodeDrogas"
+                                value="N"
+                                checked={formData.prontuario_UsodeDrogas === "N"}
+                                onChange={handleRadioChange}
+                            />
+                            <label className="form-check-label" htmlFor="prontuario_UsodeDrogas2">Não</label>
+                        </div>
                     </div>
-                </div>
+                )
             );
         }
 
         {/* CADASTRO UNICO*/ }
         const renderQstCadUnico = () => {
             return (
-                <div className={`${largura < 415 ? 'd-flex justify-content-evenly p-4' : 'p-2'} `}>
-                    <div className="form-check">
-                        <input
-                            data-api="form-prontuario"
-                            type="radio"
-                            className="form-check-input"
-                            id="prontuario_CadUnico1"
-                            name="prontuario_CadUnico"
-                            value="Y"
-                            checked={formData.prontuario_CadUnico === "Y"}
-                            onChange={handleRadioChange}
-                        />
-                        <label className="form-check-label" htmlFor="prontuario_CadUnico1">Sim</label>
+                checkWordInArray(getURI, 'consultar') ? (
+                    <div className="p-2">
+                        {formData.prontuario_CadUnico === "Y" ? "Sim" : "Não"}
                     </div>
-                    <div className="form-check">
-                        <input
-                            data-api="form-prontuario"
-                            type="radio"
-                            className="form-check-input"
-                            id="prontuario_CadUnico2"
-                            name="prontuario_CadUnico"
-                            value="N"
-                            checked={formData.prontuario_CadUnico === "N"}
-                            onChange={handleRadioChange}
-                        />
-                        <label className="form-check-label" htmlFor="prontuario_CadUnico2">Não</label>
+                ) : (
+                    <div className={`${largura < 415 ? 'd-flex justify-content-evenly p-4' : 'p-2'} `}>
+                        <div className="form-check">
+                            <input
+                                data-api="form-prontuario"
+                                type="radio"
+                                className="form-check-input"
+                                id="prontuario_CadUnico1"
+                                name="prontuario_CadUnico"
+                                value="Y"
+                                checked={formData.prontuario_CadUnico === "Y"}
+                                onChange={handleRadioChange}
+                            />
+                            <label className="form-check-label" htmlFor="prontuario_CadUnico1">Sim</label>
+                        </div>
+                        <div className="form-check">
+                            <input
+                                data-api="form-prontuario"
+                                type="radio"
+                                className="form-check-input"
+                                id="prontuario_CadUnico2"
+                                name="prontuario_CadUnico"
+                                value="N"
+                                checked={formData.prontuario_CadUnico === "N"}
+                                onChange={handleRadioChange}
+                            />
+                            <label className="form-check-label" htmlFor="prontuario_CadUnico2">Não</label>
+                        </div>
                     </div>
-                </div>
+                )
             );
         }
 
         {/* ENCAMINHAMENTO ÓRGÃOS */ }
         const renderQstEncaminhamentoOrgao = () => {
             return (
-                <div className={`${largura < 415 ? 'd-flex justify-content-evenly p-4' : 'p-2'} `}>
-                    <div className="form-check">
-                        <input data-api="form-prontuario" type="radio" className="form-check-input" id="prontuario_EncaminhamentoOrgao1" name="prontuario_EncaminhamentoOrgao"
-                            value="Y"
-                            checked={formData.prontuario_EncaminhamentoOrgao === "Y"}
-                            onChange={handleRadioChange}
-                        />
-                        <label className="form-check-label" htmlFor="prontuario_EncaminhamentoOrgao1">Sim</label>
+                checkWordInArray(getURI, 'consultar') ? (
+                    <div className="p-2">
+                        {formData.prontuario_EncaminhamentoOrgao === "Y" ? "Sim" : "Não"}
                     </div>
-                    <div className="form-check">
-                        <input
-                            data-api="form-prontuario"
-                            type="radio"
-                            className="form-check-input"
-                            id="prontuario_EncaminhamentoOrgao2"
-                            name="prontuario_EncaminhamentoOrgao"
-                            value="N"
-                            checked={formData.prontuario_EncaminhamentoOrgao === "N"}
-                            onChange={handleRadioChange}
-                        />
-                        <label className="form-check-label" htmlFor="prontuario_EncaminhamentoOrgao2">Não</label>
-                    </div>
-                </div>
+                ) : (
+                    < div className={`${largura < 415 ? 'd-flex justify-content-evenly p-4' : 'p-2'} `
+                    }>
+                        <div className="form-check">
+                            <input data-api="form-prontuario" type="radio" className="form-check-input" id="prontuario_EncaminhamentoOrgao1" name="prontuario_EncaminhamentoOrgao"
+                                value="Y"
+                                checked={formData.prontuario_EncaminhamentoOrgao === "Y"}
+                                onChange={handleRadioChange}
+                            />
+                            <label className="form-check-label" htmlFor="prontuario_EncaminhamentoOrgao1">Sim</label>
+                        </div>
+                        <div className="form-check">
+                            <input
+                                data-api="form-prontuario"
+                                type="radio"
+                                className="form-check-input"
+                                id="prontuario_EncaminhamentoOrgao2"
+                                name="prontuario_EncaminhamentoOrgao"
+                                value="N"
+                                checked={formData.prontuario_EncaminhamentoOrgao === "N"}
+                                onChange={handleRadioChange}
+                            />
+                            <label className="form-check-label" htmlFor="prontuario_EncaminhamentoOrgao2">Não</label>
+                        </div>
+                    </div >
+                )
             );
         }
 
         {/* DEFICIÊNCIA */ }
         const renderQstDeficiencia = () => {
             return (
-                <div className={`${largura < 415 ? 'd-flex justify-content-evenly p-4' : 'p-2'} `}>
-                    <div className="form-check">
-                        <input data-api="form-prontuario" type="radio" className="form-check-input" id="prontuario_Deficiencia1" name="prontuario_Deficiencia"
-                            value="Y"
-                            checked={formData.prontuario_Deficiencia === "Y"}
-                            onChange={handleRadioChange}
-                        />
-                        <label className="form-check-label" htmlFor="prontuario_Deficiencia1">Sim</label>
+                checkWordInArray(getURI, 'consultar') ? (
+                    <div className="p-2">
+                        {formData.prontuario_Deficiencia === "Y" ? "Sim" : "Não"}
                     </div>
-                    <div className="form-check">
-                        <input
-                            data-api="form-prontuario"
-                            type="radio"
-                            className="form-check-input"
-                            id="prontuario_Deficiencia2"
-                            name="prontuario_Deficiencia"
-                            value="N"
-                            checked={formData.prontuario_Deficiencia === "N"}
-                            onChange={handleRadioChange}
-                        />
-                        <label className="form-check-label" htmlFor="prontuario_Deficiencia2">Não</label>
+                ) : (
+                    <div className={`${largura < 415 ? 'd-flex justify-content-evenly p-4' : 'p-2'} `}>
+                        <div className="form-check">
+                            <input data-api="form-prontuario" type="radio" className="form-check-input" id="prontuario_Deficiencia1" name="prontuario_Deficiencia"
+                                value="Y"
+                                checked={formData.prontuario_Deficiencia === "Y"}
+                                onChange={handleRadioChange}
+                            />
+                            <label className="form-check-label" htmlFor="prontuario_Deficiencia1">Sim</label>
+                        </div>
+                        <div className="form-check">
+                            <input
+                                data-api="form-prontuario"
+                                type="radio"
+                                className="form-check-input"
+                                id="prontuario_Deficiencia2"
+                                name="prontuario_Deficiencia"
+                                value="N"
+                                checked={formData.prontuario_Deficiencia === "N"}
+                                onChange={handleRadioChange}
+                            />
+                            <label className="form-check-label" htmlFor="prontuario_Deficiencia2">Não</label>
+                        </div>
                     </div>
-                </div>
+                )
             );
         }
 
         {/* NECESSIDADE MEDIADOR */ }
         const renderQstNecessidadeMediador = () => {
             return (
-                <div className={`${largura < 415 ? 'd-flex justify-content-evenly p-4' : 'p-2'} `}>
-                    <div className="form-check">
-                        <input data-api="form-prontuario" type="radio" className="form-check-input" id="prontuario_NecesMediador1" name="prontuario_NecesMediador"
-                            value="Y"
-                            checked={formData.prontuario_NecesMediador === "Y"}
-                            onChange={handleRadioChange}
-                        />
-                        <label className="form-check-label" htmlFor="prontuario_NecesMediador1">Sim</label>
+                checkWordInArray(getURI, 'consultar') ? (
+                    <div className="p-2">
+                        {formData.prontuario_NecesMediador === "Y" ? "Sim" : "Não"}
                     </div>
-                    <div className="form-check">
-                        <input
-                            data-api="form-prontuario"
-                            type="radio"
-                            className="form-check-input"
-                            id="prontuario_NecesMediador2"
-                            name="prontuario_NecesMediador"
-                            value="N"
-                            checked={formData.prontuario_NecesMediador === "N"}
-                            onChange={handleRadioChange}
-                        />
-                        <label className="form-check-label" htmlFor="prontuario_NecesMediador2">Não</label>
+                ) : (
+                    <div className={`${largura < 415 ? 'd-flex justify-content-evenly p-4' : 'p-2'} `}>
+                        <div className="form-check">
+                            <input data-api="form-prontuario" type="radio" className="form-check-input" id="prontuario_NecesMediador1" name="prontuario_NecesMediador"
+                                value="Y"
+                                checked={formData.prontuario_NecesMediador === "Y"}
+                                onChange={handleRadioChange}
+                            />
+                            <label className="form-check-label" htmlFor="prontuario_NecesMediador1">Sim</label>
+                        </div>
+                        <div className="form-check">
+                            <input
+                                data-api="form-prontuario"
+                                type="radio"
+                                className="form-check-input"
+                                id="prontuario_NecesMediador2"
+                                name="prontuario_NecesMediador"
+                                value="N"
+                                checked={formData.prontuario_NecesMediador === "N"}
+                                onChange={handleRadioChange}
+                            />
+                            <label className="form-check-label" htmlFor="prontuario_NecesMediador2">Não</label>
+                        </div>
                     </div>
-                </div>
+                )
             );
         }
 
         {/* GRAU VULNERABILIADE */ }
         const renderQstVulnerabilidade = () => {
+
+            const vulnerabilidadeLabels = {
+                "extremamente-vulneravel": "Extremamente Vulnerável",
+                "muito-vulneravel": "Muito Vulnerável",
+                "vulneravel": "Vulnerável"
+            };
+
             return (
-                <div className={`${largura < 415 ? 'd-flex justify-content-evenly p-4' : 'd-flex gap-3 p-2'}`} style={{ flexWrap: 'nowrap' }}>
-                    <div className="form-check">
-                        <input
-                            data-api="form-prontuario"
-                            type="radio"
-                            className="form-check-input"
-                            id="prontuario_referenciado_na_red1"
-                            name="prontuario_referenciado_na_rede"
-                            value="extremamente-vulneravel"
-                            checked={formData.prontuario_referenciado_na_rede === "extremamente-vulneravel"}
-                            onChange={handleRadioChange}
-                        />
-                        <label className="form-check-label" htmlFor="prontuario_referenciado_na_red1">
-                            Extremamente Vulnerável
-                        </label>
+                checkWordInArray(getURI, 'consultar') ? (
+                    <div className="p-2">
+                        {vulnerabilidadeLabels[formData.prontuario_Vulnerabilidade] || "Não Informado"}
                     </div>
-                    <div className="form-check">
+                ) : (
+                    <div className={`${largura < 415 ? 'd-flex justify-content-evenly p-4' : 'd-flex gap-3 p-2'}`} style={{ flexWrap: 'nowrap' }}>
+                        <div className="form-check">
+                            <input
+                                data-api="form-prontuario"
+                                type="radio"
+                                className="form-check-input"
+                                id="vulnerabilidade1"
+                                name="prontuario_Vulnerabilidade"
+                                value="extremamente-vulneravel"
+                                checked={formData.prontuario_Vulnerabilidade === "extremamente-vulneravel"}
+                                onChange={handleRadioChange}
+                            />
+                            <label className="form-check-label" htmlFor="vulnerabilidade1">
+                                Extremamente Vulnerável
+                            </label>
+                        </div>
+                        <div className="form-check">
+                            <input
+                                data-api="form-prontuario"
+                                type="radio"
+                                className="form-check-input"
+                                id="vulnerabilidade2"
+                                name="prontuario_Vulnerabilidade"
+                                value="muito-vulneravel"
+                                checked={formData.prontuario_Vulnerabilidade === "muito-vulneravel"}
+                                onChange={handleRadioChange}
+                            />
+                            <label className="form-check-label" htmlFor="vulnerabilidade2">
+                                Muito Vulnerável
+                            </label>
+                        </div>
+                        <div className="form-check">
+                            <input
+                                data-api="form-prontuario"
+                                type="radio"
+                                className="form-check-input"
+                                id="vulnerabilidade3"
+                                name="prontuario_Vulnerabilidade"
+                                value="vulneravel"
+                                checked={formData.prontuario_Vulnerabilidade === "vulneravel"}
+                                onChange={handleRadioChange}
+                            />
+                            <label className="form-check-label" htmlFor="vulnerabilidade3">
+                                Vulnerável
+                            </label>
+                        </div>
+
+                        {/* Campo hidden para armazenar a pontuação */}
                         <input
-                            data-api="form-prontuario"
-                            type="radio"
-                            className="form-check-input"
-                            id="prontuario_referenciado_na_red2"
-                            name="prontuario_referenciado_na_rede"
-                            value="muito-vulneravel"
-                            checked={formData.prontuario_referenciado_na_rede === "muito-vulneravel"}
-                            onChange={handleRadioChange}
+                            type="hidden"
+                            name="prontuario_PontuacaoVulnerabilidade"
+                            value={pontuacaoMap[formData.prontuario_PontuacaoVulnerabilidade] || ''}
                         />
-                        <label className="form-check-label" htmlFor="prontuario_referenciado_na_red2">
-                            Muito Vulnerável
-                        </label>
                     </div>
-                    <div className="form-check">
-                        <input
-                            data-api="form-prontuario"
-                            type="radio"
-                            className="form-check-input"
-                            id="prontuario_referenciado_na_red3"
-                            name="prontuario_referenciado_na_rede"
-                            value="vulneravel"
-                            checked={formData.prontuario_referenciado_na_rede === "vulneravel"}
-                            onChange={handleRadioChange}
-                        />
-                        <label className="form-check-label" htmlFor="prontuario_referenciado_na_red3">
-                            Vulnerável
-                        </label>
-                    </div>
-                </div>
+                )
             );
         }
 
@@ -1103,6 +1174,9 @@
                                                                 id="prontuario_MedidasSocioEducativasDesc"
                                                                 name="prontuario_MedidasSocioEducativasDesc"
                                                                 placeholder="Informe"
+                                                                value={formData.prontuario_MedidasSocioEducativasDesc || ''}
+                                                                onChange={handleChange}
+                                                                disabled={checkWordInArray(getURI, 'consultar')}
                                                                 required>
                                                             </textarea>
                                                         )}
@@ -1135,6 +1209,9 @@
                                                                 id="prontuario_UsoDrogasDesc"
                                                                 name="prontuario_UsoDrogasDesc"
                                                                 placeholder="Informe"
+                                                                value={formData.prontuario_UsoDrogasDesc || ''}
+                                                                onChange={handleChange}
+                                                                disabled={checkWordInArray(getURI, 'consultar')}
                                                                 required>
                                                             </textarea>
                                                         )}
@@ -1166,9 +1243,12 @@
                                                         {(formData.prontuario_CadUnico === 'Y') && (
                                                             <textarea
                                                                 className="form-control m-0 p-2 w-100 h-100"
-                                                                id="prontuario_CadUnicoDesc"
-                                                                name="prontuario_CadUnicoDesc"
+                                                                id="prontuario_CadUnicoProgramaSocial"
+                                                                name="prontuario_CadUnicoProgramaSocial"
                                                                 placeholder="Informe"
+                                                                value={formData.prontuario_CadUnicoProgramaSocial || ''}
+                                                                onChange={handleChange}
+                                                                disabled={checkWordInArray(getURI, 'consultar')}
                                                                 required>
                                                             </textarea>
                                                         )}
@@ -1200,6 +1280,9 @@
                                                                 id="prontuario_EncaminhamentoOrgaoDesc"
                                                                 name="prontuario_EncaminhamentoOrgaoDesc"
                                                                 placeholder="Informe"
+                                                                value={formData.prontuario_EncaminhamentoOrgaoDesc || ''}
+                                                                onChange={handleChange}
+                                                                disabled={checkWordInArray(getURI, 'consultar')}
                                                                 required>
                                                             </textarea>
                                                         )}
@@ -1233,6 +1316,9 @@
                                                                 id="prontuario_DeficienciaDesc"
                                                                 name="prontuario_DeficienciaDesc"
                                                                 placeholder="Informe"
+                                                                value={formData.prontuario_DeficienciaDesc || ''}
+                                                                onChange={handleChange}
+                                                                disabled={checkWordInArray(getURI, 'consultar')}
                                                                 required>
                                                             </textarea>
                                                         )}
@@ -1261,9 +1347,12 @@
                                                         {(formData.prontuario_NecesMediador === 'Y') && (
                                                             <textarea
                                                                 className="form-control m-0 p-2 w-100 h-100"
-                                                                id="prontuario_NecesMediadorDesc"
-                                                                name="prontuario_NecesMediadorDesc"
+                                                                id="prontuario_NecesMediadorTipoFamiliar"
+                                                                name="prontuario_NecesMediadorTipoFamiliar"
                                                                 placeholder="Informe"
+                                                                value={formData.prontuario_NecesMediadorTipoFamiliar || ''}
+                                                                onChange={handleChange}
+                                                                disabled={checkWordInArray(getURI, 'consultar')}
                                                                 required>
                                                             </textarea>
                                                         )}
@@ -1278,7 +1367,7 @@
                                 <div className="col-12 col-sm-12">
                                     <div style={formGroupStyle}>
                                         <label
-                                            htmlFor="prontuario_EncaminhamentoOrgao" style={formLabelStyle} className="form-label">
+                                            htmlFor="prontuario_Vulnerabilidade" style={formLabelStyle} className="form-label">
                                             Grau de Vulnerabilidade
                                         </label>
                                         <div>

@@ -68,7 +68,7 @@ $parametros_backend['api_get_atualizar_prontuariopsicosocial'] = ($atualizar_id 
                         &nbsp;
                     </div>
                 </div>
-                <AppForm
+                <AppForm2
                     parametros={parametros}
                 />
 

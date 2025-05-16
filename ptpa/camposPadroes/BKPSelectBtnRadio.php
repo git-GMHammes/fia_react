@@ -64,7 +64,7 @@
 
         // Função handleChange simplificada
         const handleChange = (event) => {
-            console.log("handleChange...");
+            // console.log("handleChange...");
             const { name, value } = event.target;
 
             // Lógica para os radio buttons (diferente de filtroSelect)
@@ -83,7 +83,7 @@
 
             // Resto da lógica para o filtroSelect
             if (name === 'filtroSelect') {
-                console.log('handleChange - filtroSelect:', value);
+                // console.log('handleChange - filtroSelect:', value);
 
                 // Se o comprimento do valor for 1 ou menos, redefine o estado
                 if (value.length <= 1) {
@@ -135,7 +135,7 @@
                     ...prev,
                     [name]: selectedIds.join(', '),
                 };
-                console.log('formData atualizado no handleBlur:', updatedFormData);
+                // console.log('formData atualizado no handleBlur:', updatedFormData);
                 return updatedFormData;
             });
         };
@@ -154,8 +154,8 @@
 
         // POST Padrão 
         const fetchPost = async (custonBaseURL = base_url, custonApiPostObjeto = api_post, customPage = getVar_page) => {
-            console.log('-------------------------------');
-            console.log('src/app/Views/fia/ptpa/camposPadroes/BKPSelectBtnRadio.php');
+            // console.log('-------------------------------');
+            // console.log('src/app/Views/fia/ptpa/camposPadroes/BKPSelectBtnRadio.php');
             if (custonApiPostObjeto === 'api/post') {
                 return false;
             } else {
@@ -164,7 +164,7 @@
             let message = errorMessage === '' ? `Não foram encontrados(as) ${labelField} cadastrados(as)` : errorMessage;
             // console.log('fetchPost - getVar_page: ', getVar_page);
             const url = custonBaseURL + custonApiPostObjeto + customPage;
-            console.log('fetchPost - url: ', url);
+            // console.log('fetchPost - url: ', url);
             const SetData = { setFormData };
             // console.log('fetchPost - SetData: ', SetData);
             try {
@@ -180,18 +180,18 @@
                     throw new Error(`Erro HTTP: ${response.status}`);
                 }
                 const data = await response.json();
-                console.log('fetchPost - data: ', data);
+                // console.log('fetchPost - data: ', data);
                 if (data.result && data.result.dbResponse && data.result.dbResponse.length > 0) {
                     // console.log('fetchPost - data.result.dbResponse: ', data.result.dbResponse);
                     const dbResponse = data.result.dbResponse;
                     //
-                    console.log('attributeFieldKey :: ', attributeFieldKey);
-                    console.log('attributeFieldName :: ', attributeFieldName);
+                    // console.log('attributeFieldKey :: ', attributeFieldKey);
+                    // console.log('attributeFieldName :: ', attributeFieldName);
                     const mappedResponse = dbResponse.map((item) => ({
                         [attributeFieldKey[1]]: item[attributeFieldKey[0]], // Mapeia a chave
                         [attributeFieldName[1]]: item[attributeFieldName[0]], // Mapeia o valor
                     }));
-                    console.log('fetchFilter - mappedResponse: ', mappedResponse);
+                    // console.log('fetchFilter - mappedResponse: ', mappedResponse);
                     setObjetoMapKey(mappedResponse);
                     //
                 } else {
@@ -212,7 +212,7 @@
 
         // Filtro Padrão
         const fetchFilter = async (custonBaseURL = base_url, custonApiPostObjeto = api_filter, customPage = getVar_page) => {
-            console.log('fetchFilter... ');
+            // console.log('fetchFilter... ');
             let message = errorMessage === '' ? `Não foram encontrados(as) ${labelField} cadastrados(as)` : errorMessage;
             const url = custonBaseURL + custonApiPostObjeto + customPage;
             // console.log('fetchFilter - url: ', url);
@@ -275,8 +275,8 @@
         {/* React.useEffect 2 */ }
         React.useEffect(() => {
             // Verifica se há algum ID selecionado no formData
-            console.log('-----------------------');
-            console.log('React.useEffect - formData: ', formData);
+            // console.log('-----------------------');
+            // console.log('React.useEffect - formData: ', formData);
             if (formData[nameField]) {
                 const id = formData[nameField].toString();
                 setSelectedIds([id]);
@@ -291,13 +291,13 @@
 
         {/* React.useEffect 3 */ }
         React.useEffect(() => {
-            console.log('--------------------------');
-            console.log('React.useEffect - Carregar Dados Iniciais');
+            // console.log('--------------------------');
+            // console.log('React.useEffect - Carregar Dados Iniciais');
 
             // Função para carregar todos os dados necessários
             const loadData = async () => {
-                console.log('labelField :: ', labelField);
-                console.log('nameField :: ', nameField);
+                // console.log('labelField :: ', labelField);
+                // console.log('nameField :: ', nameField);
 
                 try {
                     await fetchPost();

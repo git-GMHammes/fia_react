@@ -79,13 +79,13 @@
             // Verifica se o último caractere digitado é inválido
             const lastChar = input.slice(-1);
             const lastCharIsInvalid = !/^[0-9.-]$/.test(lastChar) && lastChar !== '';
-            
+
             // Remove caracteres inválidos
             let cleanedInput = input.replace(/[^0-9]/g, '');
 
             // Se o último caractere for inválido, mostra mensagem
             if (lastCharIsInvalid) {
-                console.log('ERRO - APENAS NÚMEROS');
+                // console.log('ERRO - APENAS NÚMEROS');
                 let message = errorMessage === '' ? `O Campo ${labelField} aceita apenas números` : errorMessage;
                 setAttributeDisabled(true);
                 setModalId(`modal_form_${gerarContagemAleatoria(6)}`);
@@ -111,7 +111,7 @@
 
             // Se o último caractere for inválido, mostra mensagem
             if (lastCharIsInvalid) {
-                console.log('ERRO - APENAS LETRAS e ESPAÇOS');
+                // console.log('ERRO - APENAS LETRAS e ESPAÇOS');
                 let message = errorMessage === '' ? `O Campo ${labelField} aceita apenas letras` : errorMessage;
                 setAttributeDisabled(true);
                 setModalId(`modal_form_${gerarContagemAleatoria(6)}`);
@@ -137,7 +137,7 @@
 
             // Se o último caractere for inválido, mostra mensagem
             if (lastCharIsInvalid) {
-                console.log('ERRO - APENAS LETRAS e NUMEROS');
+                // console.log('ERRO - APENAS LETRAS e NUMEROS');
                 let message = errorMessage === '' ? `O Campo ${labelField} aceita apenas letras e números` : errorMessage;
                 setAttributeDisabled(true);
                 setModalId(`modal_form_${gerarContagemAleatoria(6)}`);
@@ -163,7 +163,7 @@
 
             // Se o último caractere for inválido, mostra mensagem
             if (lastCharIsInvalid) {
-                console.log('ERRO - PERMITE APENAS LETRAS, NUMEROS, PONTO E VIRGULA');
+                // console.log('ERRO - PERMITE APENAS LETRAS, NUMEROS, PONTO E VIRGULA');
                 let message = errorMessage === '' ? `O Campo ${labelField} aceita apenas letras, números, pontos e vírgulas` : errorMessage;
                 setAttributeDisabled(true);
                 setModalId(`modal_form_${gerarContagemAleatoria(6)}`);
@@ -332,8 +332,8 @@
         const handleFocus = (event) => {
             const { name, value } = event.target;
             // console.log('src/app/Views/fia/ptpa/camposPadroes/AppText.php')
-            console.log('handleFocus: ', name, value);
-
+            // console.log('handleFocus: ', name, value);
+            {/* CPF */ }
             if (name == 'CPF' && value !== '') {
                 // console.log('handleFocus / CPF: ', name, value);
                 setInitialValue(value);
@@ -350,7 +350,7 @@
         // handleChange
         const handleChange = (event) => {
             const { name, value } = event.target;
-            console.log('name, value :: ', name, value);
+            // console.log('name, value :: ', name, value);
 
             // Fecha qualquer modal aberto antes de fazer a validação
             if (!value) {
@@ -368,7 +368,7 @@
                 }));
                 return;
             }
-            
+
             // Trata Nome
             if (name === 'Logradouro') {
                 const cleanedValue = cleanInput(value);
@@ -378,7 +378,7 @@
                 }));
                 return;
             }
-            
+
             // Verifica se o valor realmente mudou antes de atualizar o state
             if (formData[name] === value) return;
 
@@ -459,14 +459,14 @@
 
                 case 'Certidao':
                     // Somente preenche os campos se tiver o comprimento adequado
-                    console.log('PASSOU AQUI');
+                    // console.log('PASSOU AQUI');
 
                     const maskedValueCert = applyMaskCertidao(value);
-                    console.log("maskedValue :: ", maskedValueCert);
+                    // console.log("maskedValue :: ", maskedValueCert);
                     const cleanedValue = cleanInputOnlyNumber(value);
 
                     if (cleanedValue.length >= 32) {
-                        console.log('Aqui tem 32')
+                        // console.log('Aqui tem 32')
                         // Extraindo os valores conforme as posições especificadas
                         const serventiaCode = cleanedValue.substring(0, 6); // posições 1-6
                         const acervoCode = cleanedValue.substring(6, 8);    // posições 7-8
@@ -478,15 +478,15 @@
                         const numeroTermo = cleanedValue.substring(23, 30); // posições 24-30
                         const digitoVerificador = cleanedValue.substring(30, 32); // posições 31-32
 
-                        console.log('serventiaCode :: ', serventiaCode);
-                        console.log('acervoCode :: ', acervoCode);
-                        console.log('rcpnCode :: ', rcpnCode);
-                        console.log('anoRegistro :: ', anoRegistro);
-                        console.log('tipoLivro :: ', tipoLivro);
-                        console.log('numeroLivro :: ', numeroLivro);
-                        console.log('numeroFolha :: ', numeroFolha);
-                        console.log('numeroTermo :: ', numeroTermo);
-                        console.log('digitoVerificador :: ', digitoVerificador);
+                        // console.log('serventiaCode :: ', serventiaCode);
+                        // console.log('acervoCode :: ', acervoCode);
+                        // console.log('rcpnCode :: ', rcpnCode);
+                        // console.log('anoRegistro :: ', anoRegistro);
+                        // console.log('tipoLivro :: ', tipoLivro);
+                        // console.log('numeroLivro :: ', numeroLivro);
+                        // console.log('numeroFolha :: ', numeroFolha);
+                        // console.log('numeroTermo :: ', numeroTermo);
+                        // console.log('digitoVerificador :: ', digitoVerificador);
 
                         // Atualiza o formData com os campos específicos
                         setFormData((prev) => ({
@@ -519,19 +519,20 @@
         const handleBlur = async (event) => {
             // setModalMessage({ show: false, type: 'light', message: '' });
             const { name, value } = event.target;
+            console.log("-------------------------");
+            console.log("handleBlur");
+            console.log("-------------------------");
+            console.log("name :: ", name);
+            console.log("value :: ", value);
+            console.log("attributeMinlength :: ", attributeMinlength);
             let message = errorMessage === '' ? `Por favor, informe um ${attributeMask} válido.` : errorMessage;
             let isValid = true;
             let dataColuna = {};
 
             const countValue = value;
             if (countValue.length < attributeMinlength) {
-                console.log("-------------------------");
-                console.log("handleBlur");
-                console.log("-------------------------");
-                console.log("name :: ", name);
-                console.log("value :: ", value);
-                console.log("attributeMinlength :: ", attributeMinlength);
-
+                console.log('------------------------');
+                console.log('countValue.length < attributeMinlength');
                 let message = `O Campo ${labelField} devem ter entre ${attributeMinlength} e ${attributeMaxlength} caracteres`;
                 setAttributeDisabled(true);
                 setModalId(`modal_form_${gerarContagemAleatoria(6)}`);
@@ -549,15 +550,23 @@
                     isValid = cleanInputOnlyNumber(value).length >= 10;
                     break;
 
-                // CPF
+                    {/* CPF */ }
                 case 'CPF':
-                    // console.log('attributeMask :: ', attributeMask);
+                    console.log('attributeMask :: ', attributeMask);
                     if (labelColor === 'gray') {
+                        console.log('------------------------');
+                        console.log('labelColor === gray');
                         break;
                     }
                     isValid = isValidCPF(value);
-                    // console.log('isValid :: ', isValid);
-                    if (!isValid && labelColor !== 'gray') {
+                    console.log('HOP-562');
+                    if (
+                        !isValid &&
+                        labelColor !== 'gray'
+                    ) {
+                        console.log('------------------------');
+                        console.log(`!isValid &&`);
+                        console.log(`labelColor !== 'gray'`);
                         setModalId(`modal_form_${gerarContagemAleatoria(6)}`);
                         let message = errorMessage === '' ? `Campo ${labelField} inválido` : errorMessage;
                         setAttributeDisabled(true);
@@ -576,12 +585,26 @@
                     {/* CPF DUPLICADO */ }
                     dataColuna = (name === 'CPF') ? ({ CPF: value }) : ('');
                     const isDuplicadoCPF = await fetchCadastro(dataColuna);
-                    // console.log('isDuplicadoCPF :: ', isDuplicadoCPF);
-                    // console.log('InitialValue :: ', InitialValue);
-                    // console.log('value :: ', value);
-                    if (isDuplicadoCPF && name === 'CPF' && labelColor !== 'gray' && InitialValue !== value) {
+                    console.log('isDuplicadoCPF :: ', isDuplicadoCPF);
+                    console.log('InitialValue :: ', InitialValue);
+                    console.log('value :: ', value);
+                    console.log('labelColor :: ', labelColor);
+                    console.log('HOP-1');
+
+                    if (
+                        isDuplicadoCPF &&
+                        name === 'CPF' &&
+                        labelColor !== 'gray' &&
+                        InitialValue !== value
+                    ) {
+                        console.log('------------------------');
+                        console.log(`isDuplicadoCPF &&`);
+                        console.log(`name :: `, name);
+                        console.log(`labelColor !== 'gray' &&`);
+                        console.log(`InitialValue !== value`);
                         setModalId(`modal_form_cpf_duplicado${gerarContagemAleatoria(6)}`);
                         let message = errorMessage === '' ? `Campo ${labelField} Duplicado` : errorMessage;
+                        console.log('HOP-2');
                         if (
                             checkWordInArray(getURI, 'cadastrar') &&
                             labelColor !== 'gray' ||
@@ -601,7 +624,17 @@
                             }));
                             break;
                         }
-                        if (checkWordInArray(getURI, 'atualizar') && value !== InitialValue && labelColor !== 'gray') {
+                        console.log('HOP-3');
+
+                        if (
+                            checkWordInArray(getURI, 'atualizar') &&
+                            value !== InitialValue &&
+                            labelColor !== 'gray'
+                        ) {
+                            console.log('------------------------');
+                            console.log(`checkWordInArray(getURI, 'atualizar')`);
+                            console.log(`value !== InitialValue`);
+                            console.log(`labelColor !== 'gray'`);
                             setModalId(`modal_form_${gerarContagemAleatoria(6)}`);
                             setAttributeDisabled(true);
                             setMsgError(message);
@@ -617,6 +650,7 @@
                             break;
                         }
                     }
+                    console.log('HOP-FIM');
                     break;
 
                 // CEP
@@ -650,20 +684,20 @@
                         InitialValue == value
 
                     ) {
-                        console.log('------------------------');
-                        console.log('Certidao');
-                        console.log('value :: ', value);
-                        console.log('InitialValue :: ', InitialValue);
+                        // console.log('------------------------');
+                        // console.log('Certidao');
+                        // console.log('value :: ', value);
+                        // console.log('InitialValue :: ', InitialValue);
                         break;
                     }
                     {/* CERTIDAO DUPLICADA */ }
                     dataColuna = (name === 'Certidao') ? ({ Certidao: value }) : ('');
                     const isDuplicadoCertidao = await fetchCadastro(dataColuna);
-                    console.log('------------------------');
-                    console.log('Certidao');
-                    console.log('isDuplicadoCertidao :: ', isDuplicadoCertidao);
-                    console.log('InitialValue :: ', InitialValue);
-                    console.log('value :: ', value);
+                    // console.log('------------------------');
+                    // console.log('Certidao');
+                    // console.log('isDuplicadoCertidao :: ', isDuplicadoCertidao);
+                    // console.log('InitialValue :: ', InitialValue);
+                    // console.log('value :: ', value);
 
                     if (isDuplicadoCertidao && name === 'Certidao' && labelColor !== 'gray' && InitialValue !== value) {
                         let message = errorMessage === '' ? `Campo ${labelField} Duplicado` : errorMessage;
@@ -741,16 +775,16 @@
             if (dataColuna.CPF !== undefined) {
                 // Lógica para busca por CPF
                 coluna = 'CPF';
-                console.log("Buscando por CPF:", dataColuna.CPF);
+                // console.log("Buscando por CPF:", dataColuna.CPF);
                 // Continuar com a lógica específica para CPF...
             } else if (dataColuna.Certidao !== undefined) {
                 // Lógica para busca por Certidão
                 coluna = 'Certidao';
-                console.log("Buscando por Certidão:", dataColuna.Certidao);
+                // console.log("Buscando por Certidão:", dataColuna.Certidao);
                 // Continuar com a lógica específica para Certidão...
             } else {
                 // Caso nenhum dos dois seja fornecido
-                console.log("Tipo de dado não identificado");
+                // console.log("Tipo de dado não identificado");
                 return null; // ou throw new Error("Tipo de dado inválido");
             }
 
@@ -774,49 +808,30 @@
                     data.result.dbResponse &&
                     data.result.dbResponse.length > 0
                 ) {
-                    // Limpa o campo se o CPF for inválido
-                    if (
-                        checkWordInArray(getURI, 'adolescente') &&
-                        checkWordInArray(getURI, 'atualizar') ||
-                        checkWordInArray(getURI, 'profissional') &&
-                        checkWordInArray(getURI, 'atualizar')
-                    ) {
-                        inputCPF = data.CPF
-                    } else {
-                        inputCPF = ''
+                    // Se estiver atualizando e o CPF for o mesmo que já estava no registro
+                    if (InitialValue === dataColuna.CPF) {
+                        // Não faz nada, mantém o mesmo CPF
+                        return true;
                     }
+
+                    // Verifica se está na página de atualização de adolescente ou profissional
+                    if (
+                        checkWordInArray(getURI, 'atualizar') &&
+                        (checkWordInArray(getURI, 'adolescente') || checkWordInArray(getURI, 'profissional'))
+                    ) {
+                        inputCPF = data.CPF;
+                    } else {
+                        // Se for cadastro ou outro tipo de atualização, o CPF não pode ser duplicado
+                        inputCPF = '';
+                    }
+
                     setFormData((prev) => ({
                         ...prev,
                         ['CPF']: inputCPF
                     }));
-                    // console.log('CPF já cadastrado.');
                     return true;
                 }
 
-                if (
-                    coluna === 'Certidao' &&
-                    data.result &&
-                    data.result.dbResponse &&
-                    data.result.dbResponse.length > 0
-                ) {
-                    // Limpa o campo se a Certidão for inválida
-                    if (
-                        checkWordInArray(getURI, 'adolescente') &&
-                        checkWordInArray(getURI, 'atualizar') ||
-                        checkWordInArray(getURI, 'profissional') &&
-                        checkWordInArray(getURI, 'atualizar')
-                    ) {
-                        inputCertidao = data.Certidao
-                    } else {
-                        inputCertidao = ''
-                    }
-                    setFormData((prev) => ({
-                        ...prev,
-                        ['Certidao']: inputCertidao
-                    }));
-                    // console.log('Certidão já cadastrada.');
-                    return true;
-                }
 
             } catch (error) {
                 // Função para exibir o alerta (success, danger, warning, info)

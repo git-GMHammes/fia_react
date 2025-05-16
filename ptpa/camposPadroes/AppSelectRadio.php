@@ -272,7 +272,7 @@
 
                     // Criar uma nova cópia do array para não modificar o original
                     const updatedList = [...parameter, newItem];
-                    console.log('updatedList :: ', updatedList);
+                    // console.log('updatedList :: ', updatedList);
                     setListSelect(updatedList);
                     setOther('Outro');
                 }, 300);
