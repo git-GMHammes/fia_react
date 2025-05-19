@@ -4417,7 +4417,7 @@
         }, [formData.CEP]);
         {/* formData */ }
         React.useEffect(() => {
-            // console.log("-------------------");
+            console.log("-------------------");
             // console.log("src/ app/ Views/ fia/ ptpa/ adolescentes/ AppForm.php");
             // console.log("FormData atualizado:", formData);
         }, [formData]);

@@ -255,7 +255,6 @@
             }
         };
 
-
         // Fetch para obter os Profissionais
         const fetchProfissionais = async () => {
             try {
@@ -624,7 +623,7 @@
                                                 Adolescente
                                                 {checkWordInArray(getURI, 'consultar') || checkWordInArray(getURI, 'atualizar') ? (null) : (<strong style={requiredField}>*</strong>)}
                                             </label>
-                                            { checkWordInArray(getURI, 'consultar') || checkWordInArray(getURI, 'atualizar') ? (
+                                            {checkWordInArray(getURI, 'consultar') || checkWordInArray(getURI, 'atualizar') ? (
                                                 <div className="p-2">
                                                     {formData.adolescente_Nome || 'Adolescente selecionado'}
                                                 </div>

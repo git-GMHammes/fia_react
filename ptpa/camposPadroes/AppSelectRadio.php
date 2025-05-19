@@ -51,18 +51,19 @@
         });
 
         const makeSelectedLabel = () => {
-            // console.log('-----------------');
-            // console.log('makeSelectedLabel');
-            // console.log('formData[nameField] :: ', formData[nameField]);
-            if (formData[nameField] && formData[nameField] !== null && isNaN(formData[nameField])) {
+            console.log('-----------------');
+            console.log('src/ app/ Views/ fia/ ptpa/ camposPadroes/ AppSelectRadio.php');
+            console.log('makeSelectedLabel');
+            console.log('formData[nameField] :: ', formData[nameField]);
+            if (
+                (formData[nameField] && formData[nameField] !== null && isNaN(formData[nameField])) ||
+                (formData[nameField] && formData[nameField] !== '' && isNaN(formData[nameField]))
+            ) {
                 // console.log('-----------------');
                 // console.log('IF');
                 setSelectedLabel(formData[nameField]);
-            } else {
-                // console.log('-----------------');
-                // console.log('ELSE');
-                // console.log(`formData[${nameField}] :: `, formData[nameField]);
             }
+
             if (formData[nameField] === null || formData[nameField] === '') {
                 setSelectedLabel('Seleção Nula')
             }
@@ -125,6 +126,8 @@
             // console.log('src/ app/ Views/ fia/ ptpa/ camposPadroes/ AppSelectRadio.php');
             // console.log('name :: ', name);
             // console.log('value :: ', value);
+            // console.log('-------------------------');
+            // console.log(listSelect);
             // Atualiza o estado do formulário
             setFormData((prev) => ({
                 ...prev,
@@ -549,6 +552,7 @@
                 setListSelect(objetoArrayKey);
                 setIsLoading(false);
                 setShowFilterSelect(false);
+                makeSelectedLabel();
                 return;
             }
 
@@ -579,20 +583,29 @@
 
         React.useEffect(() => {
             // Apenas executa se listSelect estiver pronto (não vazio)
+            console.log('formData[nameField] :: ', formData[nameField]);
             if (listSelect && listSelect.length > 0) {
                 setTimeout(() => {
                     // console.log(`formData[${nameField}] :: `, formData[nameField]);
-                    if (isNaN(formData[nameField])) {
+                    if (
+                        (isNaN(formData[nameField])) &&
+                        (formData[nameField] === null || formData[nameField] === '')
+                    ) {
                         setSelectedLabel(formData[nameField]);
-                        // console.log('#setSelectedLabel(formData[nameField])');
-                    } else if (formData[nameField] === null || formData[nameField] === '') {
+                        console.log('HOP 1');
+                    } else if (
+                        formData[nameField] === null ||
+                        formData[nameField] === '' ||
+                        formData[nameField] === undefined
+                    ) {
                         setSelectedLabel('Seleção Nula');
-                        // console.log('#formData[nameField] === null || formData[nameField] === \'\'');
+                        console.log('HOP 2');
                     } else {
                         buildSelectedLabel(formData[nameField]);
+                        console.log('HOP 3');
                         // console.log('#useEffect buildSelectedLabel(formData[nameField])');
                     }
-                }, 300); // Tempo reduzido para aumentar responsividade
+                }, 3000); // Tempo reduzido para aumentar responsividade
             }
         }, [formData[nameField], listSelect]);
 

@@ -71,21 +71,34 @@
         const handleChange = (event) => {
             // Adicione "type" na desestruturação para resolver o erro
             const { name, value, type, checked } = event.target;
-            // console.log('-------------------------');
-            // console.log('handleChange');
-            // console.log('-------------------------');
-            // console.log('src/ app/ Views/ fia/ ptpa/ camposPadroes/ AppSelectCheck.php');
-            // console.log('name :: ', name);
-            // console.log('value :: ', value);
-            // console.log('type :: ', type);
-            // console.log('checked :: ', checked);
+            console.log('-------------------------');
+            console.log('handleChange');
+            console.log('-------------------------');
+            console.log('src/ app/ Views/ fia/ ptpa/ camposPadroes/ AppSelectCheck.php');
+            console.log('name :: ', name);
+            console.log('value :: ', value);
+            console.log('type :: ', type);
+            console.log('checked :: ', checked);
+            // 
+            const cleanedValue = removeSpacesAroundCommas(value);
+            if (type === 'checkbox') {
+                setSelectedIds(prev => checked
+                    ? [...prev, value]
+                    : prev.filter(id => id !== value)
+                );
+                return;
+            }
 
-            setSelectedIds(prev => checked
-                ? [...prev, value]
-                : prev.filter(id => id !== value)
-            );
+            if (type === 'text') {
+                setFormData((prev) => ({
+                    ...prev,
+                    [name]: cleanedValue
+                }));
+                return;
+            }
 
             setMessage({ show: false, type: null, message: null });
+
         };
 
         const handleBlur = (event) => {
@@ -125,6 +138,17 @@
             // Se há múltiplos itens selecionados
             setSelectedLabel(`${selectedValues.length} itens selecionados`);
         };
+
+        const removeSpacesAroundCommas = (value) => {
+            // Primeiro remove espaços antes das vírgulas
+            let cleaned = value.replace(/\s+,/g, ',');
+            // Depois remove espaços depois das vírgulas
+            cleaned = cleaned.replace(/,\s+/g, ',');
+            // Remove vírgulas duplicadas ou mais
+            cleaned = cleaned.replace(/,+/g, ',');
+            return cleaned;
+        };
+
 
         const stringToArray = (value) => {
             if (!value) return [];
@@ -269,7 +293,7 @@
                 };
             });
 
-            console.log('mappedResponse:', mappedResponse);
+            // console.log('mappedResponse:', mappedResponse);
             setListSelect(mappedResponse);
             addOuther(mappedResponse)
         };
@@ -769,6 +793,7 @@
                                 >
                                     <i className="bi bi-file-text"></i>
                                 </span>
+                                {/* TEXT OUTRO*/}
                                 <input
                                     type="text"
                                     className="form-control form-control-sm"

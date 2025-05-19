@@ -123,6 +123,18 @@ $parametros_backend = array(
                                         </a>
                                     </li>
                                 )}
+                                {(checkWordInArray(permissao_menu, 'Prontuário')) && (
+                                    <li className="nav-item">
+                                        <a
+                                            className="nav-link active"
+                                            aria-current="page"
+                                            href={`${base_url}index.php/fia/ptpa/prontuariopsicosocial/endpoint/exibir`} // 
+                                            style={linkStyle}
+                                        >
+                                            Prontuários
+                                        </a>
+                                    </li>
+                                )}
                             </ul>
                             <form className="d-flex" role="search">
                                 <div className="input-group mb-3">

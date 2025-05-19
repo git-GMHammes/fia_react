@@ -35,6 +35,9 @@
         const [isLoading, setIsLoading] = React.useState(true);
         const [idade, setIdade] = React.useState([0, 0]);
         const [error, setError] = React.useState(null);
+        const [vulnerabilidadeIdade, setVulnerabilidadeIdade] = React.useState(0);
+        const [vulnerabilidadeEscolaridade, setVulnerabilidadeEscolaridade] = React.useState(0);
+        const [vulnerabilidadeBase, setVulnerabilidadeBase] = React.useState(0);
 
         // Loading
         const [dataLoading, setDataLoading] = React.useState(true);
@@ -51,12 +54,6 @@
             message: null
         });
 
-        const pontuacaoMap = {
-            "extremamente-vulneravel": 40,
-            "muito-vulneravel": 25,
-            "vulneravel": 10
-        };
-
         {/* ALTURA x LARGURA */ }
         React.useEffect(() => {
             const atualizarDimensoes = () => {
@@ -71,7 +68,13 @@
             };
         }, []);
 
-        // Função handleChange simplificada
+        const pontuacaoMap = {
+            "extremamente-vulneravel": 40,
+            "muito-vulneravel": 25,
+            "vulneravel": 10
+        };
+
+        // Função handleChange corrigida
         const handleChange = (event) => {
             const { name, value } = event.target;
             // console.log('--------------------');
@@ -79,45 +82,58 @@
             // console.log('--------------------');
             // console.log('NOME/VALOR', name, value);
 
-            // Forçar atualização imediata
-            setFormData((prevFormData) => {
-                const updatedData = {
-                    ...prevFormData,
+            if (name === "adolescente_id") {
+                // Chama a função fetchGetAdolescentes com o id do adolescente
+                fetchGetAdolescentes(value);
+                setFormData((prev) => ({
+                    ...prev,
                     [name]: value
-                };
+                }));
+                return;
+            }
 
-                // Se necessário, também atualize outros estados dependentes
-                // como por exemplo, no caso de pontuações
-                if (name === "prontuario_Vulnerabilidade") {
-                    updatedData.prontuario_PontuacaoTotal = pontuacaoMap[value] || 0;
-                }
+            // Forçar atualização imediata
+            setFormData((prev) => ({
+                ...prev,
+                [name]: value
+            }));
 
-                return updatedData;
-            });
+            return;
         };
 
-        // Função handleRadioChange simplificada
+        {/* HANDLERADIOCHANGE */ }
         const handleRadioChange = (event) => {
             const { name, value } = event.target;
 
-            // console.log('--------------------');
-            // console.log('handleRadioChange');
-            // console.log('--------------------');
-            // console.log('NOME/VALOR', name, value);
+            console.log('--------------------');
+            console.log('handleRadioChange');
+            console.log('--------------------');
 
-            /// Abordagem mais direta
+            // Abordagem mais direta
             event.target.checked = true;
+            if (name === "prontuario_Vulnerabilidade") {
+                // Atualiza o estado de forma assíncrona
+                const ptsVulnerabilidade = pontuacaoMap[value] || '';
+                console.log('ptsVulnerabilidade :: ', ptsVulnerabilidade);
+                console.log('vulnerabilidadeBase :: ', vulnerabilidadeBase);
+                console.log('vulnerabilidadeEscolaridade :: ', vulnerabilidadeEscolaridade);
+                console.log('vulnerabilidadeIdade :: ', vulnerabilidadeIdade);
 
-            // Atualizar o estado de forma assíncrona
-            setTimeout(() => {
-                setFormData((prevFormData) => {
-                    return {
-                        ...prevFormData,
-                        [name]: value,
-                        prontuario_PontuacaoVulnerabilidade: pontuacaoMap[value] || ''
-                    };
-                });
-            }, 0);
+                setFormData((prev) => ({
+                    ...prev,
+                    prontuario_Vulnerabilidade: value,
+                    prontuario_PontuacaoVulnerabilidade: ptsVulnerabilidade,
+                    prontuario_PontuacaoTotal: vulnerabilidadeIdade + vulnerabilidadeEscolaridade + ptsVulnerabilidade
+                }));
+
+                return;
+            }
+
+            setFormData(prev => ({
+                ...prev,
+                [name]: value
+            }));
+
         };
 
         const handleBlur = (event) => {
@@ -131,7 +147,7 @@
             atualizaVulnerabilidade();
         };
 
-        {/* formData */ }
+        {/* FORMDATA */ }
         const [formData, setFormData] = React.useState({
             //
             token_csrf: token_csrf,
@@ -310,10 +326,10 @@
                 adolescente_id: 'Selecione um adolescente',
                 prontuario_MedidasSocioEducativas: 'Medidas socioeducativas em branco',
                 prontuario_UsodeDrogas: 'Uso de Drogas em branco',
-                prontuario_EncaminhamentoOrgao: 'Encaminhamento de Droga',
-                prontuario_Deficiencia: 'Deficie_ncia em branco',
+                prontuario_CadUnico: 'Cadastro Único em branco',
+                prontuario_EncaminhamentoOrgao: 'Encaminhamento de Orgão em branco',
+                prontuario_Deficiencia: 'Deficiência em branco',
                 prontuario_NecesMediador: 'Necessidade de mediador em branco',
-                prontuario_CadUnico: 'Cadastro Único',
                 prontuario_Vulnerabilidade: 'Grau de Vulnerabilidade',
             };
 
@@ -422,8 +438,14 @@
 
         // Fetch para obter os Adolescentes
         const fetchAdolescentes = async () => {
+            // console.log('-------------------------------------');
+            // console.log('fetchAdolescentes...');
+            // console.log('-------------------------------------');
+            // console.log('src/app/Views/fia/ptpa/prontuario/AppForm2.php');
+            const url = base_url + api_post_filtrar_adolescente;
+            // console.log('url :: ', url);
             try {
-                const response = await fetch(base_url + api_post_filtrar_adolescente, {
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -433,6 +455,7 @@
                 const data = await response.json();
 
                 if (data.result && data.result.dbResponse && data.result.dbResponse.length > 0) {
+                    // console.log('data.result.dbResponse :: ', data.result.dbResponse);
                     setAdolescentes(data.result.dbResponse);
                 }
             } catch (error) {
@@ -464,15 +487,30 @@
             }
         };
 
-        const fetchGetAdolescentes = async (id) => {
+        const fetchGetAdolescentes = async (id = null) => {
 
-            if (formData.adolescente_Nome && formData.adolescente_id === id) {
-                // sconsole.log("Dados já carregados, evitando nova requisição.");
+            setVulnerabilidadeIdade(0);
+            setVulnerabilidadeEscolaridade(0);
+            setVulnerabilidadeBase(0);
+            setFormData((prev) => ({
+                ...prev,
+                "prontuario_PontuacaoTotal": 0,
+                "prontuario_Vulnerabilidade": 0,
+                "prontuario_PontuacaoVulnerabilidade": 0,
+                "prontuario_PontuacaoTotal": 0
+            }));
+
+            if (id === null) {
                 return;
             }
-
+            console.log('-------------------------------------');
+            console.log('fetchGetAdolescentes...');
+            console.log('-------------------------------------');
+            console.log('src/app/Views/fia/ptpa/prontuario/AppForm2.php');
+            const url = base_url + api_get_exibir_adolescente + '/' + id;
+            console.log('url :: ', url);
             try {
-                const response = await fetch(base_url + api_get_exibir_adolescente + '/' + id, {
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -483,129 +521,108 @@
                 const data = await response.json();
                 if (data.result && data.result.dbResponse && data.result.dbResponse.length > 0) {
                     const adolescente = data.result.dbResponse[0];
+                    console.log('adolescente :: ', adolescente);
 
-                    setFormData((prev) => {
-                        const novoFormData = {
-                            ...prev,
-                            "adolescente_id": id,
-                            "adolescente_Nome": adolescente.Nome,
-                            "Nascimento": adolescente.Nascimento,
-                            "Escolaridade": adolescente.Escolaridade,
-                            "prontuario_Vulnerabilidade": "",   
-                            "PontuacaoIdade": 0,     
-                            "PontuacaoEscolaridade": 0    
-                            "prontuario_PontuacaoTotal": 0
-                        };
+                    const meses_vida = calcularMesesDeVida(adolescente.Nascimento);
+                    setTimeout(() => {
+                        calcularVulnerabilidadeIdade(meses_vida);
+                    }, 300);
 
-                        return novoFormData;
-                    });
-                    // console.log("FormData atualizado:", formData);
-                } else {
-                    return false;
+                    const recebe_escolaridade = adolescente.Escolaridade;
+
+                    setTimeout(() => {
+                        calcularVulnerabilidadeEscolaridade(recebe_escolaridade);
+                    }, 300);
+
                 }
             } catch (error) {
                 setError('Erro ao carregar Adolescentes: ' + error.message);
             }
         };
 
-        {/* CHAMA GERAL */ }
-        React.useEffect(() => {
-            setIsLoading(true);
-            // Função para carregar todos os dados necessários
-            const loadData = async () => {
-                // console.log('-------------------------------');
-                // console.log('src/app/Views/fia/ptpa/prontuario/AppForm2.php');
-                // console.log('React.useEffect(()...');
-                try {
-                    // Chama as funções de fetch para carregar os dados
-                    await fetchProfissionais();
-                    await fetchAdolescentes();
-                    await fetchProntuarios();
-                } catch (error) {
-                    console.error('Erro ao carregar dados:', error);
-                } finally {
-                    // console.log('Fim do React.useEffect...');
-                    // console.log('formData :: ', formData);
-                    // console.log('user_session :: ', user_session);
-                    setIsLoading(false);
-                }
-            };
+        const calcularMesesDeVida = (dataNascimento) => {
+            // console.log('----------------------');
+            // console.log('calcularMesesDeVida');
+            // console.log('----------------------');
+            // console.log('src/ app/ Views/ fia/ ptpa/ prontuario/ AppForm2.php');
 
-            loadData();
-        }, []);
+            if (!dataNascimento) return 0; // Retorna 0 se não houver data válida
 
-        {/* CONSULTAR ESCOLARIDADE */ }
-        React.useEffect(() => {
-            if (formData.Nascimento || formData.Escolaridade) {
-                if (!checkWordInArray(getURI, 'consultar')) {
-                    atualizaVulnerabilidade();
-                }
-            }
-        }, [formData.Nascimento, formData.Escolaridade]);
+            const dataNasc = new Date(dataNascimento);
+            const hoje = new Date();
 
-        {/* TOTAL */ }
-        React.useEffect(() => {
-            if (!checkWordInArray(getURI, 'consultar')) {
-                const totalPontuacao =
-                    (pontuacaoMap[formData.prontuario_Vulnerabilidade] || 0) +
-                    (formData.PontuacaoIdade || 0) +
-                    (formData.PontuacaoEscolaridade || 0);
+            const anos = hoje.getFullYear() - dataNasc.getFullYear();
+            const meses = hoje.getMonth() - dataNasc.getMonth();
 
-                setFormData((prevFormData) => ({
-                    ...prevFormData,
-                    prontuario_PontuacaoTotal: totalPontuacao
-                }));
-            }
-        }, [formData.prontuario_Vulnerabilidade, formData.PontuacaoIdade, formData.PontuacaoEscolaridade]);
+            const totalMeses = anos * 12 + meses;
 
-        // Função para identificar o usuário
-        React.useEffect(() => {
-            // console.log('-------------------------);
-            // console.log('src/app/Views/fia/ptpa/prontuario/AppForm2.php');
-            // console.log('React.useEffect - Sessão');
-            if (
-                user_session &&
-                user_session.CargoFuncaoId === '5' &&
-                user_session.PerfilId === '5' &&
-                checkWordInArray(getURI, 'cadastrar') &&
-                formData.profissional_id === null
-            ) {
-                setFormData((prev) => ({
-                    ...prev,
-                    profissional_id: user_session.profissional_id,
-                    profissional_Nome: user_session.Nome
-                }));
-            }
-        }, []);
+            return totalMeses;
+        };
 
         const calcularVulnerabilidadeIdade = (idade) => {
+            console.log('----------------------');
+            console.log('calcularVulnerabilidadeIdade');
+            console.log('----------------------');
+            console.log('src/ app/ Views/ fia/ ptpa/ prontuario/ AppForm2.php');
+            console.log('idade :: ', idade);
+
             if (idade >= 204 && idade <= 210) {
-                setFormData((prevFormData) => ({
-                    ...prevFormData,
-                    "PontuacaoIdade": 25
-                }));
+                setVulnerabilidadeIdade(25);
+
+                setTimeout(() => {
+                    setVulnerabilidadeBase(vulnerabilidadeIdade + vulnerabilidadeEscolaridade);
+                    setFormData((prevFormData) => ({
+                        ...prevFormData,
+                        "prontuario_PontuacaoTotal": vulnerabilidadeIdade + vulnerabilidadeEscolaridade,
+                        "PontuacaoIdade": 25
+                    }));
+                }, 100);
+
+                console.log('PontuacaoIdade :: ', 25);
 
                 return true
             }
             if (idade >= 198 && idade <= 201) {
-                setFormData((prevFormData) => ({
-                    ...prevFormData,
-                    "PontuacaoIdade": 20
-                }));
+                setVulnerabilidadeIdade(20);
+
+                setTimeout(() => {
+                    setVulnerabilidadeBase(vulnerabilidadeIdade + vulnerabilidadeEscolaridade);
+                    setFormData((prevFormData) => ({
+                        ...prevFormData,
+                        "prontuario_PontuacaoTotal": vulnerabilidadeIdade + vulnerabilidadeEscolaridade,
+                        "PontuacaoIdade": 20
+                    }));
+                }, 100);
+
+                console.log('PontuacaoIdade :: ', 20);
 
                 return true
             }
             if (idade >= 192 && idade <= 197) {
-                setFormData((prevFormData) => ({
-                    ...prevFormData,
-                    "PontuacaoIdade": 10
-                }));
+                setVulnerabilidadeIdade(10);
+
+                setTimeout(() => {
+                    setVulnerabilidadeBase(vulnerabilidadeIdade + vulnerabilidadeEscolaridade);
+                    setFormData((prevFormData) => ({
+                        ...prevFormData,
+                        "prontuario_PontuacaoTotal": vulnerabilidadeIdade + vulnerabilidadeEscolaridade,
+                        "PontuacaoIdade": 10
+                    }));
+                }, 100);
+
+                console.log('PontuacaoIdade :: ', 10);
 
                 return true
             }
+            console.log('HOP-FIM');
         };
 
         const calcularVulnerabilidadeEscolaridade = (escolaridade) => {
+            console.log('----------------------');
+            console.log('calcularVulnerabilidadeEscolaridade');
+            console.log('----------------------');
+            console.log('src/ app/ Views/ fia/ ptpa/ prontuario/ AppForm2.php');
+
             let pontuacao = 0;
 
             if (["6º Ano Ensino Fundamental", "7º Ano Ensino Fundamental", "8º Ano Ensino Fundamental", "9º Ano Ensino Fundamental", "EJA"].includes(escolaridade)) {
@@ -622,40 +639,9 @@
                 ...prevFormData,
                 "PontuacaoEscolaridade": pontuacao
             }));
-        };
+            setVulnerabilidadeEscolaridade(pontuacao);
 
-        const calcularMesesDeVida = (dataNascimento) => {
-            if (!dataNascimento) return 0; // Retorna 0 se não houver data válida
-
-            const dataNasc = new Date(dataNascimento);
-            const hoje = new Date();
-
-            const anos = hoje.getFullYear() - dataNasc.getFullYear();
-            const meses = hoje.getMonth() - dataNasc.getMonth();
-
-            const totalMeses = anos * 12 + meses;
-
-            return totalMeses;
-        };
-
-        const atualizaVulnerabilidade = () => {
-
-            const calcAdolescente = async (id) => {
-                if (formData.adolescente_id !== null) {
-                    fetchGetAdolescentes(id);
-                }
-            };
-
-            calcAdolescente(formData.adolescente_id);
-
-            const totalMeses = calcularMesesDeVida(formData.Nascimento);
-
-            if (totalMeses > 0) {
-                calcularVulnerabilidadeIdade(totalMeses);
-            }
-            if (formData.Escolaridade) {
-                calcularVulnerabilidadeEscolaridade(formData.Escolaridade);
-            }
+            return;
         };
 
         if (debugMyPrint && isLoading) {
@@ -908,52 +894,60 @@
                     </div>
                 ) : (
                     <div className={`${largura < 415 ? 'd-flex justify-content-evenly p-4' : 'd-flex gap-3 p-2'}`} style={{ flexWrap: 'nowrap' }}>
-                        <div className="form-check">
-                            <input
-                                data-api="form-prontuario"
-                                type="radio"
-                                className="form-check-input"
-                                id="vulnerabilidade1"
-                                name="prontuario_Vulnerabilidade"
-                                value="extremamente-vulneravel"
-                                checked={formData.prontuario_Vulnerabilidade === "extremamente-vulneravel"}
-                                onChange={handleRadioChange}
-                            />
-                            <label className="form-check-label" htmlFor="vulnerabilidade1">
-                                Extremamente Vulnerável
-                            </label>
-                        </div>
-                        <div className="form-check">
-                            <input
-                                data-api="form-prontuario"
-                                type="radio"
-                                className="form-check-input"
-                                id="vulnerabilidade2"
-                                name="prontuario_Vulnerabilidade"
-                                value="muito-vulneravel"
-                                checked={formData.prontuario_Vulnerabilidade === "muito-vulneravel"}
-                                onChange={handleRadioChange}
-                            />
-                            <label className="form-check-label" htmlFor="vulnerabilidade2">
-                                Muito Vulnerável
-                            </label>
-                        </div>
-                        <div className="form-check">
-                            <input
-                                data-api="form-prontuario"
-                                type="radio"
-                                className="form-check-input"
-                                id="vulnerabilidade3"
-                                name="prontuario_Vulnerabilidade"
-                                value="vulneravel"
-                                checked={formData.prontuario_Vulnerabilidade === "vulneravel"}
-                                onChange={handleRadioChange}
-                            />
-                            <label className="form-check-label" htmlFor="vulnerabilidade3">
-                                Vulnerável
-                            </label>
-                        </div>
 
+                        <div className="row w-100">
+                            <div className="col-12 col-sm-4">
+                                <div className="form-check">
+                                    <input
+                                        data-api="form-prontuario"
+                                        type="radio"
+                                        className="form-check-input"
+                                        id="vulnerabilidade1"
+                                        name="prontuario_Vulnerabilidade"
+                                        value="extremamente-vulneravel"
+                                        checked={formData.prontuario_Vulnerabilidade === "extremamente-vulneravel"}
+                                        onChange={handleRadioChange}
+                                    />
+                                    <label className="form-check-label" htmlFor="vulnerabilidade1">
+                                        Extremamente Vulnerável
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="col-12 col-sm-4">
+                                <div className="form-check">
+                                    <input
+                                        data-api="form-prontuario"
+                                        type="radio"
+                                        className="form-check-input"
+                                        id="vulnerabilidade2"
+                                        name="prontuario_Vulnerabilidade"
+                                        value="muito-vulneravel"
+                                        checked={formData.prontuario_Vulnerabilidade === "muito-vulneravel"}
+                                        onChange={handleRadioChange}
+                                    />
+                                    <label className="form-check-label" htmlFor="vulnerabilidade2">
+                                        Muito Vulnerável
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="col-12 col-sm-4">
+                                <div className="form-check">
+                                    <input
+                                        data-api="form-prontuario"
+                                        type="radio"
+                                        className="form-check-input"
+                                        id="vulnerabilidade3"
+                                        name="prontuario_Vulnerabilidade"
+                                        value="vulneravel"
+                                        checked={formData.prontuario_Vulnerabilidade === "vulneravel"}
+                                        onChange={handleRadioChange}
+                                    />
+                                    <label className="form-check-label" htmlFor="vulnerabilidade3">
+                                        Vulnerável
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                         {/* Campo hidden para armazenar a pontuação */}
                         <input
                             type="hidden"
@@ -979,6 +973,97 @@
                 window.location.href = uri;
             }, 4000);
         };
+
+        {/* CHAMA GERAL */ }
+        React.useEffect(() => {
+            setIsLoading(true);
+            // Função para carregar todos os dados necessários
+            const loadData = async () => {
+                // console.log('-------------------------------');
+                // console.log('src/app/Views/fia/ptpa/prontuario/AppForm2.php');
+                // console.log('React.useEffect(()...');
+                try {
+                    // Chama as funções de fetch para carregar os dados
+                    await fetchProfissionais();
+                    await fetchAdolescentes();
+                    await fetchProntuarios();
+                } catch (error) {
+                    console.error('Erro ao carregar dados:', error);
+                } finally {
+                    // console.log('Fim do React.useEffect...');
+                    // console.log('formData :: ', formData);
+                    // console.log('user_session :: ', user_session);
+                    setIsLoading(false);
+                }
+            };
+
+            loadData();
+        }, []);
+
+        {/* FORMDATA.ADOLESCENTE_ID */ }
+        React.useEffect(() => {
+            // console.log('--------------------------------');
+            // console.log('React.useEffect(()...');
+            // console.log('--------------------------------');
+            // console.log('src/app/Views/fia/ptpa/prontuario/AppForm2.php');
+            if (!formData.adolescente_id) {
+                console.log('ID não fornecido');
+                return;
+            }
+
+            if (isNaN(Number(formData.adolescente_id))) {
+                console.log('ID não é um número válido');
+                return;
+            }
+
+            console.log('--------------------------------');
+            console.log('formData.adolescente_id :: ', formData.adolescente_id);
+
+            if (Number(formData.adolescente_id) < 0) {
+                const idPositivo = Math.abs(Number(formData.adolescente_id));
+                setFormData(prevFormData => ({
+                    ...prevFormData,
+                    adolescente_id: idPositivo
+                }));
+            }
+
+            setTimeout(() => {
+                fetchGetAdolescentes(formData.adolescente_id);
+            }, 300);
+
+        }, [formData.adolescente_id]);
+
+        {/* [VULNERABILIDADEIDADE, VULNERABILIDADEESCOLARIDADE] */ }
+        React.useEffect(() => {
+            if (
+                vulnerabilidadeIdade !== 0 ||
+                vulnerabilidadeEscolaridade !== 0
+            ) {
+                setVulnerabilidadeBase(vulnerabilidadeIdade + vulnerabilidadeEscolaridade);
+            }
+        }, [vulnerabilidadeIdade, vulnerabilidadeEscolaridade]);
+
+        {/* FUNÇÃO PARA OBTENÇÃO DO ID DO USUÁRIO */ }
+
+        {/* FUNÇÃO PARA IDENTIFICAR O USUÁRIO */ }
+        React.useEffect(() => {
+            // console.log('-------------------------);
+            // console.log('src/app/Views/fia/ptpa/prontuario/AppForm2.php');
+            // console.log('React.useEffect - Sessão');
+            if (
+                user_session &&
+                user_session.CargoFuncaoId === '5' &&
+                user_session.PerfilId === '5' &&
+                checkWordInArray(getURI, 'cadastrar') &&
+                formData.profissional_id === null
+            ) {
+                setFormData((prev) => ({
+                    ...prev,
+                    profissional_id: user_session.profissional_id,
+                    profissional_Nome: user_session.Nome
+                }));
+            }
+        }, []);
 
         const formGroupStyle = {
             position: 'relative',
@@ -1083,7 +1168,7 @@
                                                 id="profissional_id"
                                                 name="profissional_id"
                                                 value={formData.profissional_id || ''}
-                                                onChange={handleRadioChange}
+                                                onChange={handleChange}
                                                 className="form-select"
                                                 required
                                                 readOnly={checkWordInArray(getURI, 'consultar') || checkWordInArray(getURI, 'atualizar')}
@@ -1122,10 +1207,7 @@
                                                     id="adolescente_id"
                                                     name="adolescente_id"
                                                     value={formData.adolescente_id || ''}
-                                                    onChange={(event) => {
-                                                        handleChange(event);
-                                                        fetchGetAdolescentes(event.target.value);
-                                                    }}
+                                                    onChange={handleChange}
                                                     style={formControlStyle}
                                                     className="form-select"
                                                     aria-label="Default select"
@@ -1374,7 +1456,7 @@
                                             {/* CAMPO / DESCRIÇÃO */}
                                             <div className="row g-1">
                                                 <div className="col-12 col-sm-9">
-                                                    <div className="border-0" style={{ height: '40px' }}>
+                                                    <div className="border-0" style={{ minHeight: '40px' }}>
                                                         {renderQstVulnerabilidade()}
                                                     </div>
                                                 </div>
@@ -1385,32 +1467,107 @@
                             </div>
                         </div>
                     </div>
-                    <div className="card mb-4">
-                        <div className="card-body">
-                            {/* Pontuação total */}
-                            <div style={formGroupStyle}>
-                                <label
-                                    htmlFor="prontuario_PontuacaoTotal"
-                                    style={formLabelStyle}
-                                    className="form-label"
-                                >
-                                    Pontuação total
-                                </label>
-                                <input
-                                    data-api="form-prontuario"
-                                    type="number"
-                                    value={formData.prontuario_PontuacaoTotal || 0}
-                                    onChange={handleRadioChange}
-                                    className="form-control"
-                                    style={formControlStyle}
-                                    id="prontuario_PontuacaoTotal"
-                                    name="prontuario_PontuacaoTotal"
-                                    aria-describedby="prontuario_PontuacaoTotal"
-                                    disabled
-                                    required
-                                />
+                    <div className="card mb-4 p-2">
+                        <div className="row">
+                            <div className="col-12 col-sm-4">
+                                {/* Pontuação Idade */}
+                                <div style={formGroupStyle}>
+                                    <label
+                                        htmlFor="vulnerabilidadeIdade"
+                                        style={formLabelStyle}
+                                        className="form-label"
+                                    >
+                                        Vulnerabilidade Idade
+                                    </label>
+                                    <input
+                                        data-api="form-prontuario"
+                                        type="number"
+                                        value={vulnerabilidadeIdade || 0}
+                                        className="form-control"
+                                        style={formControlStyle}
+                                        id="vulnerabilidadeIdade"
+                                        name="vulnerabilidadeIdade"
+                                        aria-describedby="vulnerabilidadeIdade"
+                                        readOnly
+                                        required
+                                    />
+                                </div>
                             </div>
-                            {/* Pontuação total */}
+                            <div className="col-12 col-sm-4">
+                                {/* Pontuação escolaridade */}
+                                <div style={formGroupStyle}>
+                                    <label
+                                        htmlFor="vulnerabilidadeEscolaridade"
+                                        style={formLabelStyle}
+                                        className="form-label"
+                                    >
+                                        Pontuação por escolaridade
+                                    </label>
+                                    <input
+                                        data-api="form-prontuario"
+                                        type="number"
+                                        value={vulnerabilidadeEscolaridade || 0}
+                                        className="form-control"
+                                        style={formControlStyle}
+                                        id="vulnerabilidadeEscolaridade"
+                                        name="vulnerabilidadeEscolaridade"
+                                        aria-describedby="vulnerabilidadeEscolaridade"
+                                        readOnly
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div className="col-12 col-sm-4">
+                                {/* Pontuação Grau de Vulnerabilidade */}
+                                <div style={formGroupStyle}>
+                                    <label
+                                        htmlFor="prontuario_PontuacaoVulnerabilidade"
+                                        style={formLabelStyle}
+                                        className="form-label"
+                                    >
+                                        Grau de Vulnerabilidade
+                                    </label>
+                                    <input
+                                        data-api="form-prontuario"
+                                        type="number"
+                                        value={formData.prontuario_PontuacaoVulnerabilidade || 0}
+                                        className="form-control"
+                                        style={formControlStyle}
+                                        id="prontuario_PontuacaoVulnerabilidade"
+                                        name="prontuario_PontuacaoVulnerabilidade"
+                                        aria-describedby="prontuario_PontuacaoVulnerabilidade"
+                                        readOnly
+                                        required
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="row">
+                            <div className="col-12 col-sm-12">
+                                {/* Pontuação total */}
+                                <div style={formGroupStyle}>
+                                    <label
+                                        htmlFor="prontuario_PontuacaoTotal"
+                                        style={formLabelStyle}
+                                        className="form-label"
+                                    >
+                                        Pontuação total
+                                    </label>
+                                    <input
+                                        data-api="form-prontuario"
+                                        type="number"
+                                        value={formData.prontuario_PontuacaoTotal || 0}
+                                        className="form-control"
+                                        style={formControlStyle}
+                                        id="prontuario_PontuacaoTotal"
+                                        name="prontuario_PontuacaoTotal"
+                                        aria-describedby="prontuario_PontuacaoTotal"
+                                        readOnly
+                                        required
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
