@@ -75,16 +75,17 @@
                 console.error('A variável global listSelect não é um array:', listSelect);
                 return 'Erro: A variável global listSelect não é um array.';
             }
-            // console.log('buildSelectedLabel listSelect ::', listSelect);
+            console.log('buildSelectedLabel listSelect ::', listSelect);
             // Busca o item correspondente ao ID
             const foundItem = listSelect.find(item => item.id == id);
 
             if (foundItem) {
-                // console.log('------------------------');
-                // console.log('foundItem :: ', foundItem.value);
+                console.log('------------------------');
+                console.log('foundItem :: ', foundItem.value);
                 setSelectedLabel(foundItem.value);
                 return foundItem.value;
             } else {
+                console.log('ELSE');
                 setSelectedLabel('Escolha uma opção');
                 return 'Escolha uma opção';
             }
@@ -590,18 +591,18 @@
                     if (
                         (isNaN(formData[nameField])) &&
                         (formData[nameField] === null || formData[nameField] === '')
-                        console.log('HOP-1');
                     ) {
                         setSelectedLabel(formData[nameField]);
                     } else if (
                         formData[nameField] === null ||
                         formData[nameField] === '' ||
                         formData[nameField] === undefined
-                        console.log('HOP-2');
                     ) {
                         setSelectedLabel('Seleção Nula');
-                    } else {
-                        console.log('HOP-3');
+                    } else if(isNaN(formData[nameField])){
+                        setSelectedLabel(formData[nameField]);
+                    }else {
+                        console.log('ELSE');
                         console.log('formData[nameField] :: ', formData[nameField]);
                         buildSelectedLabel(formData[nameField]);
                         // console.log('#useEffect buildSelectedLabel(formData[nameField])');
