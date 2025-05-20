@@ -37,6 +37,9 @@
 </head>
 
 <body>
+    <?
+    // myPrint('$loadView :: ', $loadView);
+    ?>
         <header>
             <!-- <h1>Template Principal</h1> -->
         </header>

@@ -156,7 +156,7 @@
                                     <label className="form-check-label" htmlFor="termo">
                                         {/* Button trigger modal */}
                                         <button type="button" className="btn m-0 p-0 text-primary fw-bold" data-bs-toggle="modal" data-bs-target="#staticTermoUso">
-                                            Aceito os termos de uso
+                                            Para que os dados sejam enviados, você precisa concordar com os termos e politicas do Programa FIA/PTPA. clique aqui para ler  o termo.
                                         </button>
                                     </label>
                                 </div>
@@ -164,7 +164,7 @@
                                 <div>
                                     {/* Button trigger modal */}
                                     < button type="button" className="btn m-0 p-0 text-primary fw-bold" data-bs-toggle="modal" data-bs-target="#staticTermoUso">
-                                        Aceito os termos de uso
+                                        Para que os dados sejam enviados, você precisa concordar com os termos e politicas do Programa FIA/PTPA. clique aqui para ler  o termo.
                                     </button>
                                 </div>
                             )}

@@ -2181,7 +2181,7 @@
                                                         style={formLabelStyle}
                                                         className="form-label"
                                                     >
-                                                        Gênero V-2
+                                                        Gênero
                                                         <strong style={requiredField}>*</strong>
                                                     </label>
                                                     {(isLoading) && (
@@ -2199,7 +2199,7 @@
                                                             setFormData={setFormData}
                                                             fieldAttributes={{
                                                                 attributeOrigemForm: `origemForm`,
-                                                                labelField: 'Gênero V-2',
+                                                                labelField: 'Gênero',
                                                                 nameField: 'genero_identidade',
                                                                 btnCollor: '', // primary, secondary, success, info, warning, danger, light, dark
                                                                 btnOutline: true, // true ou false
@@ -2970,7 +2970,7 @@
                                                             style={formLabelStyle}
                                                             className="form-label"
                                                         >
-                                                            Gênero V-2
+                                                            Gênero
                                                             <strong style={requiredField}>*</strong>
                                                         </label>
                                                         {(isLoading) && (
@@ -2988,9 +2988,9 @@
                                                                 setFormData={setFormData}
                                                                 fieldAttributes={{
                                                                     attributeOrigemForm: `origemForm`,
-                                                                    labelField: 'Gênero V-2',
+                                                                    labelField: 'Gênero',
                                                                     nameField: 'genero_identidade',
-                                                                    btnCollor: 'danger', // primary, secondary, success, info, warning, danger, light, dark
+                                                                    btnCollor: '', // primary, secondary, success, info, warning, danger, light, dark
                                                                     btnOutline: true, // true ou false
                                                                     btnSize: 'sm', // sm, lg
                                                                     btnRounded: '2', // 2, 5, pill
@@ -3806,7 +3806,7 @@
                                                         style={formLabelStyle}
                                                         className="form-label"
                                                     >
-                                                        Gênero V-2
+                                                        Gênero
                                                         <strong style={requiredField}>*</strong>
                                                     </label>
                                                     {(isLoading) && (
@@ -3824,7 +3824,7 @@
                                                             setFormData={setFormData}
                                                             fieldAttributes={{
                                                                 attributeOrigemForm: `origemForm`,
-                                                                labelField: 'Gênero V-2',
+                                                                labelField: 'Gênero',
                                                                 nameField: 'genero_identidade',
                                                                 btnCollor: '', // primary, secondary, success, info, warning, danger, light, dark
                                                                 btnOutline: true, // true ou false
@@ -4015,7 +4015,7 @@
                             {/* ESCOLARIDADE */}
                             <div style={formGroupStyle}>
                                 <label htmlFor="TipoEscola" style={formLabelStyle} className="form-label">
-                                    Escolaridade - v3<strong style={requiredField}>*</strong>
+                                    Escolaridade<strong style={requiredField}>*</strong>
                                 </label>
                                 <form className="was-validated" onSubmit={(e) => {
                                     e.preventDefault();

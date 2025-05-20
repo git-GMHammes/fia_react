@@ -623,17 +623,26 @@
                 {renderModalHelperSelect1()}
                 {renderModalHelperSelect2()}
                 {/* btn-group */}
-                <div className="btn-group w-100">
+                <div className="btn-group w-100 b-0 p-0">
                     <button
-                        className={`btn btn${btnOutline ? '-outline' : ''}-${btnCollor} ${btnSize ? `btn-${btnSize}` : ''} dropdown text-start ${btnRounded ? `rounded-${btnRounded}` : ''}`}
+                        className={`btn btn${btnOutline ? '-outline' : ''}-${btnCollor} ${btnSize ? `btn-${btnSize}` : ''} dropdown text-start ${btnRounded ? `rounded-${btnRounded}` : ''} b-0 p-0`}
                         type="button"
                         data-bs-toggle="dropdown"
                         data-bs-auto-close="outside"
                         aria-expanded="false"
                     >
-                        <div className="d-flex justify-content-between">
-                            {selectedLabel}
-                            <i className="bi bi-chevron-down"></i>
+                        <div className="d-flex justify-content-between b-0 p-0">
+                            <div className="ms-2">
+                                {selectedLabel}
+                            </div>
+                            <div>
+                                {(attributeRequired) ? (
+                                    <i class={`bi bi-exclamation-circle text-danger me-2`} style={{ fontSize: "1.10rem" }}></i>
+                                ) : (
+                                    <i class="bi bi-check-lg text-success me-2" style={{ fontSize: "1.18rem" }}></i>
+                                )}
+                                <i className="bi bi-chevron-down"></i>
+                            </div>
                         </div>
                     </button>
                     <div className={`dropdown-menu w-100 p-1`}>

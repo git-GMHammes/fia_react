@@ -529,19 +529,22 @@
             let isValid = true;
             let dataColuna = {};
 
-            const countValue = value;
-            if (countValue.length < attributeMinlength) {
-                console.log('------------------------');
-                console.log('countValue.length < attributeMinlength');
-                let message = `O Campo ${labelField} devem ter entre ${attributeMinlength} e ${attributeMaxlength} caracteres`;
-                setAttributeDisabled(true);
-                setModalId(`modal_form_${gerarContagemAleatoria(6)}`);
-                setMsgError(message);
-                setModalMessage({
-                    show: true,
-                    type: 'light',
-                    message: message
-                });
+
+            if (labelColor !== 'gray'){
+                const countValue = value;
+                if (countValue.length < attributeMinlength) {
+                    console.log('------------------------');
+                    console.log('countValue.length < attributeMinlength');
+                    let message = `O Campo ${labelField} devem ter entre ${attributeMinlength} e ${attributeMaxlength} caracteres`;
+                    setAttributeDisabled(true);
+                    setModalId(`modal_form_${gerarContagemAleatoria(6)}`);
+                    setMsgError(message);
+                    setModalMessage({
+                        show: true,
+                        type: 'light',
+                        message: message
+                    });
+                }
             }
 
             switch (attributeMask) {
