@@ -590,19 +590,20 @@
                     if (
                         (isNaN(formData[nameField])) &&
                         (formData[nameField] === null || formData[nameField] === '')
+                        console.log('HOP-1');
                     ) {
                         setSelectedLabel(formData[nameField]);
-                        console.log('HOP 1');
                     } else if (
                         formData[nameField] === null ||
                         formData[nameField] === '' ||
                         formData[nameField] === undefined
+                        console.log('HOP-2');
                     ) {
                         setSelectedLabel('Seleção Nula');
-                        console.log('HOP 2');
                     } else {
+                        console.log('HOP-3');
+                        console.log('formData[nameField] :: ', formData[nameField]);
                         buildSelectedLabel(formData[nameField]);
-                        console.log('HOP 3');
                         // console.log('#useEffect buildSelectedLabel(formData[nameField])');
                     }
                 }, 3000); // Tempo reduzido para aumentar responsividade
@@ -637,9 +638,9 @@
                             </div>
                             <div>
                                 {(attributeRequired) ? (
-                                    <i class={`bi bi-exclamation-circle text-danger me-2`} style={{ fontSize: "1.10rem" }}></i>
+                                    <i className={`bi bi-exclamation-circle text-danger me-2`} style={{ fontSize: "1.10rem" }}></i>
                                 ) : (
-                                    <i class="bi bi-check-lg text-success me-2" style={{ fontSize: "1.18rem" }}></i>
+                                    <i className="bi bi-check-lg text-success me-2" style={{ fontSize: "1.18rem" }}></i>
                                 )}
                                 <i className="bi bi-chevron-down"></i>
                             </div>

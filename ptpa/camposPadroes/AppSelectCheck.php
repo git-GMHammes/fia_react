@@ -361,7 +361,7 @@
             setChoice(parameter);
         }
 
-        {/* FETCH POST */ }
+        {/* FETCH POST */}
         const fetchPOST = async (custonBaseURL = base_url, custonApiPostObjeto = api_post, customPage = '') => {
             setIsLoading(true);
             // console.log('-------------------------');
@@ -401,7 +401,7 @@
             }
         };
 
-        {/* FETCH GET */ }
+        {/* FETCH GET */}
         const fetchGET = async (custonBaseURL = base_url, custonApiGetObjeto = api_get, customPage = '?page =1&limit=90000') => {
             setIsLoading(true);
             setShowFilterSelect(false);
@@ -445,7 +445,7 @@
             }
         };
 
-        {/* FETCH FILTER */ }
+        {/* FETCH FILTER */}
         const fetchFilter = async (formFilter, custonBaseURL = base_url, custonApiPostObjeto = api_filter, customPage = '?page =1&limit=90000') => {
             setIsLoading(true);
             // console.log('-------------------------');
@@ -606,7 +606,7 @@
             }
         };
 
-        {/* REACT PRINCIPAL */ }
+        {/* REACT PRINCIPAL */}
         React.useEffect(() => {
             // console.log('-------------------------');
             // console.log('useEffect');
@@ -629,7 +629,7 @@
 
         }, []);
 
-        {/* REACT - LOADING */ }
+        {/* REACT - LOADING */}
         React.useEffect(() => {
             let animationFrame;
             const startAnimation = () => {
@@ -651,7 +651,7 @@
             return () => cancelAnimationFrame(animationFrame); // Cleanup da animação
         }, []);
 
-        {/* REACT formData[nameField], listSelect */ }
+        {/* REACT formData[nameField], listSelect */}
         React.useEffect(() => {
             // console.log('-------------------------');
             // console.log('useEffect');
@@ -664,7 +664,7 @@
             }
         }, [formData[nameField], listSelect]);
 
-        {/* REACT 004 */ }
+        {/* REACT 004 */}
         React.useEffect(() => {
             if (formData[nameField]) {
                 setSelectedIds(formData[nameField].split(',').map(id => id.trim()));
@@ -675,7 +675,7 @@
             // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [nameField]);
 
-        {/* REACT 005 */ }
+        {/* REACT 005 */}
         React.useEffect(() => {
             setFormData(prev => ({
                 ...prev,
@@ -713,9 +713,9 @@
                             </div>
                             <div>
                                 {(attributeRequired) ? (
-                                    <i class={`bi bi-exclamation-circle text-danger me-2`} style={{ fontSize: "1.18rem" }}></i>
+                                    <i className={`bi bi-exclamation-circle text-danger me-2`} style={{ fontSize: "1.18rem" }}></i>
                                 ) : (
-                                    <i class="bi bi-check-lg text-success me-2" style={{ fontSize: "1.18rem" }}></i>
+                                    <i className="bi bi-check-lg text-success me-2" style={{ fontSize: "1.18rem" }}></i>
                                 )}
                                 <i className="bi bi-chevron-down"></i>
                             </div>
