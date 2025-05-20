@@ -142,33 +142,25 @@
                 <div className="row">
                     <div className="col-12 col-sm-12 m-4">
                         <div className="form-check">
-                            {(formData.termo) ? (
-                                <div>
-                                    <input
-                                        className="form-check-input"
-                                        type="checkbox"
-                                        id="termo"
-                                        name="termo"
-                                        checked={formData.termo || false} // Vinculado ao estado formData
-                                        onChange={handleChange} // Manipula as mudanças
-                                        disabled={!formData.termo || false} // Desabilita o checkbox se já estiver marcado
-                                    />
-                                    <label className="form-check-label" htmlFor="termo">
-                                        {/* Button trigger modal */}
-                                        <button type="button" className="btn m-0 p-0 text-primary fw-bold" data-bs-toggle="modal" data-bs-target="#staticTermoUso">
-                                            Para que os dados sejam enviados, você precisa concordar com os termos e politicas do Programa FIA/PTPA. clique aqui para ler  o termo.
-                                        </button>
-                                    </label>
-                                </div>
-                            ) : (
-                                <div>
-                                    {/* Button trigger modal */}
-                                    < button type="button" className="btn m-0 p-0 text-primary fw-bold" data-bs-toggle="modal" data-bs-target="#staticTermoUso">
-                                        Para que os dados sejam enviados, você precisa concordar com os termos e politicas do Programa FIA/PTPA. clique aqui para ler  o termo.
-                                    </button>
-                                </div>
-                            )}
+                            <div>
+                                <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    id="termo"
+                                    name="termo"
+                                    checked={formData.termo || false} // Vinculado ao estado formData
+                                    onChange={handleChange} // Manipula as mudanças
+                                    disabled={!formData.termo || false} // Desabilita o checkbox se já estiver marcado
+                                />
+                                <label className="form-check-label" htmlFor="termo">
+                                </label>
+                                {/* Button trigger modal */}
+                                <button type="button" className="btn m-0 p-0 text-primary fw-bold" data-bs-toggle="modal" data-bs-target="#staticTermoUso">
+                                    Para que os dados sejam enviados, você precisa concordar com os termos e politicas do Programa FIA/PTPA. clique aqui para ler  o termo.
+                                </button>
+                            </div>
                         </div>
+                        
                         {/* Modal */}
                         <div className="modal fade" id="staticTermoUso" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex={-1} aria-labelledby="staticTermoUsoLabel" aria-hidden="true">
                             <div className="modal-dialog modal-dialog-centered">

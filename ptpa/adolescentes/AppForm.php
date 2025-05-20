@@ -4256,7 +4256,7 @@
                                         {/* BOTÃO DE SALVAR\ */}
                                         <button
                                             type="submit"
-                                            className="btn btn-primary me-2"
+                                            className={`btn btn-${!checkWordInArray(getURI, 'atualizar') && !termoAceito ? 'secondary' : 'success'} me-2`}
                                             disabled={!checkWordInArray(getURI, 'atualizar') && !termoAceito}
                                         >
                                             Salvar
@@ -4281,7 +4281,7 @@
                                     <div className="m-1">
                                         <button
                                             type="submit"
-                                            className="btn btn-primary me-2"
+                                            className="btn btn-success me-2"
                                         >
                                             Atualizar
                                         </button>
@@ -4295,7 +4295,7 @@
                                 <div className="m-1">
                                     <button
                                         type="button"
-                                        className="btn btn-secondary me-2"
+                                        className="btn btn-danger me-2"
                                         onClick={() => {
                                             setIsChoiceMade(false);
                                         }}
@@ -4311,7 +4311,7 @@
                             checkWordInArray(getURI, 'atualizar')
                         ) && (
                                 <div className="m-1">
-                                    <a className="btn btn-secondary" href={`${base_url}index.php/fia/ptpa/adolescente/endpoint/exibir`} role="button">
+                                    <a className="btn btn-danger" href={`${base_url}index.php/fia/ptpa/adolescente/endpoint/exibir`} role="button">
                                         Voltar
                                     </a>
                                 </div>
@@ -4586,7 +4586,7 @@
                                 Por CPF
                             </button>
                             <button
-                                className="btn btn-secondary m-3"
+                                className="btn btn-info m-3"
                                 style={{ width: '200px' }}
                                 onClick={() => {
                                     handleChoice('certidao')
