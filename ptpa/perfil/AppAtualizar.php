@@ -36,7 +36,7 @@ $parametros_backend['api_get_atualizar_perfil'] = ($atualizar_id !== 'erro') ? (
         const base_url = parametros.base_url;
 
         return (
-            <div>
+            <div className="container font-sans">
                 <AppForm parametros={parametros} />
             </div>
         );

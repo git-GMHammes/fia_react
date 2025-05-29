@@ -335,7 +335,7 @@ $parametros_backend['api_get_atualizar_profissional'] = ($atualizar_id !== 'erro
                             &nbsp;
                         </div>
                     </div>
-                    <div className="container">
+                    <div className="container font-sans">
                         <div className="d-flex justify-content-end">
                             <div className="me-2">
                                 <form onSubmit={(e) => {
@@ -423,15 +423,15 @@ $parametros_backend['api_get_atualizar_profissional'] = ($atualizar_id !== 'erro
                         </nav>
                     </div>
 
-                    <div className="container">
+                    <div className="container font-sans">
 
                         {/* Divisor */}
                         <hr style={{ borderColor: 'gray', borderWidth: '1px' }} />
 
                         {/* Tabela */}
                         <div className="table-responsive ms-2 me-2 ps-2 pe-2">
-                            <table className="table table-hover">
-                                <thead>
+                            <table className="table table-striped">
+                                <thead className="border border-2 border-dark border-start-0 border-end-0">
                                     <tr>
                                         <th scope="col">PERMISSÃO</th>
                                         <th scope="col">#</th>

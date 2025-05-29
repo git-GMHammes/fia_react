@@ -51,10 +51,10 @@
         });
 
         const makeSelectedLabel = () => {
-            console.log('-----------------');
-            console.log('src/ app/ Views/ fia/ ptpa/ camposPadroes/ AppSelectRadio.php');
-            console.log('makeSelectedLabel');
-            console.log('formData[nameField] :: ', formData[nameField]);
+            // console.log('-----------------');
+            // console.log('src/ app/ Views/ fia/ ptpa/ camposPadroes/ AppSelectRadio.php');
+            // console.log('makeSelectedLabel');
+            // console.log('formData[nameField] :: ', formData[nameField]);
             if (
                 (formData[nameField] && formData[nameField] !== null && isNaN(formData[nameField])) ||
                 (formData[nameField] && formData[nameField] !== '' && isNaN(formData[nameField]))
@@ -75,32 +75,21 @@
                 console.error('A variável global listSelect não é um array:', listSelect);
                 return 'Erro: A variável global listSelect não é um array.';
             }
-            console.log('buildSelectedLabel listSelect ::', listSelect);
+            // console.log('buildSelectedLabel listSelect ::', listSelect);
             // Busca o item correspondente ao ID
             const foundItem = listSelect.find(item => item.id == id);
 
             if (foundItem) {
-                console.log('------------------------');
-                console.log('foundItem :: ', foundItem.value);
+                // console.log('------------------------');
+                // console.log('foundItem :: ', foundItem.value);
                 setSelectedLabel(foundItem.value);
                 return foundItem.value;
             } else {
-                console.log('ELSE');
+                // console.log('ELSE');
                 setSelectedLabel('Escolha uma opção');
                 return 'Escolha uma opção';
             }
         };
-
-        const removeFilter = (parameter) => {
-            // console.log('-----------------');
-            // console.log('removeFilter');
-            // console.log('parameter :: ', parameter);
-            if (parameter !== null && !isNaN(parameter)) {
-                setShowFilterSelect(false);
-            } else {
-                setShowFilterSelect(true);
-            }
-        }
 
         const handleFocus = (event) => {
             const { name, value } = event.target;
@@ -352,11 +341,13 @@
                     // console.log('attributeFieldLabel :: ', attributeFieldLabel);
                     // console.log('dbResponse :: ', dbResponse);
                     await setMappedResponse(dbResponse);
+                    // console.log('--------------------------');
                     setIsLoading(false);
-                    removeFilter(formData[nameField]);
+                    setShowFilterSelect(true);
                     makeSelectedLabel();
                     return dbResponse;
                 } else {
+                    myPrint('Erro ao carregar Dados.');
                     setMessage({
                         show: true,
                         type: 'light',
@@ -404,7 +395,6 @@
                     // console.log('attributeFieldLabel :: ', attributeFieldLabel);
                     // console.log('dbResponse :: ', dbResponse);
                     setMappedResponse(dbResponse);
-                    setListSelect(dbResponse);
                     setIsLoading(false);
                     return dbResponse;
                 } else {
@@ -467,7 +457,7 @@
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                <button type="button" className="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
                             </div>
                         </div>
                     </div>
@@ -516,7 +506,7 @@
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                <button type="button" className="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
                             </div>
                         </div>
                     </div>
@@ -584,7 +574,7 @@
 
         React.useEffect(() => {
             // Apenas executa se listSelect estiver pronto (não vazio)
-            console.log('formData[nameField] :: ', formData[nameField]);
+            // console.log('formData[nameField] :: ', formData[nameField]);
             if (listSelect && listSelect.length > 0) {
                 setTimeout(() => {
                     // console.log(`formData[${nameField}] :: `, formData[nameField]);
@@ -602,8 +592,8 @@
                     } else if(isNaN(formData[nameField])){
                         setSelectedLabel(formData[nameField]);
                     }else {
-                        console.log('ELSE');
-                        console.log('formData[nameField] :: ', formData[nameField]);
+                        // console.log('ELSE');
+                        // console.log('formData[nameField] :: ', formData[nameField]);
                         buildSelectedLabel(formData[nameField]);
                         // console.log('#useEffect buildSelectedLabel(formData[nameField])');
                     }

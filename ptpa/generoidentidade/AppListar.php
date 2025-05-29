@@ -293,8 +293,8 @@ $parametros_backend['base_paginator'] = implode('/', $parametros_backend['getURI
                     </div>
 
                     <div className="table-responsive ms-2 me-2 ps-2 pe-2">
-                        <table className="table table-hover">
-                            <thead>
+                        <table className="table table-striped">
+                            <thead className="border border-2 border-dark border-start-0 border-end-0">
                                 <tr>
                                     <th scope="col" className="text-nowrap">
                                         <div className="collapse mb-4" style={formGroupStyle} id="collapseExample">
@@ -457,7 +457,7 @@ $parametros_backend['base_paginator'] = implode('/', $parametros_backend['getURI
                                             ...
                                         </div>
                                         <div className="modal-footer">
-                                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                            <button type="button" className="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
                                         </div>
                                     </div>
                                 </div>

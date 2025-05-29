@@ -215,8 +215,8 @@ $parametros_backend['base_paginator'] = implode('/', $parametros_backend['getURI
 
                 {/* Tabela */}
                 <div className="table-responsive ms-2 me-2 ps-2 pe-2">
-                    <table className="table table-hover">
-                        <thead>
+                    <table className="table table-striped">
+                        <thead className="border border-2 border-dark border-start-0 border-end-0">
                             <tr>
                                 {['Sigla', 'Descrição', 'Link', 'Restaurar', 'Eliminar'].map((header, index) => (
                                     <th key={index} scope="col" className="text-nowrap">

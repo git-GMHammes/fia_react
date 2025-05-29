@@ -386,6 +386,7 @@
                                                     fieldAttributes={{
                                                         attributeOrigemForm: `${origemForm}`,
                                                         labelField: 'Inicio do Período',
+                                                        labelColor: 'gray', // gray, red, black,
                                                         nameField: 'periodo_data_inicio',
                                                         attributeMax: '', // maxDate - Profissional, Periodo.
                                                         attributeRequired: false,
@@ -409,6 +410,7 @@
                                                     fieldAttributes={{
                                                         attributeOrigemForm: `${origemForm}`,
                                                         labelField: 'Término do Período',
+                                                        labelColor: 'gray', // gray, red, black,
                                                         nameField: 'periodo_data_termino',
                                                         attributeMax: '', // maxDate - Profissional, Periodo.
                                                         attributeRequired: false,
@@ -518,8 +520,8 @@
 
                 {/* Tabela */}
                 <div className="table-responsive ms-2 me-2 ps-2 pe-2">
-                    <table className="table table-hover">
-                        <thead>
+                    <table className="table table-striped">
+                        <thead className="border border-2 border-dark border-start-0 border-end-0">
                             <tr>
 
                                 <th scope="col">
@@ -772,7 +774,7 @@
                                     ...
                                 </div>
                                 <div className="modal-footer">
-                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                    <button type="button" className="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
                                 </div>
                             </div>
                         </div>

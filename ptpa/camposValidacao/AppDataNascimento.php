@@ -53,7 +53,7 @@
                         [name]: '' // Reseta o campo se a idade não estiver no intervalo
                     }));
                 } else {
-                    console.log(`Idade válida: ${idade} anos.`);
+                    // console.log(`Idade válida: ${idade} anos.`);
                 }
             }
 

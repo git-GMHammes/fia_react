@@ -588,7 +588,7 @@ $parametros_backend['base_paginator'] = implode('/', $parametros_backend['getURI
 
         return (
             <div>
-                <div>
+                <div className="container font-sans">
                     {debugMyPrint ? (
                         <div className="row">
                             <div className="alert alert-danger" role="alert">
@@ -601,7 +601,7 @@ $parametros_backend['base_paginator'] = implode('/', $parametros_backend['getURI
                         <h2 className="myBold mt-3">{title}</h2>
                     </div>
 
-                    <div className="container">
+                    <div className="container font-sans">
                         <div className="d-flex justify-content-end">
                             <div>
                                 <input
@@ -712,13 +712,13 @@ $parametros_backend['base_paginator'] = implode('/', $parametros_backend['getURI
                             </div>
                         </nav>
                     </div>
-                    <div className="container">
+                    <div className="container font-sans">
                         {/* Divisor */}
                         <hr style={{ borderColor: 'gray', borderWidth: '1px' }} />
                         {/* Tabela */}
                         <div className="table-responsive ms-2 me-2 ps-2 pe-2">
-                            <table className="table table-hover">
-                                <thead>
+                            <table className="table table-striped">
+                                <thead className="border border-2 border-dark border-start-0 border-end-0">
                                     <tr>
                                         <th scope="col">
                                             <div className="d-flex justify-content-center">
@@ -868,7 +868,7 @@ $parametros_backend['base_paginator'] = implode('/', $parametros_backend['getURI
                                         ...
                                     </div>
                                     <div className="modal-footer">
-                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                        <button type="button" className="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
                                     </div>
                                 </div>
                             </div>
@@ -907,6 +907,7 @@ $parametros_backend['base_paginator'] = implode('/', $parametros_backend['getURI
                                                         fieldAttributes={{
                                                             attributeOrigemForm: `${origemForm}`,
                                                             labelField: 'Data de Início da Consulta',
+                                                            labelColor: 'gray', // gray, red, black,
                                                             nameField: 'unidades_data_cadastramento_inicio',
                                                             attributeMax: '', // maxDate - Profissional, Periodo. 
                                                             attributeRequired: false,
@@ -930,6 +931,7 @@ $parametros_backend['base_paginator'] = implode('/', $parametros_backend['getURI
                                                     fieldAttributes={{
                                                         attributeOrigemForm: `${origemForm}`,
                                                         labelField: 'Data de Término da Consulta',
+                                                        labelColor: 'gray', // gray, red, black,
                                                         nameField: 'unidades_data_cadastramento_fim',
                                                         attributeMax: '', // maxDate - Profissional, Periodo.
                                                         attributeRequired: false,
@@ -942,7 +944,7 @@ $parametros_backend['base_paginator'] = implode('/', $parametros_backend['getURI
                                     </div>
                                     <div className="modal-footer">
                                         <button
-                                            className="btn btn-secondary"
+                                            className="btn btn-danger"
                                             onClick={() => setShowModal(false)} // Fecha o modal
                                         >
                                             Fechar

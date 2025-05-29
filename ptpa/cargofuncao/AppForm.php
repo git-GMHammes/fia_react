@@ -353,7 +353,7 @@
                                         }}>
                                         <div className="d-flex gap-2">
                                             {/* Botão Voltar */}
-                                            <a className="btn btn-secondary"
+                                            <a className="btn btn-danger"
                                                 href={`${base_url}index.php/fia/ptpa/cargofuncao/endpoint/exibir`}
                                                 role="button"
                                             >
@@ -362,7 +362,7 @@
 
                                             {/* Botão Salvar */}
                                             <input
-                                                className="btn btn-outline-primary"
+                                                className="btn btn-outline-success"
                                                 type="submit"
                                                 value="Enviar"
                                             />

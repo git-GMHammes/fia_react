@@ -23,9 +23,17 @@
 
         // Busca a palavra em um Array
         const checkWordInArray = (array, word) => array.includes(word) ? true : false;
+        const [labelTelResponsavel, setLabelTelResponsavel] = React.useState('Tel Responsável');
+        const [labelDataNascimento, setDataNascimento] = React.useState('Dt Nascimento');
+        const [labelTermConsulta, setTermConsulta] = React.useState('Fim Consulta');
+        const [labelInicioConsulta, setInicioConsulta] = React.useState('Ini Consulta');
+        const [labelFimConsulta, setFimConsulta] = React.useState('Fim Consulta');
 
         // Variáveis da API
         const [prontuario, setProntuario] = React.useState([]);
+
+        // Largura
+        const [width, setWidth] = React.useState(window.innerWidth);
 
         // Variáveis Uteis
         const [error, setError] = React.useState(null);
@@ -461,7 +469,6 @@
             // }
         };
 
-
         React.useEffect(() => {
 
             const loadData = async () => {
@@ -479,6 +486,24 @@
 
             loadData();
         }, []);
+
+        React.useEffect(() => {
+            if (width < 1280) {
+                setLabelTelResponsavel('Tel Responsável');
+                setDataNascimento('Dt Nasc');
+                setTermConsulta('Fim Consulta');
+                setTermConsulta('Termino');
+                setInicioConsulta('Inicio');
+                setFimConsulta('Fim');
+            } else {
+                setLabelTelResponsavel('Tel Responsável');
+                setDataNascimento('Data Nascimento');
+                setTermConsulta('Fim Consulta');
+                setTermConsulta('Term Consulta');
+                setInicioConsulta('Inicio Consulta');
+                setFimConsulta('Fim Consulta');
+            }
+        }, [width]);
 
         // Fetch para GET
         const fetchGetProntuarioListar = async (custonBaseURL = base_url, custonApiGetObjeto = api_get_prontuariopsicosocial, customPage = getVar_page) => {
@@ -803,9 +828,23 @@
                                                 e.preventDefault();
                                                 submitAllForms(`filtro-${origemForm}`, formData);
                                             }}>
-                                                <div style={{ ...formGroupStyle }}>
-                                                    <AppResponsavelTelefoneMovelFiltro formData={formData} setFormData={setFormData} parametros={parametros} />
-                                                </div>
+                                                <AppText parametros={parametros} formData={formData} setFormData={setFormData}
+                                                    fieldAttributes={{
+                                                        attributeOrigemForm: `${origemForm}`,
+                                                        labelField: `${labelTelResponsavel}`,
+                                                        labelColor: 'gray', // gray, red, black,
+                                                        nameField: 'Responsavel_TelefoneMovel',
+                                                        attributePlaceholder: '', // placeholder 
+                                                        attributeMinlength: 2, // minlength 
+                                                        attributeMaxlength: 14, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
+                                                        attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
+                                                        attributeAutocomplete: 'on', // on, off ]
+                                                        attributeRequired: false,
+                                                        attributeReadOnly: false,
+                                                        attributeDisabled: false,
+                                                        attributeMask: '', // CPF, Telefone, CEP, , SEI, Processo.
+                                                    }}
+                                                />
                                             </form>
                                         </div>
                                         <div style={{ flex: '0 1 18%' }} className="col-12 col-lg-2">
@@ -820,7 +859,8 @@
                                                     setFormData={setFormData}
                                                     fieldAttributes={{
                                                         attributeOrigemForm: `${origemForm}`,
-                                                        labelField: 'Data de Nascimento',
+                                                        labelField: `${labelDataNascimento}`,
+                                                        labelColor: 'gray', // gray, red, black,
                                                         nameField: 'adolescente_Nascimento',
                                                         attributeMax: '', //  maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20 
                                                         attributeRequired: false,
@@ -841,9 +881,9 @@
                                                     formData={formData}
                                                     setFormData={setFormData}
                                                     fieldAttributes={{
-
                                                         attributeOrigemForm: `${origemForm}`,
-                                                        labelField: 'Início da Consulta',
+                                                        labelField: `${labelInicioConsulta}`,
+                                                        labelColor: 'gray', // gray, red, black,
                                                         nameField: 'prontuario_data_inicio',
                                                         attributeMax: '', // maxDate - Profissional, Periodo. 
                                                         attributeRequired: false,
@@ -864,7 +904,8 @@
                                                     setFormData={setFormData}
                                                     fieldAttributes={{
                                                         attributeOrigemForm: `${origemForm}`,
-                                                        labelField: 'Término da Consulta',
+                                                        labelField: `${labelFimConsulta}`,
+                                                        labelColor: 'gray', // gray, red, black,
                                                         nameField: 'prontuario_data_fim',
                                                         attributeMax: '', // maxDate - Profissional, Periodo.
                                                         attributeRequired: false,
@@ -884,8 +925,8 @@
                 </div>
 
                 <div className="table-responsive ms-2 ps-2 pe-2">
-                    <table className="table table-hover">
-                        <thead>
+                    <table className="table table-striped">
+                        <thead className="border border-2 border-dark border-start-0 border-end-0">
                             <tr>
                                 <th scope="col" className="text-nowrap">
                                     <div className="d-flex justify-content-center">
@@ -1075,7 +1116,7 @@
                                 </div>
 
                                 <div className="modal-footer">
-                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                    <button type="button" className="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
                                 </div>
 
                             </div>

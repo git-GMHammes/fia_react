@@ -68,7 +68,7 @@ $parametros_backend = array(
                     </div>
                 ) : null}
                 <div style={inForm} className="border border-warning">
-                    <div className="container">
+                    <div className="container font-sans">
                         <div className="row mb-3">
                             <div className="col-12 col-sm-6">
                                 <div className="d-flex justify-content-center">

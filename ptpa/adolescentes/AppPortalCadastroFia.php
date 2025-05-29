@@ -25,7 +25,7 @@ $parametros_backend = array(
         console.log('caminhoImagem :: ', caminhoImagem)
 
         return (
-            <div className="container">
+            <div className="container font-sans">
                 <h2 className="text-center my-4">Portal FIA</h2>
 
                 {/* Imagem adicionada no meio do componente */}

@@ -61,7 +61,7 @@ $parametros_backend['api_get_profissionais'] = ($atualizar_id !== 'erro') ? ('in
 
 
         return (
-            <div>
+            <div className="container font-sans">
                 {debugMyPrint ? (
                     <div className="row ms-2 me-2">
                         <div className="col-12 col-sm-12">
@@ -119,7 +119,7 @@ $parametros_backend['api_get_profissionais'] = ($atualizar_id !== 'erro') ? ('in
 
                 <div className="m-3">
                     <a
-                        className="btn btn-secondary"
+                        className="btn btn-danger"
                         href={`${base_url}index.php/fia/ptpa/alocarfuncionario/endpoint/exibir`}
                         role="button"> Voltar
                     </a>

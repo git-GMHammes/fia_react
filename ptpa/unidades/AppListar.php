@@ -41,7 +41,7 @@ $parametros_backend['base_paginator'] = implode('/', $parametros_backend['getURI
         parametros.origemForm = 'unidade'
 
         return (
-            <div>
+            <div className="container font-sans">
                 <AppListarConteudo
                     parametros={parametros}
                 />

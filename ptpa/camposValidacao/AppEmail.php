@@ -68,7 +68,10 @@
             console.log('handleBlur: ', name);
             console.log('handleBlur: ', value);
             if (name === 'Email') {
-                if (!isValidEmail(value)) {
+                if (
+                    value.length > 0 &&
+                    !isValidEmail(value)
+                ) {
                     if (lastInteraction === 'mouse') {
                         setMessage({
                             show: true,
@@ -91,8 +94,10 @@
 
         // Validação de E-mail
         const isValidEmail = (Email) => {
-            const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,6}$/;
-            return regexEmail.test(Email);
+            if (Email.length > 0) {
+                const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,6}$/;
+                return regexEmail.test(Email);
+            }
         };
 
         // Estilos de formatação
@@ -130,7 +135,7 @@
                         className="form-label">E-mail
                         {(checkWordInArray(getURI, 'consultar') || checkWordInArray(getURI, 'consultarfunc')) ? null : (<strong style={requiredField}>*</strong>)}
                     </label>
-                    {(checkWordInArray(getURI, 'consultar') || checkWordInArray(getURI, 'consultarfunc'))? (
+                    {(checkWordInArray(getURI, 'consultar') || checkWordInArray(getURI, 'consultarfunc')) ? (
                         <div className='p-2'>
                             {formData.Email}
                         </div>

@@ -178,6 +178,19 @@
             return cleanedInput;
         };
 
+        {/* Mascara para RG */ }
+        function applyMaskRG(value) {
+            let onlyNums = value.replace(/\D/g, '').slice(0, 10);
+            let result = '';
+            if (onlyNums.length > 0) {
+                result = '-' + onlyNums.slice(-1);
+                if (onlyNums.length > 1) result = '.' + onlyNums.slice(-4, -1) + result;
+                if (onlyNums.length > 4) result = '.' + onlyNums.slice(-7, -4) + result;
+                if (onlyNums.length > 7) result = onlyNums.slice(0, -7) + result;
+            }
+            return result.replace(/^\./, '');
+        }
+
         // Máscara CPF
         const applyMaskCPF = (cpf) => {
             cpf = cleanInputOnlyNumber(cpf)
@@ -369,8 +382,28 @@
                 return;
             }
 
-            // Trata Nome
+            // Trata Nome da escola
+            if (name === 'NomeEscola') {
+                const cleanedValue = cleanInputOnlyLetter(value);
+                setFormData((prev) => ({
+                    ...prev,
+                    [name]: cleanedValue,
+                }));
+                return;
+            }
+
+            // Trata Logradouro
             if (name === 'Logradouro') {
+                const cleanedValue = cleanInput(value);
+                setFormData((prev) => ({
+                    ...prev,
+                    [name]: cleanedValue,
+                }));
+                return;
+            }
+
+            // Trata Complemento
+            if (name === 'Complemento') {
                 const cleanedValue = cleanInput(value);
                 setFormData((prev) => ({
                     ...prev,
@@ -421,6 +454,15 @@
             };
 
             switch (attributeMask) {
+                case 'RG':
+                    const maskedValueRG = applyMaskRG(value);
+                    setFormData((prev) => ({
+                        ...prev,
+                        [name]: maskedValueRG,
+                    }));
+                    // console.log('Telefone:', value);
+                    break;
+
                 case 'Telefone':
                     const maskedValueTel = applyMaskTelefone(value);
                     setFormData((prev) => ({
@@ -492,12 +534,12 @@
                         setFormData((prev) => ({
                             ...prev,
                             [name]: maskedValueCert,
-                            NumRegistro: numeroTermo,           // Número do termo
+                            NumRegistro: numeroTermo,        // Número do termo (deve ser esse)
                             Folha: numeroFolha,              // Número da folha
                             Livro: numeroLivro,              // Número do livro
-                            Circunscricao: serventiaCode,    // Código da Serventia
+                            Circunscricao: serventiaCode,    // Código da Serventia (Circunscrição)
                             Zona: acervoCode,                // Código do acervo
-                            // Pode adicionar mais campos se necessário:
+                            // Se quiser adicionar mais campos:
                             // TipoLivro: tipoLivro,
                             // AnoRegistro: anoRegistro,
                             // CodigoRCPN: rcpnCode,
@@ -529,13 +571,24 @@
             let isValid = true;
             let dataColuna = {};
 
+            console.log('------------');
+            console.log('errorMessage :: ', errorMessage);
 
-            if (labelColor !== 'gray'){
+            if (labelColor !== 'gray') {
                 const countValue = value;
-                if (countValue.length < attributeMinlength) {
-                    console.log('------------------------');
-                    console.log('countValue.length < attributeMinlength');
-                    let message = `O Campo ${labelField} devem ter entre ${attributeMinlength} e ${attributeMaxlength} caracteres`;
+                if (
+                    countValue.length > 0 &&
+                    countValue.length < attributeMinlength
+                ) {
+                    // console.log('------------------------');
+                    // console.log('countValue.length < attributeMinlength');
+
+                    if (errorMessage !== '') {
+                        message = errorMessage;
+                    } else {
+                        message = `O Campo ${labelField} devem ter entre ${attributeMinlength} e ${attributeMaxlength} caracteres`;
+                    }
+
                     setAttributeDisabled(true);
                     setModalId(`modal_form_${gerarContagemAleatoria(6)}`);
                     setMsgError(message);
@@ -555,21 +608,22 @@
 
                     {/* CPF */ }
                 case 'CPF':
-                    console.log('attributeMask :: ', attributeMask);
+                    // console.log('attributeMask :: ', attributeMask);
                     if (labelColor === 'gray') {
-                        console.log('------------------------');
-                        console.log('labelColor === gray');
+                        // console.log('------------------------');
+                        // console.log('labelColor === gray');
                         break;
                     }
                     isValid = isValidCPF(value);
-                    console.log('HOP-562');
+                    // console.log('HOP-562');
                     if (
+                        value.length > 0 &&
                         !isValid &&
                         labelColor !== 'gray'
                     ) {
-                        console.log('------------------------');
-                        console.log(`!isValid &&`);
-                        console.log(`labelColor !== 'gray'`);
+                        // console.log('------------------------');
+                        // console.log(`!isValid &&`);
+                        // console.log(`labelColor !== 'gray'`);
                         setModalId(`modal_form_${gerarContagemAleatoria(6)}`);
                         let message = errorMessage === '' ? `Campo ${labelField} inválido` : errorMessage;
                         setAttributeDisabled(true);
@@ -588,11 +642,11 @@
                     {/* CPF DUPLICADO */ }
                     dataColuna = (name === 'CPF') ? ({ CPF: value }) : ('');
                     const isDuplicadoCPF = await fetchCadastro(dataColuna);
-                    console.log('isDuplicadoCPF :: ', isDuplicadoCPF);
-                    console.log('InitialValue :: ', InitialValue);
-                    console.log('value :: ', value);
-                    console.log('labelColor :: ', labelColor);
-                    console.log('HOP-1');
+                    // console.log('isDuplicadoCPF :: ', isDuplicadoCPF);
+                    // console.log('InitialValue :: ', InitialValue);
+                    // console.log('value :: ', value);
+                    // console.log('labelColor :: ', labelColor);
+                    // console.log('HOP-1');
 
                     if (
                         isDuplicadoCPF &&
@@ -600,14 +654,14 @@
                         labelColor !== 'gray' &&
                         InitialValue !== value
                     ) {
-                        console.log('------------------------');
+                        // console.log('------------------------');
                         console.log(`isDuplicadoCPF &&`);
                         console.log(`name :: `, name);
                         console.log(`labelColor !== 'gray' &&`);
                         console.log(`InitialValue !== value`);
                         setModalId(`modal_form_cpf_duplicado${gerarContagemAleatoria(6)}`);
                         let message = errorMessage === '' ? `Campo ${labelField} Duplicado` : errorMessage;
-                        console.log('HOP-2');
+                        // console.log('HOP-2');
                         if (
                             checkWordInArray(getURI, 'cadastrar') &&
                             labelColor !== 'gray' ||
@@ -627,14 +681,14 @@
                             }));
                             break;
                         }
-                        console.log('HOP-3');
+                        // console.log('HOP-3');
 
                         if (
                             checkWordInArray(getURI, 'atualizar') &&
                             value !== InitialValue &&
                             labelColor !== 'gray'
                         ) {
-                            console.log('------------------------');
+                            // console.log('------------------------');
                             console.log(`checkWordInArray(getURI, 'atualizar')`);
                             console.log(`value !== InitialValue`);
                             console.log(`labelColor !== 'gray'`);
@@ -653,22 +707,82 @@
                             break;
                         }
                     }
-                    console.log('HOP-FIM');
+
+                    if (
+                        formData['CPF'] !== "" &&
+                        formData['Responsavel_CPF'] !== "" &&
+                        formData['CPF'] === formData['Responsavel_CPF'] &&
+                        labelColor !== 'gray' &&
+                        InitialValue !== value
+                    ) {
+                        let message = errorMessage === '' ? `Campo ${labelField} do Adolescente é igual ao Campo CPF do Responsável` : errorMessage;
+                        if (
+                            checkWordInArray(getURI, 'cadastrar') &&
+                            labelColor !== 'gray' ||
+                            checkWordInArray(getURI, 'drupal') &&
+                            labelColor !== 'gray'
+                        ) {
+                            setAttributeDisabled(true);
+                            setMsgError(message);
+                            setModalMessage({
+                                show: true,
+                                type: 'light',
+                                message: message
+                            });
+                            setFormData((prev) => ({
+                                ...prev,
+                                CPF: '',
+                                Responsavel_CPF: '',
+                            }));
+                            break;
+                        }
+
+                        if (
+                            checkWordInArray(getURI, 'atualizar') &&
+                            value !== InitialValue &&
+                            labelColor !== 'gray'
+                        ) {
+                            setAttributeDisabled(true);
+                            setMsgError(message);
+                            setModalMessage({
+                                show: true,
+                                type: 'light',
+                                message: message
+                            });
+                            setFormData((prev) => ({
+                                ...prev,
+                                CPF: '',
+                                Responsavel_CPF: '',
+                            }));
+                            break;
+                        }
+                    }
+                    // console.log('HOP-FIM');
                     break;
 
                 // CEP
                 case 'CEP':
                     const cleanedCEP = cleanInputOnlyNumber(value);
-                    // console.log("name, value :: ", name, value);
-                    // console.log("name, value :: ", cleanedCEP);
-                    if (cleanedCEP.length < 8) {
+                    console.log("name, value :: ", name, value);
+                    console.log("name, value :: ", cleanedCEP);
+                    console.log("cleanedCEP.length :: ", cleanedCEP.length);
+                    if (cleanedCEP.length !== 8 && cleanedCEP.length > 0) {
+                        // Mostra mensagem de erro para CEPs incompletos
+                        setModalId(`modal_form_${gerarContagemAleatoria(4)}`);
                         isValid = false;
-                    } else {
+                        let message = `O Campo ${labelField} deve ter 8 Números`;
+                        console.log('------------------------');
+                        console.log('message :: ', message);
+                        setModalMessage({
+                            show: true,
+                            type: 'light',
+                            message: message
+                        });
+                        console.error(message);
+                    } else if (cleanedCEP.length === 8) {
                         try {
-                            // console.log('TESTE');
                             await fetchGetCEP(cleanedCEP);
                         } catch (error) {
-                            // console.log(`Erro ao validar CEP via API: ${error.message}`);
                             isValid = false;
                         }
                     }
@@ -769,13 +883,19 @@
 
         // Fetch para obter os Cadastros
         const fetchCadastro = async (dataColuna) => {
+            // console.log('dataColuna :: ', dataColuna)
             {/* BUSCA CADASTRO */ }
             let coluna = '';
             let inputCPF = '';
             let inputCertidao = '';
 
             // Verificar se o objeto data contém a propriedade CPF ou Certidao
-            if (dataColuna.CPF !== undefined) {
+            if (
+                dataColuna.CPF !== undefined &&
+                dataColuna.CPF !== null &&
+                dataColuna.CPF.length > 0 &&
+                /^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(dataColuna.CPF)
+            ) {
                 // Lógica para busca por CPF
                 coluna = 'CPF';
                 // console.log("Buscando por CPF:", dataColuna.CPF);
@@ -787,7 +907,7 @@
                 // Continuar com a lógica específica para Certidão...
             } else {
                 // Caso nenhum dos dois seja fornecido
-                // console.log("Tipo de dado não identificado");
+                console.log("Tipo de dado não identificado");
                 return null; // ou throw new Error("Tipo de dado inválido");
             }
 
@@ -845,12 +965,12 @@
         // Fetch para GET
         const fetchGetCEP = async (cleanedCEP) => {
             const url = `${viacep}${cleanedCEP}/json`;
-            // console.log('fetchGetCEP URL ::', url);
+            console.log('fetchGetCEP URL ::', url);
             try {
                 const response = await fetch(url);
                 const data = await response.json();
                 if (data.erro) {
-
+                    setModalId(`modal_form_${gerarContagemAleatoria(3)}`);
                     setMsgError('CEP inválido');
                     setModalMessage({
                         show: true,
@@ -860,8 +980,8 @@
                     return false;
                 }
                 if (data.uf && data.localidade && data.uf !== 'RJ') {
+                    setModalId(`modal_form_${gerarContagemAleatoria(3)}`);
                     const msg = `A Localidade ${data.localidade}, ${data.uf}, não participa do projeto FIA/PTPA. Um CEP do Estado do Rio de Janeiro deve ser informado.`;
-
                     setMsgError(msg);
                     setModalMessage({
                         show: true,
@@ -937,7 +1057,7 @@
             left: '20px',
             backgroundColor: 'white',
             padding: '0 5px',
-            color: labelColor,
+            color: labelColor
         };
 
         const requiredField = {
@@ -990,28 +1110,33 @@
                         <option value=""></option>
                     </datalist>
                 </div>
-                {(msgError) && (
-                    <div className="fw-light text-danger" style={fontErro}>
-                        {errorMessage && (
-                            <div>
-                                {msgError}
-                            </div>
-                        )}
-                    </div>
-                )}
+                {(
+                    msgError &&
+                    !checkWordInArray(getURI, 'fia') &&
+                    !checkWordInArray(getURI, 'ptpa')
+                ) && (
+                        <div className="fw-light text-danger" style={fontErro}>
+                            {errorMessage && (
+                                <div>
+                                    {msgError}
+                                </div>
+                            )}
+                        </div>
+                    )}
 
-                {typeof AppMessageCard !== "undefined" ? (
-                    <div>
-                        <AppMessageCard
-                            parametros={modalmessage}
-                            modalId={modalId}
-                        />
-                    </div>
-                ) : (
-                    <div>
-                        <p className="text-danger">AppMessageCard não lacançado.</p>
-                    </div>
-                )}
+                {
+                    typeof AppMessageCard !== "undefined" ? (
+                        <div>
+                            <AppMessageCard
+                                parametros={modalmessage}
+                                modalId={modalId}
+                            />
+                        </div>
+                    ) : (
+                        <div>
+                            <p className="text-danger">AppMessageCard não lacançado.</p>
+                        </div>
+                    )}
             </div>
         );
     };

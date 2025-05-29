@@ -264,8 +264,8 @@ $parametros_backend['base_paginator'] = implode('/', $parametros_backend['getURI
                     </div>
                 </div>
                 <div className="table-responsive ms-2 me-2 ps-2 pe-2">
-                    <table className="table table-hover">
-                        <thead>
+                    <table className="table table-striped">
+                        <thead className="border border-2 border-dark border-start-0 border-end-0">
                             <tr>
                                 <th scope="col" className="text-nowrap">
                                     <div className="collapse" style={formGroupStyle} id="collapseExample">
@@ -373,7 +373,7 @@ $parametros_backend['base_paginator'] = implode('/', $parametros_backend['getURI
                                             </div>
                                             <div className="row">
                                                 <div className="col-12 col-sm-12">
-                                                    <input className="btn btn-outline-primary" type="submit" value="Enviar" />
+                                                    <input className="btn btn-outline-success" type="submit" value="Enviar" />
                                                     {/*
                                                     <button className="btn btn-outline-primary mb-5" onClick={() => submitAllForms('dados-adolescente')} type="submit">Enviar</button>
                                                 */}
@@ -383,7 +383,7 @@ $parametros_backend['base_paginator'] = implode('/', $parametros_backend['getURI
                                         {/* formulario Profissao*/}
                                     </div>
                                     <div className="modal-footer">
-                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                        <button type="button" className="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
                                     </div>
                                 </div>
                             </div>

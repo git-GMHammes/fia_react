@@ -33,7 +33,7 @@ $parametros_backend = array(
         parametros.origemForm = 'periodo';
 
         return (
-            <div>
+            <div className="container font-sans">
                 <AppListarConteudo
                     parametros={parametros}
                 />

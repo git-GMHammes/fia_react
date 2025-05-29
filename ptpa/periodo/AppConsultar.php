@@ -47,7 +47,7 @@ $parametros_backend['api_get_atualizar_periodo'] = ($atualizar_id !== 'erro') ? 
 
 
         return (
-            <div>
+            <div className="container font-sans">
                 {debugMyPrint ? (
                     <div className="row ms-2 me-2">
                         <div className="col-12 col-sm-12">

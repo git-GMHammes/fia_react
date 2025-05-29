@@ -105,19 +105,19 @@
         const handleRadioChange = (event) => {
             const { name, value } = event.target;
 
-            console.log('--------------------');
-            console.log('handleRadioChange');
-            console.log('--------------------');
+            // console.log('--------------------');
+            // console.log('handleRadioChange');
+            // console.log('--------------------');
 
             // Abordagem mais direta
             event.target.checked = true;
             if (name === "prontuario_Vulnerabilidade") {
                 // Atualiza o estado de forma assíncrona
                 const ptsVulnerabilidade = pontuacaoMap[value] || '';
-                console.log('ptsVulnerabilidade :: ', ptsVulnerabilidade);
-                console.log('vulnerabilidadeBase :: ', vulnerabilidadeBase);
-                console.log('vulnerabilidadeEscolaridade :: ', vulnerabilidadeEscolaridade);
-                console.log('vulnerabilidadeIdade :: ', vulnerabilidadeIdade);
+                // console.log('ptsVulnerabilidade :: ', ptsVulnerabilidade);
+                // console.log('vulnerabilidadeBase :: ', vulnerabilidadeBase);
+                // console.log('vulnerabilidadeEscolaridade :: ', vulnerabilidadeEscolaridade);
+                // console.log('vulnerabilidadeIdade :: ', vulnerabilidadeIdade);
 
                 setFormData((prev) => ({
                     ...prev,
@@ -503,12 +503,12 @@
             if (id === null) {
                 return;
             }
-            console.log('-------------------------------------');
-            console.log('fetchGetAdolescentes...');
-            console.log('-------------------------------------');
-            console.log('src/app/Views/fia/ptpa/prontuario/AppForm2.php');
+            // console.log('-------------------------------------');
+            // console.log('fetchGetAdolescentes...');
+            // console.log('-------------------------------------');
+            // console.log('src/app/Views/fia/ptpa/prontuario/AppForm2.php');
             const url = base_url + api_get_exibir_adolescente + '/' + id;
-            console.log('url :: ', url);
+            // console.log('url :: ', url);
             try {
                 const response = await fetch(url, {
                     method: 'POST',
@@ -560,11 +560,11 @@
         };
 
         const calcularVulnerabilidadeIdade = (idade) => {
-            console.log('----------------------');
-            console.log('calcularVulnerabilidadeIdade');
-            console.log('----------------------');
-            console.log('src/ app/ Views/ fia/ ptpa/ prontuario/ AppForm2.php');
-            console.log('idade :: ', idade);
+            // console.log('----------------------');
+            // console.log('calcularVulnerabilidadeIdade');
+            // console.log('----------------------');
+            // console.log('src/ app/ Views/ fia/ ptpa/ prontuario/ AppForm2.php');
+            // console.log('idade :: ', idade);
 
             if (idade >= 204 && idade <= 210) {
                 setVulnerabilidadeIdade(25);
@@ -618,10 +618,10 @@
         };
 
         const calcularVulnerabilidadeEscolaridade = (escolaridade) => {
-            console.log('----------------------');
-            console.log('calcularVulnerabilidadeEscolaridade');
-            console.log('----------------------');
-            console.log('src/ app/ Views/ fia/ ptpa/ prontuario/ AppForm2.php');
+            // console.log('----------------------');
+            // console.log('calcularVulnerabilidadeEscolaridade');
+            // console.log('----------------------');
+            // console.log('src/ app/ Views/ fia/ ptpa/ prontuario/ AppForm2.php');
 
             let pontuacao = 0;
 
@@ -1016,8 +1016,8 @@
                 return;
             }
 
-            console.log('--------------------------------');
-            console.log('formData.adolescente_id :: ', formData.adolescente_id);
+            // console.log('--------------------------------');
+            // console.log('formData.adolescente_id :: ', formData.adolescente_id);
 
             if (Number(formData.adolescente_id) < 0) {
                 const idPositivo = Math.abs(Number(formData.adolescente_id));
@@ -1114,10 +1114,12 @@
                     {`Altura: ${altura}px | Largura: ${largura}px`}
                 </div>
                 {/* Fomulário Prontuário */}
-                <form className="was-validated" onSubmit={(e) => {
-                    e.preventDefault();
-                    submitAllForms(`filtro-${origemForm}`, formData);
-                }}>
+                <form
+                    className="was-validated"
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        submitAllForms(`filtro-${origemForm}`, formData);
+                    }}>
                     {formData.id !== 'erro' && (
                         <input
                             data-api={`filtro-${origemForm}`}
@@ -1154,15 +1156,17 @@
                             {/* Profissional */}
                             <div className="row">
                                 <div className="col-12 col-sm-6">
-                                    <form className="was-validated" onSubmit={(e) => {
-                                        e.preventDefault();
-                                        submitAllForms(`filtro-${origemForm}`, formData);
-                                    }}>
+                                    <form
+                                        className="was-validated"
+                                        onSubmit={(e) => {
+                                            e.preventDefault();
+                                            submitAllForms(`filtro-${origemForm}`, formData);
+                                        }}>
                                         <div style={formGroupStyle}>
                                             <label htmlFor="profissional_id"
                                                 style={formLabelStyle}
                                                 className="form-label">
-                                                Funcionário<strong style={requiredField}></strong>
+                                                Funcionário<strong style={requiredField}>*</strong>
                                             </label>
                                             <select
                                                 id="profissional_id"
@@ -1186,10 +1190,12 @@
                                 <div className="col-12 col-sm-6">
 
                                     {/* Adolescente */}
-                                    <form className="was-validated" onSubmit={(e) => {
-                                        e.preventDefault();
-                                        submitAllForms(`filtro-${origemForm}`, formData);
-                                    }}>
+                                    <form
+                                        className="was-validated"
+                                        onSubmit={(e) => {
+                                            e.preventDefault();
+                                            submitAllForms(`filtro-${origemForm}`, formData);
+                                        }}>
                                         <div style={formGroupStyle}>
                                             <label htmlFor="adolescente_id"
                                                 style={formLabelStyle}
@@ -1237,7 +1243,7 @@
                                     <div style={formGroupStyle}>
                                         <label
                                             htmlFor="prontuario_MedidasSocioEducativas" style={formLabelStyle} className="form-label">
-                                            Cumpre medidas socioeducativas?
+                                            Cumpre medidas socioeducativas?<strong style={requiredField}>*</strong>
                                         </label>
                                         <div>
                                             {/* CAMPO / DESCRIÇÃO */}
@@ -1273,7 +1279,7 @@
                                     <div style={formGroupStyle}>
                                         <label
                                             htmlFor="prontuario_UsodeDrogas" style={formLabelStyle} className="form-label">
-                                            Em tratamento de Drogas?
+                                            Em tratamento de Drogas?<strong style={requiredField}>*</strong>
                                         </label>
                                         <div>
                                             {/* CAMPO / DESCRIÇÃO */}
@@ -1310,7 +1316,7 @@
                                     <div style={formGroupStyle}>
                                         <label
                                             htmlFor="prontuario_CadUnico" style={formLabelStyle} className="form-label">
-                                            Tem Cadastro Único?
+                                            Tem Cadastro Único?<strong style={requiredField}>*</strong>
                                         </label>
                                         <div>
                                             {/* CAMPO / DESCRIÇÃO */}
@@ -1344,7 +1350,7 @@
                                     <div style={formGroupStyle}>
                                         <label
                                             htmlFor="prontuario_EncaminhamentoOrgao" style={formLabelStyle} className="form-label">
-                                            Encaminhamento de órgãos?
+                                            Encaminhamento de órgãos?<strong style={requiredField}>*</strong>
                                         </label>
                                         <div>
                                             {/* CAMPO / DESCRIÇÃO */}
@@ -1380,7 +1386,7 @@
                                     <div style={formGroupStyle}>
                                         <label
                                             htmlFor="prontuario_Deficiencia" style={formLabelStyle} className="form-label">
-                                            Adolescente com Deficiência?
+                                            Adolescente com Deficiência?<strong style={requiredField}>*</strong>
                                         </label>
                                         <div>
                                             {/* CAMPO / DESCRIÇÃO */}
@@ -1414,7 +1420,7 @@
                                     <div style={formGroupStyle}>
                                         <label
                                             htmlFor="prontuario_NecesMediador" style={formLabelStyle} className="form-label">
-                                            Necessidade de mediador?
+                                            Necessidade de mediador?<strong style={requiredField}>*</strong>
                                         </label>
                                         <div>
                                             {/* CAMPO / DESCRIÇÃO */}
@@ -1450,7 +1456,7 @@
                                     <div style={formGroupStyle}>
                                         <label
                                             htmlFor="prontuario_Vulnerabilidade" style={formLabelStyle} className="form-label">
-                                            Grau de Vulnerabilidade
+                                            Grau de Vulnerabilidade<strong style={requiredField}>*</strong>
                                         </label>
                                         <div>
                                             {/* CAMPO / DESCRIÇÃO */}
@@ -1589,7 +1595,7 @@
                                             {/* Botão Voltar */}
                                             {!checkWordInArray(getURI, 'alocarfuncionario') && (
                                                 <a
-                                                    className="btn btn-secondary"
+                                                    className="btn btn-danger"
                                                     href={`${base_url}index.php/fia/ptpa/prontuariopsicosocial/endpoint/exibir`}
                                                     role="button"
                                                 >
@@ -1600,7 +1606,7 @@
                                             {/* Botão Salvar */}
                                             {!checkWordInArray(getURI, 'consultar') && (
                                                 <input
-                                                    className="btn btn-primary"
+                                                    className="btn btn-success"
                                                     type="submit"
                                                     value="Salvar"
                                                 />

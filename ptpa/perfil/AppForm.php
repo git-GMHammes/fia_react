@@ -357,7 +357,7 @@
                                     >
                                         <div className="d-flex gap-2">
                                             {/* Botão Voltar */}
-                                            <a className="btn btn-secondary"
+                                            <a className="btn btn-danger"
                                                 href={`${base_url}index.php/fia/ptpa/perfil/endpoint/exibir`}
                                                 role="button"
                                             >

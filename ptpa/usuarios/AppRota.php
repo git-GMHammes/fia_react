@@ -405,8 +405,8 @@
                     <hr style={{ borderColor: 'gray', borderWidth: '1px' }} />
                     {/* Tabela */}
                     <div className="table-responsive ms-2 me-2 ps-2 pe-2">
-                        <table className="table table-hover">
-                            <thead>
+                        <table className="table table-striped">
+                            <thead className="border border-2 border-dark border-start-0 border-end-0">
                                 <tr>
                                     <th scope="col">PERMISSÃO</th>
                                     <th scope="col">#</th>

@@ -1255,7 +1255,7 @@
                                     {/* Botão Voltar */}
                                     {checkWordInArray(getURI, 'alocarfuncionario') ? (
                                         <button
-                                            className="btn btn-secondary"
+                                            className="btn btn-danger"
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 window.history.back(); // Retorna à página anterior
@@ -1265,7 +1265,7 @@
                                         </button>
                                     ) : (
                                         <button
-                                            className="btn btn-secondary"
+                                            className="btn btn-danger"
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 window.history.back(); // Retorna à página anterior
@@ -1278,7 +1278,7 @@
                                     {/* Botão Salvar */}
                                     {!checkWordInArray(getURI, 'consultar') && !checkWordInArray(getURI, 'consultarfunc') && (
                                         <input
-                                            className="btn btn-primary"
+                                            className="btn btn-success"
                                             type="submit"
                                             value="Salvar"
                                         />

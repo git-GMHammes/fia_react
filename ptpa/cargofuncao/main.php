@@ -24,14 +24,14 @@ $parametros_backend = array(
         const base_url = parametros.base_url;
 
         return (
-            <div>
-                {debugMyPrint?(
+            <div className="container font-sans">
+                {debugMyPrint ? (
                     <div className="row">
                         <div className="alert alert-danger" role="alert">
-                                Você esta utilizando o a Tela em modo DEBUG nenhuma API com relação a Banco de Dados irá funcionar
+                            Você esta utilizando o a Tela em modo DEBUG nenhuma API com relação a Banco de Dados irá funcionar
                         </div>
                     </div>
-                ):null}
+                ) : null}
                 Tela Principal
             </div>
         );

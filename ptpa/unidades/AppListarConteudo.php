@@ -741,6 +741,7 @@
                                                     fieldAttributes={{
                                                         attributeOrigemForm: `${origemForm}`,
                                                         labelField: 'Período de Consulta',
+                                                        labelColor: 'gray', // gray, red, black,
                                                         nameField: 'unidades_data_cadastramento_inicio',
                                                         attributeMax: '', // maxDate - Profissional, Periodo.
                                                         attributeRequired: false,
@@ -756,6 +757,7 @@
                                                     fieldAttributes={{
                                                         attributeOrigemForm: `${origemForm}`,
                                                         labelField: 'Período de Consulta',
+                                                        labelColor: 'gray', // gray, red, black,
                                                         nameField: 'unidades_data_cadastramento_fim',
                                                         attributeMax: '', // maxDate - Profissional, Periodo.
                                                         attributeRequired: false,
@@ -813,7 +815,7 @@
                     <h2 className="myBold mt-3">{title}</h2>
                 </div>
 
-                <div className="container">
+                <div className="container font-sans">
                     <div className="d-flex justify-content-end">
                         <div>
                             <form onSubmit={(e) => {
@@ -838,14 +840,14 @@
 
                 </div>
 
-                <div className="container">
+                <div>
                     {/* Divisor */}
                     <hr style={{ borderColor: 'gray', borderWidth: '1px' }} />
 
                     {/* Tabela */}
                     <div className="table-responsive ms-2 me-2 ps-2 pe-2">
-                        <table className="table table-hover">
-                            <thead>
+                        <table className="table table-striped">
+                            <thead className="border border-2 border-dark border-start-0 border-end-0">
                                 <tr>
                                     <th scope="col">
                                         <div className="d-flex justify-content-center">

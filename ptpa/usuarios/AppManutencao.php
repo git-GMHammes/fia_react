@@ -601,7 +601,7 @@
                                 >
                                     Excluir
                                 </button>
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                <button type="button" className="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
                             </div>
                         </div>
                     </div>
@@ -679,8 +679,8 @@
 
                                 </form>
                                 <div className="table-responsive overflow-y-auto" style={{ height: '300px' }}>
-                                    <table className="table table-hover">
-                                        <thead>
+                                    <table className="table table-striped">
+                                        <thead className="border border-2 border-dark border-start-0 border-end-0">
                                             <tr>
                                                 <th scope="col">#ID</th>
                                                 <th scope="col">#DESCRIÇÃO</th>
@@ -776,8 +776,8 @@
                                     </div>
                                 </form>
                                 <div className="table-responsive overflow-y-auto" style={{ height: '300px' }}>
-                                    <table className="table table-hover">
-                                        <thead>
+                                    <table className="table table-striped">
+                                        <thead className="border border-2 border-dark border-start-0 border-end-0">
                                             <tr>
                                                 <th scope="col">#ID</th>
                                                 <th scope="col">#DESCRIÇÃO</th>

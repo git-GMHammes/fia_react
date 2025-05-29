@@ -82,7 +82,7 @@ $parametros_backend['api_get_atualizar_profissional'] = ($atualizar_id !== 'erro
         };
 
         return (
-            <div>
+            <div className="container font-sans">
                 {debugMyPrint ? (
                     <div className="row">
                         <div className="alert alert-danger" role="alert">

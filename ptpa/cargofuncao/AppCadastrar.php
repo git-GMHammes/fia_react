@@ -34,7 +34,7 @@ $parametros_backend['api_get_atualizar_cargofuncao'] = ($atualizar_id !== 'erro'
         const base_url = parametros.base_url;
 
         return (
-            <div>
+            <div className="container font-sans">
                 <AppForm parametros={parametros} />
             </div>
         );
@@ -44,7 +44,7 @@ $parametros_backend['api_get_atualizar_cargofuncao'] = ($atualizar_id !== 'erro'
     const rootElement = document.querySelector('.app_cadastrar');
     const root = ReactDOM.createRoot(rootElement);
     root.render(<AppCadastrar />);
-    
+
 </script>
 <?php
 $parametros_backend = array();

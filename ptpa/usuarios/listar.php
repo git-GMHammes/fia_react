@@ -27,18 +27,20 @@ $parametros_backend = array(
         // 
         return (
             <div>
-                {debugMyPrint?(
+                {debugMyPrint ? (
                     <div className="row">
                         <div className="alert alert-danger" role="alert">
-                                Você esta utilizando o a Tela em modo DEBUG nenhuma API com relação a Banco de Dados irá funcionar
+                            Você esta utilizando o a Tela em modo DEBUG nenhuma API com relação a Banco de Dados irá funcionar
                         </div>
                     </div>
-                ):null}
+                ) : null}
                 Lista de usuarios
             </div>
         );
     };
-    ReactDOM.render(<AppListarUsuario />, document.querySelector('.app_listar_usuario'));
+    const rootElement = document.querySelector('.app_listar_usuario');
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(<AppListarUsuario />);
 </script>
 <?php
 $parametros_backend = array();

@@ -1037,7 +1037,7 @@
                                         {/* Botão Voltar */}
                                         {!checkWordInArray(getURI, 'alocarfuncionario') && (
                                             <a
-                                                className="btn btn-secondary"
+                                                className="btn btn-danger"
                                                 href={`${base_url}index.php/fia/ptpa/prontuariopsicosocial/endpoint/exibir`}
                                                 role="button"
                                             >
@@ -1048,7 +1048,7 @@
                                         {/* Botão Salvar */}
                                         {!checkWordInArray(getURI, 'consultar') && (
                                             <input
-                                                className="btn btn-primary"
+                                                className="btn btn-success"
                                                 type="submit"
                                                 value="Salvar"
                                             />

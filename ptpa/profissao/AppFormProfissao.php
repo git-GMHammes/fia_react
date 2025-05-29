@@ -263,7 +263,7 @@ $parametros_backend['base_paginator'] = implode('/', $parametros_backend['getURI
                     </div>
                     <div className="row">
                         <div className="col-12 col-sm-12">
-                            <button className="btn btn-outline-primary mb-5" onClick={() => submitAllForms('dados-profissao')} type="submit">Enviar</button>
+                            <button className="btn btn-outline-success mb-5" onClick={() => submitAllForms('dados-profissao')} type="submit">Enviar</button>
                         </div>
                     </div>
                 </form>

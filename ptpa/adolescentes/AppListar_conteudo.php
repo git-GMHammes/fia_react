@@ -32,7 +32,7 @@
 
         // Largura
         const [width, setWidth] = React.useState(window.innerWidth);
-        const [labelFieldTermino, setLabelFieldTermino] = React.useState('Término da Consulta');
+        const [labelFieldTermino, setLabelFieldTermino] = React.useState('Fim Consulta');
 
         // Definindo mensagens do Sistema
         const [tabNav, setTabNav] = React.useState('form');
@@ -271,7 +271,7 @@
             if (width < 1500) {
                 setLabelFieldTermino('Término');
             } else {
-                setLabelFieldTermino('Término da Consulta');
+                setLabelFieldTermino('Fim Consulta');
             }
         }, [width]);
 
@@ -584,7 +584,8 @@
                                                     fieldAttributes={{
 
                                                         attributeOrigemForm: `${origemForm}`,
-                                                        labelField: 'Início da Consulta',
+                                                        labelField: 'Início Consulta',
+                                                        labelColor: 'gray', // gray, red, black,
                                                         nameField: 'adolescente_data_cadastramento_inicio',
                                                         attributeMax: '', // maxDate - Profissional, Periodo. 
                                                         attributeRequired: false,
@@ -606,6 +607,7 @@
                                                     fieldAttributes={{
                                                         attributeOrigemForm: `${origemForm}`,
                                                         labelField: `${labelFieldTermino}`,
+                                                        labelColor: 'gray', // gray, red, black,
                                                         nameField: 'adolescente_data_cadastramento_fim',
                                                         attributeMax: '', // maxDate - Profissional, Periodo.
                                                         attributeRequired: false,
@@ -624,8 +626,8 @@
                 </div>
 
                 <div className="table-responsive ms-2 ps-2 pe-2">
-                    <table className="table table-hover">
-                        <thead>
+                    <table className="table table-striped">
+                        <thead className="border border-2 border-dark border-start-0 border-end-0">
                             <tr>
                                 <th scope="col">
                                     <div className="d-flex justify-content-center">

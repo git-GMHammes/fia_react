@@ -295,7 +295,13 @@ $parametros_backend['base_paginator'] = implode('/', $parametros_backend['getURI
                     </div>
                     <div className="row">
                         <div className="col-12 col-sm-12">
-                            <button className="btn btn-outline-primary mb-5" onClick={() => submitAllForms('form-programa')} type="submit">Enviar</button>
+                            <button
+                                className="btn btn-outline-success mb-5"
+                                onClick={() => submitAllForms('form-programa')}
+                                type="submit"
+                            >
+                                Enviar
+                            </button>
                             {/*
                                 <button className="btn btn-outline-primary mb-5" type="submit">Enviar</button>
                             */}
@@ -310,7 +316,7 @@ $parametros_backend['base_paginator'] = implode('/', $parametros_backend['getURI
     const rootElement = document.querySelector('.app_form_programa');
     const root = ReactDOM.createRoot(rootElement);
     root.render(<AppFormPrograma />);
-    
+
 </script>
 <?php
 $parametros_backend = array();

@@ -248,7 +248,7 @@ $parametros_backend['base_paginator'] = implode('/', $parametros_backend['getURI
 
         return (
             <div>
-                <div>
+                <div className="container font-sans">
                     {debugMyPrint ? (
                         <div className="row">
                             <div className="alert alert-danger" role="alert">
@@ -261,7 +261,7 @@ $parametros_backend['base_paginator'] = implode('/', $parametros_backend['getURI
                         <h2 className="myBold mt-3">{title}</h2>
                     </div>
 
-                    <div className="container">
+                    <div className="container font-sans">
                         <div className="d-flex justify-content-end">
                             <div>
                                 <form onSubmit={(e) => {
@@ -378,14 +378,14 @@ $parametros_backend['base_paginator'] = implode('/', $parametros_backend['getURI
                         </nav>
                     </div>
 
-                    <div className="container">
+                    <div className="container font-sans">
                         {/* Divisor */}
                         <hr style={{ borderColor: 'gray', borderWidth: '1px' }} />
 
                         {/* Tabela */}
                         <div className="table-responsive ms-2 me-2 ps-2 pe-2">
-                            <table className="table table-hover">
-                                <thead>
+                            <table className="table table-striped">
+                                <thead className="border border-2 border-dark border-start-0 border-end-0">
                                     <tr>
                                         <th scope="col">
                                             <div className="d-flex justify-content-center">

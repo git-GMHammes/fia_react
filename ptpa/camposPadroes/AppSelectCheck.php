@@ -71,15 +71,16 @@
         const handleChange = (event) => {
             // Adicione "type" na desestruturação para resolver o erro
             const { name, value, type, checked } = event.target;
-            console.log('-------------------------');
-            console.log('handleChange');
-            console.log('-------------------------');
-            console.log('src/ app/ Views/ fia/ ptpa/ camposPadroes/ AppSelectCheck.php');
-            console.log('name :: ', name);
-            console.log('value :: ', value);
-            console.log('type :: ', type);
-            console.log('checked :: ', checked);
+            // console.log('-------------------------');
+            // console.log('handleChange');
+            // console.log('-------------------------');
+            // console.log('src/ app/ Views/ fia/ ptpa/ camposPadroes/ AppSelectCheck.php');
+            // console.log('name :: ', name);
+            // console.log('value :: ', value);
+            // console.log('type :: ', type);
+            // console.log('checked :: ', checked);
             // 
+
             const cleanedValue = removeSpacesAroundCommas(value);
             if (type === 'checkbox') {
                 setSelectedIds(prev => checked
@@ -87,6 +88,17 @@
                     : prev.filter(id => id !== value)
                 );
                 return;
+            }
+            if (name === 'filtroSelect') {
+                setApplyFilters(prevState => ({
+                    ...prevState,
+                    [name]: value
+                }));
+
+                setTimeout(() => {
+                    fetchFilter(applyFilters)
+                }, 100);
+
             }
 
             if (type === 'text') {
@@ -149,7 +161,6 @@
             return cleaned;
         };
 
-
         const stringToArray = (value) => {
             if (!value) return [];
             return Array.isArray(value) ? value : value.split(',').map((item) => item.trim());
@@ -197,17 +208,6 @@
                 return 'Escolha uma opção';
             }
         };
-
-        const removeFilter = (parameter) => {
-            // console.log('-----------------');
-            // console.log('removeFilter');
-            // console.log('parameter :: ', parameter);
-            if (parameter !== null && !isNaN(parameter)) {
-                setShowFilterSelect(false);
-            } else {
-                setShowFilterSelect(true);
-            }
-        }
 
         const getSelectedLabel = (selectedValues) => {
             if (!selectedValues || selectedValues.length === 0) {
@@ -300,9 +300,9 @@
 
         const addOuther = (parameter) => {
             let addDataStack = [];
-            // console.log('-------------------------');
-            // console.log('addOuth');
-            // console.log('-------------------------');
+            console.log('-------------------------');
+            console.log('addOuth');
+            console.log('-------------------------');
             // console.log('src/ app/ Views/ fia/ ptpa/ camposPadroes/ AppSelectCheck.php');
             // console.log('parameter :: ', parameter);
             // console.log('attributeFieldValue :: ', attributeFieldValue);
@@ -324,26 +324,26 @@
             });
 
             if (getOuther && !checkWordInArray(addDataStack, getOuther)) {
-                // console.log('-------------------------');
-                // console.log('getOuther :: Existe');
-                // console.log('getOuther :: Encontrado no FormData');
+                console.log('-------------------------');
+                console.log('getOuther :: Existe');
+                console.log('getOuther :: Encontrado no FormData');
                 debounceTimeout.current = setTimeout(() => {
-                    // Criando um novo objeto com a chave dinâmica
-                    const newItem = {};
-                    newItem['id'] = getOuther;
-                    // Adicionar também o attributeFieldLabel para exibir corretamente
-                    newItem['value'] = getOuther;
-
-                    // Criar uma nova cópia do array para não modificar o original
-                    const updatedList = [...parameter, newItem];
-                    // console.log('updatedList :: ', updatedList);
-                    setListSelect(updatedList);
                     setOther('Outro');
                 }, 300);
             } else {
-                // console.log('-------------------------');
-                // console.log('getOuther :: Não Existe');
-                // console.log('getOuther :: Não Encontrado no FormData');
+                console.log('-------------------------');
+                console.log('getOuther :: Não Existe');
+                console.log('getOuther :: Não Encontrado no FormData');
+                // Criando um novo objeto com a chave dinâmica
+                const newItem = {};
+                newItem['id'] = getOuther;
+                // Adicionar também o attributeFieldLabel para exibir corretamente
+                newItem['value'] = getOuther;
+
+                // Criar uma nova cópia do array para não modificar o original
+                const updatedList = [...parameter, newItem];
+                // console.log('updatedList :: ', updatedList);
+                setListSelect(updatedList);
                 debounceTimeout.current = setTimeout(() => {
                     setOther('Outro');
                     setChoice(false);
@@ -361,7 +361,7 @@
             setChoice(parameter);
         }
 
-        {/* FETCH POST */}
+        {/* FETCH POST */ }
         const fetchPOST = async (custonBaseURL = base_url, custonApiPostObjeto = api_post, customPage = '') => {
             setIsLoading(true);
             // console.log('-------------------------');
@@ -401,10 +401,10 @@
             }
         };
 
-        {/* FETCH GET */}
+        {/* FETCH GET */ }
         const fetchGET = async (custonBaseURL = base_url, custonApiGetObjeto = api_get, customPage = '?page =1&limit=90000') => {
             setIsLoading(true);
-            setShowFilterSelect(false);
+            // setShowFilterSelect(false);
             // console.log('-------------------------');
             // console.log('fetchGet');
             // console.log('-------------------------');
@@ -420,8 +420,9 @@
                     // console.log('attributeFieldLabel :: ', attributeFieldLabel);
                     // console.log('dbResponse :: ', dbResponse);
                     await setMappedResponse(dbResponse);
+                    // console.log('--------------------------');
                     setIsLoading(false);
-                    removeFilter(formData[nameField]);
+                    setShowFilterSelect(true);
                     makeSelectedLabel();
                     return dbResponse;
                 } else {
@@ -445,7 +446,7 @@
             }
         };
 
-        {/* FETCH FILTER */}
+        {/* FETCH FILTER */ }
         const fetchFilter = async (formFilter, custonBaseURL = base_url, custonApiPostObjeto = api_filter, customPage = '?page =1&limit=90000') => {
             setIsLoading(true);
             // console.log('-------------------------');
@@ -472,7 +473,6 @@
                     // console.log('attributeFieldLabel :: ', attributeFieldLabel);
                     // console.log('dbResponse :: ', dbResponse);
                     setMappedResponse(dbResponse);
-                    setListSelect(dbResponse);
                     setIsLoading(false);
                     return dbResponse;
                 } else {
@@ -535,7 +535,7 @@
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                <button type="button" className="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
                             </div>
                         </div>
                     </div>
@@ -584,7 +584,7 @@
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                <button type="button" className="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
                             </div>
                         </div>
                     </div>
@@ -606,7 +606,7 @@
             }
         };
 
-        {/* REACT PRINCIPAL */}
+        {/* REACT PRINCIPAL */ }
         React.useEffect(() => {
             // console.log('-------------------------');
             // console.log('useEffect');
@@ -629,7 +629,7 @@
 
         }, []);
 
-        {/* REACT - LOADING */}
+        {/* REACT - LOADING */ }
         React.useEffect(() => {
             let animationFrame;
             const startAnimation = () => {
@@ -651,7 +651,7 @@
             return () => cancelAnimationFrame(animationFrame); // Cleanup da animação
         }, []);
 
-        {/* REACT formData[nameField], listSelect */}
+        {/* REACT formData[nameField], listSelect */ }
         React.useEffect(() => {
             // console.log('-------------------------');
             // console.log('useEffect');
@@ -664,7 +664,7 @@
             }
         }, [formData[nameField], listSelect]);
 
-        {/* REACT 004 */}
+        {/* REACT 004 */ }
         React.useEffect(() => {
             if (formData[nameField]) {
                 setSelectedIds(formData[nameField].split(',').map(id => id.trim()));
@@ -675,7 +675,7 @@
             // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [nameField]);
 
-        {/* REACT 005 */}
+        {/* REACT 005 */ }
         React.useEffect(() => {
             setFormData(prev => ({
                 ...prev,

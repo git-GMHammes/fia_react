@@ -140,8 +140,8 @@
                     <div>
 
                         <div className="table-responsive ms-2 me-2 ps-2 pe-2">
-                            <table className="table table-hover">
-                                <thead>
+                            <table className="table table-striped">
+                                <thead className="border border-2 border-dark border-start-0 border-end-0">
                                     <tr>
                                         <th scope="col">AÇÃO</th>
                                         <th scope="col">MÓDULO</th>

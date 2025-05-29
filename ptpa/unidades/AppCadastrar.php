@@ -50,7 +50,7 @@ $parametros_backend['api_get_atualizar_unidade'] = ($atualizar_id !== 'erro') ? 
         };
 
         return (
-            <div>
+            <div className="container font-sans">
                 {(debugMyPrint && environment === 'DEV') ? (
                     <div className="row ms-2 me-2">
                         <div className="alert alert-danger ms-2 me-2" role="alert">

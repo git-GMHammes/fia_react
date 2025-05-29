@@ -920,6 +920,7 @@
                                                 fieldAttributes={{
                                                     attributeOrigemForm: `${origemForm}`,
                                                     labelField: 'Inicio do Período',
+                                                    labelColor: 'black', // gray, red, black
                                                     nameField: 'periodo_data_inicio',
                                                     attributeRequired: false,
                                                     attributeReadOnly: true,
@@ -937,6 +938,7 @@
                                                 fieldAttributes={{
                                                     attributeOrigemForm: `${origemForm}`,
                                                     labelField: 'Término do Período',
+                                                    labelColor: 'black', // gray, red, black
                                                     nameField: 'periodo_data_termino',
                                                     attributeRequired: false,
                                                     attributeReadOnly: true,
@@ -958,6 +960,7 @@
                                                 fieldAttributes={{
                                                     attributeOrigemForm: `${origemForm}`,
                                                     labelField: 'Inicio do Período',
+                                                    labelColor: 'black', // gray, red, black
                                                     nameField: 'periodo_data_inicio',
                                                     attributeMax: 'Periodo', // maxDate - Profissional, Periodo.
                                                     attributeRequired: true,
@@ -975,6 +978,7 @@
                                                 fieldAttributes={{
                                                     attributeOrigemForm: `${origemForm}`,
                                                     labelField: 'Término do Período',
+                                                    labelColor: 'black', // gray, red, black
                                                     nameField: 'periodo_data_termino',
                                                     attributeMax: 'Periodo', // maxDate - Profissional, Periodo.
                                                     attributeRequired: true,
@@ -1000,7 +1004,7 @@
                             <div className="ms-3 me-3">
                                 <div className="d-flex justify-content-start gap-2">
                                     <a
-                                        className="btn btn-secondary"
+                                        className="btn btn-danger"
                                         href="#"
                                         onClick={(e) => {
                                             e.preventDefault(); // Previne o comportamento de redirecionamento padrão
@@ -1010,7 +1014,7 @@
                                     </a>
                                     {!checkWordInArray(getURI, 'consultar') && (
                                         <input
-                                            className={`btn btn-primary ${salvar === false ? 'disabled' : ''}`}
+                                            className={`btn btn-success ${salvar === false ? 'disabled' : ''}`}
                                             type="submit"
                                             value="Salvar"
                                         />

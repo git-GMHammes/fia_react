@@ -36,6 +36,11 @@
         const [pagination, setPagination] = React.useState('list');
         const [paginacaoLista, setPaginacaoLista] = React.useState([]);
         const [exibirFuncionarioComponente, setFuncionarioComponente] = React.useState(checkWordInArray(getURI, 'profissional') && checkWordInArray(getURI, 'exibir') ? true : false);
+        const [labelCargoFuncao, setLabelCargoFuncao] = React.useState('Cargo/Função');
+        const [labelProgramaFia, setLabelProgramaFia] = React.useState('Programa FIA');
+
+        // Largura
+        const [width, setWidth] = React.useState(window.innerWidth);
 
         // Definindo mensagens do Sistema
         // const [tabNav, setTabNav] = React.useState('form');
@@ -466,6 +471,16 @@
             loadData();
         }, []);
 
+        React.useEffect(() => {
+            if (width < 1500) {
+                setLabelCargoFuncao('Carg/Funç');
+                setLabelProgramaFia('Prog/FIA');
+            } else {
+                setLabelCargoFuncao('Carg/Funç');
+                setLabelProgramaFia('Prog/FIA');
+            }
+        }, [width]);
+
         // Fetch para obter os Profissionais
         const fetchProfissionais = async (custonBaseURL = base_url, custonApiGetProfissionais = api_get_profissionais, customPage = getVar_page) => {
             console.log('fetchProfissionais...');
@@ -723,7 +738,7 @@
                                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                                     fieldAttributes={{
                                                         attributeOrigemForm: `${origemForm}`,
-                                                        labelField: 'Cargo/Função',
+                                                        labelField: `${labelCargoFuncao}`,
                                                         labelColor: 'gray', // gray, red, black,
                                                         nameField: 'CargoFuncao',
                                                         attributePlaceholder: '', // placeholder 
@@ -747,7 +762,7 @@
                                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                                     fieldAttributes={{
                                                         attributeOrigemForm: `${origemForm}`,
-                                                        labelField: 'Programa FIA',
+                                                        labelField: `${labelProgramaFia}`,
                                                         labelColor: 'gray', // gray, red, black,
                                                         nameField: 'ProgramaSigla',
                                                         attributePlaceholder: '', // placeholder 
@@ -775,9 +790,9 @@
                                                     formData={formData}
                                                     setFormData={setFormData}
                                                     fieldAttributes={{
-
                                                         attributeOrigemForm: `${origemForm}`,
                                                         labelField: 'Data Admissão',
+                                                        labelColor: 'gray', // gray, red, black,
                                                         nameField: 'DataAdmissao',
                                                         attributeMax: '', // maxDate - Profissional, Periodo. 
                                                         attributeRequired: false,
@@ -799,6 +814,7 @@
                                                     fieldAttributes={{
                                                         attributeOrigemForm: `${origemForm}`,
                                                         labelField: 'Data Demissão',
+                                                        labelColor: 'gray', // gray, red, black,
                                                         nameField: 'DataDemissao',
                                                         attributeMax: '', // maxDate - Profissional, Periodo.
                                                         attributeRequired: false,
@@ -819,8 +835,8 @@
 
                 {/* Tabela */}
                 <div className="table-responsive ms-2 me-2 ps-2 pe-2">
-                    <table className="table table-hover">
-                        <thead>
+                    <table className="table table-striped">
+                        <thead className="border border-2 border-dark border-start-0 border-end-0">
                             <tr>
                                 <th scope="col">
                                     <div className="d-flex justify-content-center">
@@ -1084,7 +1100,7 @@
                                     ...
                                 </div>
                                 <div className="modal-footer">
-                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                    <button type="button" className="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
                                 </div>
                             </div>
                         </div>

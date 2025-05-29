@@ -116,22 +116,22 @@ $parametros_backend['api_get_atualizar_responsavel'] = ($atualizar_id !== 'erro'
 
         const isValidCPF = (cpf) => {
             // Remove caracteres não numéricos
-            cpf = cpf.replace(/[^\d]+/g,'');
-            
+            cpf = cpf.replace(/[^\d]+/g, '');
+
             if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
-            
+
             let soma = 0, resto;
             for (let i = 1; i <= 9; i++) soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
             resto = (soma * 10) % 11;
             if (resto === 10 || resto === 11) resto = 0;
             if (resto !== parseInt(cpf.substring(9, 10))) return false;
-            
+
             soma = 0;
             for (let i = 1; i <= 10; i++) soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
             resto = (soma * 10) % 11;
             if (resto === 10 || resto === 11) resto = 0;
             if (resto !== parseInt(cpf.substring(10, 11))) return false;
-            
+
             return true;
         };
 
@@ -400,7 +400,7 @@ $parametros_backend['api_get_atualizar_responsavel'] = ($atualizar_id !== 'erro'
                                         <div className="col-12 col-sm-4 mb-3">
                                             <div style={formGroupStyle}>
                                                 <label htmlFor="RG" style={formLabelStyle}>RG<strong style={requiredField}>*</strong></label>
-                                                <input data-api="dados-responsavel" type="text" id="RG" name="RG" value={formData.RG || ''} onChange={(e) => setFormData({...formData, RG: e.target.value})} className={`form-control ${/\D/.test(formData.RG) ? 'is-invalid' : ''}`} style={formControlStyle} />
+                                                <input data-api="dados-responsavel" type="text" id="RG" name="RG" value={formData.RG || ''} onChange={(e) => setFormData({ ...formData, RG: e.target.value })} className={`form-control ${/\D/.test(formData.RG) ? 'is-invalid' : ''}`} style={formControlStyle} />
                                             </div>
                                             {formData.RG && /\D/.test(formData.RG) && (
                                                 <span style={{ color: 'red', fontSize: '12px' }}>
@@ -617,7 +617,12 @@ $parametros_backend['api_get_atualizar_responsavel'] = ($atualizar_id !== 'erro'
 
                     <div className="row">
                         <div className="col-12 col-sm-12">
-                            <button className="btn btn-outline-primary mb-5" type="submit">Enviar</button>
+                            <button
+                                className="btn btn-outline-success mb-5"
+                                type="submit"
+                            >
+                                Enviar
+                            </button>
                         </div>
                     </div>
                 </form>

@@ -257,15 +257,17 @@
         const [semNumeroValue, setSemNumeroValue] = React.useState("N");
         const [isCheckedSemNumero, setIsCheckedSemNumero] = React.useState(semNumeroValue === "Y");
         const [readOnlyNumero, setReadOnlyNumero] = React.useState(false)
+        const [recebeNunmeroEndereco, setRecebeNunmeroEndereco] = React.useState('');
 
         // Loading
-        const [dataLoading, setDataLoading] = React.useState(true);
+        const [dataLoading, setDataLoading] = React.useState(false);
 
         // Escolhas
         const [isCPFOptional, setIsCPFOptional] = React.useState(false);
         const [isChoiceMade, setIsChoiceMade] = React.useState(false); // CPF Matricula
         const [choice, setChoice] = React.useState(''); // CPF Obrigatorio
         const [camposObrigatorios, setCamposObrigatorios] = React.useState({});
+        const [opcional16, setOpcional16] = React.useState(true);
 
         // const [openCloseField, setOpenCloseField] = React.useState(false); DECREPTO
         // const [indexEscolariadde, setIndexEscolariadde] = React.useState(randomInt(4)); DECREPTO
@@ -520,15 +522,13 @@
                 setReadOnlyNumero(false);
             }
 
-            if (debugMyPrint) {
-                // Atualiza o formData - tanto o valor do checkbox quanto o Numero
-                setFormData(prevData => ({
-                    ...prevData,
-                    checkSemNumero: value,
-                    // Se marcado, coloca "S/N", senão mantém ou gera número
-                    Numero: checked ? "S/N" : (prevData.Numero === "S/N" ? randomInt(4).toString() : prevData.Numero)
-                }));
-            }
+            // Atualiza o formData - tanto o valor do checkbox quanto o Numero
+            setFormData(prevData => ({
+                ...prevData,
+                checkSemNumero: value,
+                // Se marcado, coloca "S/N", senão mantém ou gera número
+                Numero: checked ? "S/N" : recebeNunmeroEndereco
+            }));
         };
 
         // Função handleFocus para garantir que o modal não seja exibido ao receber o foco
@@ -552,18 +552,22 @@
 
         {/* handleChange */ }
         const handleChange = (event) => {
-            const { name, value } = event.target;
+            const { name, value, checked } = event.target;
 
-            // console.log('--------------------------------');
-            // console.log('handleChange');
-            // console.log('--------------------------------');
-            // console.log('name handleChange: ', name);
-            // console.log('value handleChange: ', value);
+            console.log('--------------------------------');
+            console.log('handleChange');
+            console.log('--------------------------------');
+            console.log('name handleChange: ', name);
+            console.log('value handleChange: ', value);
 
             setFormData((prev) => ({
                 ...prev,
                 [name]: value
             }));
+
+            if (name === "isCPFOptional") {
+                setIsCPFOptional(checked);
+            }
 
             if (name === 'Escolaridade' && prioritizesSelect === true) {
                 const myTimer = setTimeout(() => {
@@ -589,35 +593,12 @@
             }
 
             // Se o campo for o CPF, faz a validação
-            if (name === 'cpf' && !isValidCPF(value)) {
+            if (name === 'CPF' && !isValidCPF(value)) {
                 const cpfInput = event.target;
                 cpfInput.classList.add('is-invalid');
                 setError('CPF inválido');
             }
         };
-
-        // const handlePrioritizesSelect = () => {
-        // const myTimer = setTimeout(() => {
-        // setPrioritizesSelect(true);
-        // setPrioritizesOther(false);
-        // }, 300);
-        // };
-
-        // const handlePrioritizesOther = () => {
-        // const myTimer = setTimeout(() => {
-        // setPrioritizesSelect(false);
-        // setPrioritizesOther(true);
-        // // setOpenCloseField(true); DECREPTO
-        // }, 300);
-        // };
-
-        // React.useEffect(() => {
-        // console.log('--------------------------------');
-        // console.log('react.useEffect');
-        // console.log('--------------------------------');
-        // console.log('prioritizesOther: ', prioritizesOther);
-        // console.log('prioritizesSelect: ', prioritizesSelect);
-        // }, [prioritizesOther, prioritizesSelect]);
 
         const handleBlur = async (event) => {
             const { name, value } = event.target;
@@ -781,13 +762,13 @@
                         type: 'light',
                         message: `<b>Os campos</b>: <br/> ${nomesCamposVazios.join("<br/>")}<br/> <b>não podem estar em branco</b>`,
                     });
-                    console.log('camposVazios :: ', `<b>Os campos</b>: <br/> ${nomesCamposVazios.join("<br/>")}<br/> <b>não podem estar em branco</b>`);
+                    // console.log('camposVazios :: ', `<b>Os campos</b>: <br/> ${nomesCamposVazios.join("<br/>")}<br/> <b>não podem estar em branco</b>`);
                 }, 10);
                 return false;
             }
 
             if (filtro === `filtro-adolescente`) {
-                console.log('submitAllForms - filtro-adolescente...');
+                // console.log('submitAllForms - filtro-adolescente...');
                 fetchPostAdolescente(setData);
             }
         };
@@ -864,7 +845,7 @@
                 // 
                 if (data.result && data.result === 'success') {
                     // 
-                    console.log('Foi enviado um email de confirmação');
+                    // console.log('Foi enviado um email de confirmação');
                     //
                 } else {
                     // console.log('Erro ao enviar o email de confirmação');
@@ -943,6 +924,10 @@
                         ...data.result.dbResponse[0]
                     }));
 
+                    if (data.result.dbResponse[0].Numero) {
+                        setRecebeNunmeroEndereco(data.result.dbResponse[0].Numero);
+                    }
+
                     setCamposObrigatorios(() => ({
                         Nome: 'Nome Completo',
                         Email: 'Email',
@@ -974,8 +959,8 @@
         {/* POST de SALVAR ADOLESCENTE */ }
         const fetchPostAdolescente = async (formData = {}, custonBaseURL = base_url, custonApiPostObjeto = api_post_cadastrar_adolescente, customPage = getVar_page) => {
             const url = custonBaseURL + custonApiPostObjeto + customPage;
-            console.log('------------------------------');
-            console.log('fetchPostAdolescente url:', url);
+            // console.log('------------------------------');
+            // console.log('fetchPostAdolescente url:', url);
 
             const setData = formData;
             try {
@@ -987,7 +972,7 @@
                     body: JSON.stringify(setData),
                 });
                 const data = await response.json();
-                console.log('fetchPostAdolescente url:', url);
+                // console.log('fetchPostAdolescente url:', url);
 
                 if (data.result && data.result.affectedRows && data.result.affectedRows > 0) {
                     const dbResponse = data.result.dbResponse;
@@ -1691,10 +1676,12 @@
                     <div className="row">
                         {/* Opção CPF do Formulário */}
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
                                         attributeOrigemForm: `${origemForm}`,
@@ -1720,8 +1707,9 @@
                                         type="checkbox"
                                         id="isCPFOptional"
                                         name="isCPFOptional"
-                                        defaultChecked={isCPFOptional}
-                                        onChange={(e) => setIsCPFOptional(e.target.checked)}
+                                        checked={isCPFOptional}
+                                        onChange={handleChange}
+                                        disabled={!opcional16}
                                     />
                                     <label
                                         htmlFor="isCPFOptional"
@@ -1733,10 +1721,12 @@
                             )}
                         </div>
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {/*
                                 <AppNome formData={formData} setFormData={setFormData} parametros={parametros} />
                                 */}
@@ -1763,10 +1753,12 @@
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 <AppEmail
                                     formData={formData}
                                     setFormData={setFormData}
@@ -1777,10 +1769,12 @@
                     </div>
                     <div className="row">
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {(checkWordInArray(getURI, 'consultar')) ? (
                                     <div style={formGroupStyle}>
                                         <label htmlFor="Nascimento" style={formLabelStyle} className="form-label">
@@ -1815,10 +1809,12 @@
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
-                            <form onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {/* RG BK*/}
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
@@ -1826,39 +1822,41 @@
                                         labelField: 'RG',
                                         labelColor: 'black', // gray, red, black,
                                         nameField: 'RG',
-                                        errorMessage: '', // Mensagem de Erro personalizada
+                                        errorMessage: 'RG ou Órgão Expedidor inválidos ou ausentes.',
                                         attributePlaceholder: '', // placeholder 
-                                        attributeMinlength: 3, // minlength 
-                                        attributeMaxlength: 11, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
+                                        attributeMinlength: 12, // minlength 
+                                        attributeMaxlength: 13, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
                                         attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
                                         attributeAutocomplete: 'on', // on, off ]
-                                        attributeRequired: true,
+                                        attributeRequired: false,
                                         attributeReadOnly: false,
                                         attributeDisabled: false,
-                                        attributeMask: '', // CPF, Telefone, CEP, , SEI, Processo.
+                                        attributeMask: 'RG', // CPF, Telefone, CEP, , SEI, Processo.
                                     }}
                                 />
 
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
-                            <form onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
                                         attributeOrigemForm: `${origemForm}`,
                                         labelField: 'Órgao Expedidor',
                                         labelColor: 'black', // gray, red, black,
                                         nameField: 'ExpedidorRG',
-                                        errorMessage: '', // Mensagem de Erro personalizada
+                                        errorMessage: 'RG ou Órgão Expedidor inválidos ou ausentes.', // Mensagem de Erro personalizada
                                         attributePlaceholder: '', // placeholder 
                                         attributeMinlength: 3, // minlength 
                                         attributeMaxlength: 30, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
                                         attributePattern: 'Caracter', // Inteiro, Caracter, Senha
                                         attributeAutocomplete: 'on', // on, off ]
-                                        attributeRequired: true,
+                                        attributeRequired: false,
                                         attributeReadOnly: false,
                                         attributeDisabled: false,
                                         attributeMask: '', // CPF, Telefone, CEP, , SEI, Processo.
@@ -1870,137 +1868,177 @@
                     <div className="row">
                         <div className="col-12 col-sm-4">
                             {/* CEP */}
-                            <AppText parametros={parametros} formData={formData} setFormData={setFormData}
-                                fieldAttributes={{
-                                    attributeOrigemForm: `${origemForm}`,
-                                    labelField: 'CEP',
-                                    labelColor: 'black', // gray, red, black,
-                                    nameField: 'CEP',
-                                    errorMessage: '', // Mensagem de Erro personalizada
-                                    attributePlaceholder: '', // placeholder 
-                                    attributeMinlength: 5, // minlength 
-                                    attributeMaxlength: 9, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
-                                    attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
-                                    attributeAutocomplete: 'on', // on, off ]
-                                    attributeRequired: true,
-                                    attributeReadOnly: false,
-                                    attributeDisabled: false,
-                                    attributeMask: 'CEP', // CPF, Telefone, CEP, , SEI, Processo.
-                                }}
-                            />
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
+                                <AppText parametros={parametros} formData={formData} setFormData={setFormData}
+                                    fieldAttributes={{
+                                        attributeOrigemForm: `${origemForm}`,
+                                        labelField: 'CEP',
+                                        labelColor: 'black', // gray, red, black,
+                                        nameField: 'CEP',
+                                        errorMessage: '', // Mensagem de Erro personalizada
+                                        attributePlaceholder: '', // placeholder 
+                                        attributeMinlength: 8, // minlength 
+                                        attributeMaxlength: 9, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
+                                        attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
+                                        attributeAutocomplete: 'on', // on, off ]
+                                        attributeRequired: true,
+                                        attributeReadOnly: false,
+                                        attributeDisabled: false,
+                                        attributeMask: 'CEP', // CPF, Telefone, CEP, , SEI, Processo.
+                                    }}
+                                />
+                            </form>
                         </div>
                         <div className="col-12 col-sm-4">
                             {/* LOGRADOURO */}
-                            <AppText parametros={parametros} formData={formData} setFormData={setFormData}
-                                fieldAttributes={{
-                                    attributeOrigemForm: `${origemForm}`,
-                                    labelField: 'Logradouro',
-                                    labelColor: 'black', // gray, red, black,
-                                    nameField: 'Logradouro',
-                                    errorMessage: '', // Mensagem de Erro personalizada
-                                    attributePlaceholder: '', // placeholder 
-                                    attributeMinlength: 4, // minlength 
-                                    attributeMaxlength: 150, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
-                                    attributePattern: 'Caracter', // Inteiro, Caracter, Senha
-                                    attributeAutocomplete: 'on', // on, off ]
-                                    attributeRequired: true,
-                                    attributeReadOnly: false,
-                                    attributeDisabled: false,
-                                    attributeMask: '', // CPF, Telefone, CEP, , SEI, Processo.
-                                }}
-                            />
-
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
+                                <AppText parametros={parametros} formData={formData} setFormData={setFormData}
+                                    fieldAttributes={{
+                                        attributeOrigemForm: `${origemForm}`,
+                                        labelField: 'Logradouro',
+                                        labelColor: 'black', // gray, red, black,
+                                        nameField: 'Logradouro',
+                                        errorMessage: '', // Mensagem de Erro personalizada
+                                        attributePlaceholder: '', // placeholder 
+                                        attributeMinlength: 4, // minlength 
+                                        attributeMaxlength: 150, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
+                                        attributePattern: 'Caracter', // Inteiro, Caracter, Senha
+                                        attributeAutocomplete: 'on', // on, off ]
+                                        attributeRequired: true,
+                                        attributeReadOnly: false,
+                                        attributeDisabled: false,
+                                        attributeMask: '', // CPF, Telefone, CEP, , SEI, Processo.
+                                    }}
+                                />
+                            </form>
                         </div>
                         <div className="col-12 col-sm-2">
                             {/* Numero Opcional */}
-                            <div style={formGroupStyle}>
-                                <label
-                                    htmlFor={`checkSemNumero`}
-                                    style={formLabelStyle}
-                                    className="form-label"
-                                >
-                                    {`Sem número`}
-                                    <strong style={requiredField}>*</strong>
-                                </label>
-                                <div className="form-check m-1">
-                                    <input
-                                        className="form-check-input"
-                                        type="checkbox"
-                                        checked={isCheckedSemNumero}
-                                        onChange={handleCheckboxChange}
-                                        id="checkSemNumero"
-                                        name="checkSemNumero"
-                                    />
-                                    <label className="form-check-label" htmlFor="checkSemNumero">
-                                        S/N
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
+                                <div style={formGroupStyle}>
+                                    <label
+                                        htmlFor={`checkSemNumero`}
+                                        style={formLabelStyle}
+                                        className="form-label"
+                                    >
+                                        {`Sem número`}
+                                        <strong style={requiredField}>*</strong>
                                     </label>
+                                    <div className="form-check m-1">
+                                        <input
+                                            className="form-check-input"
+                                            type="checkbox"
+                                            checked={isCheckedSemNumero}
+                                            onChange={handleCheckboxChange}
+                                            id="checkSemNumero"
+                                            name="checkSemNumero"
+                                        />
+                                        <label className="form-check-label" htmlFor="checkSemNumero">
+                                            S/N
+                                        </label>
+                                    </div>
                                 </div>
-                            </div>
+                            </form>
                         </div>
                         <div className="col-12 col-sm-2">
                             {/* NUMERO */}
-                            <AppText parametros={parametros} formData={formData} setFormData={setFormData}
-                                fieldAttributes={{
-                                    attributeOrigemForm: `${origemForm}`,
-                                    labelField: 'Número',
-                                    labelColor: 'black', // gray, red, black,
-                                    nameField: 'Numero',
-                                    errorMessage: '', // Mensagem de Erro personalizada
-                                    setMessage: () => setMessage(),
-                                    attributePlaceholder: '', // placeholder 
-                                    attributeMinlength: 1, // minlength 
-                                    attributeMaxlength: 6, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
-                                    attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
-                                    attributeAutocomplete: 'on', // on, off ]
-                                    attributeRequired: false,
-                                    attributeReadOnly: readOnlyNumero,
-                                    attributeDisabled: false,
-                                    attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
-                                }}
-                            />
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
+                                <AppText parametros={parametros} formData={formData} setFormData={setFormData}
+                                    fieldAttributes={{
+                                        attributeOrigemForm: `${origemForm}`,
+                                        labelField: 'Número',
+                                        labelColor: 'black', // gray, red, black,
+                                        nameField: 'Numero',
+                                        errorMessage: '', // Mensagem de Erro personalizada
+                                        setMessage: () => setMessage(),
+                                        attributePlaceholder: '', // placeholder 
+                                        attributeMinlength: 1, // minlength 
+                                        attributeMaxlength: 6, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
+                                        attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
+                                        attributeAutocomplete: 'on', // on, off ]
+                                        attributeRequired: false,
+                                        attributeReadOnly: readOnlyNumero,
+                                        attributeDisabled: false,
+                                        attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
+                                    }}
+                                />
+                            </form>
                         </div>
                     </div>
                     <div className="row">
                         <div className="col-12 col-sm-6">
                             {/* COMPLEMENTO */}
-                            <AppText submitAllForms parametros={parametros} formData={formData} setFormData={setFormData}
-                                fieldAttributes={{
-                                    attributeOrigemForm: `${origemForm}`,
-                                    labelField: 'Complemento',
-                                    labelColor: 'black',
-                                    nameField: 'Complemento',
-                                    attributeMinlength: 4,
-                                    attributeMaxlength: 100,
-                                    attributePattern: 'Caracter, Inteiro',
-                                    attributeAutocomplete: 'on',
-                                    attributeRequired: false,
-                                    attributeReadOnly: false, // isso já tá sendo controlado no ternário acima
-                                    attributeDisabled: false,
-                                    attributeMask: '',
-                                }}
-                            />
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
+                                <AppText submitAllForms parametros={parametros} formData={formData} setFormData={setFormData}
+                                    fieldAttributes={{
+                                        attributeOrigemForm: `${origemForm}`,
+                                        labelField: 'Complemento',
+                                        labelColor: 'black',
+                                        nameField: 'Complemento',
+                                        attributeMinlength: 4,
+                                        attributeMaxlength: 100,
+                                        attributePattern: 'Caracter',
+                                        attributeAutocomplete: 'on',
+                                        attributeRequired: false,
+                                        attributeReadOnly: false, // isso já tá sendo controlado no ternário acima
+                                        attributeDisabled: false,
+                                        attributeMask: '',
+                                    }}
+                                />
+                            </form>
                         </div>
                         <div className="col-12 col-sm-6">
                             {/* BAIRRO */}
-                            <AppText parametros={parametros} formData={formData} setFormData={setFormData}
-                                fieldAttributes={{
-                                    attributeOrigemForm: `${origemForm}`,
-                                    labelField: 'Bairro',
-                                    labelColor: 'black', // gray, red, black,
-                                    nameField: 'Bairro',
-                                    errorMessage: '', // Mensagem de Erro personalizada
-                                    attributePlaceholder: '', // placeholder 
-                                    attributeMinlength: 4, // minlength 
-                                    attributeMaxlength: 70, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
-                                    attributePattern: 'Caracter, Inteiro', // Inteiro, Caracter, Senha
-                                    attributeAutocomplete: 'on', // on, off ]
-                                    attributeRequired: true,
-                                    attributeReadOnly: false,
-                                    attributeDisabled: false,
-                                    attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
-                                }}
-                            />
-
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
+                                <AppText parametros={parametros} formData={formData} setFormData={setFormData}
+                                    fieldAttributes={{
+                                        attributeOrigemForm: `${origemForm}`,
+                                        labelField: 'Bairro',
+                                        labelColor: 'black', // gray, red, black,
+                                        nameField: 'Bairro',
+                                        errorMessage: '', // Mensagem de Erro personalizada
+                                        attributePlaceholder: '', // placeholder 
+                                        attributeMinlength: 4, // minlength 
+                                        attributeMaxlength: 70, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
+                                        attributePattern: 'Caracter, Inteiro', // Inteiro, Caracter, Senha
+                                        attributeAutocomplete: 'on', // on, off ]
+                                        attributeRequired: true,
+                                        attributeReadOnly: false,
+                                        attributeDisabled: false,
+                                        attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
+                                    }}
+                                />
+                            </form>
                         </div>
                     </div>
                     <div className="row">
@@ -2008,85 +2046,107 @@
                             {(formData.dropMunicipio) ? (
                                 <div>
                                     {/* MUNICÍPIO/SELECT */}
-                                    <AppSelect
-                                        parametros={parametros}
-                                        formData={formData}
-                                        setFormData={setFormData}
-                                        fieldAttributes={{
-                                            attributeOrigemForm: `${origemForm}`,
-                                            labelField: 'Municípoio',
-                                            nameField: 'Municipio',
-                                            errorMessage: '', // Mensagem de Erro personalizada
-                                            attributeFieldKey: ['nome_municipio', 'key'], // Alterado para ex. id_municipio 
-                                            attributeFieldName: ['nome_municipio', 'value'], // Alterado o segundo valor para ex. 'value'
-                                            attributeRequired: true,
-                                            attributeDisabled: false,
-                                            objetoArrayKey: [
-                                                { key: '1', value: 'Opção 1' },
-                                                { key: '2', value: 'Opção 2' },
-                                                { key: '3', value: 'Opção 3' },
-                                                { key: '4', value: 'Opção 4' }
-                                            ],
-                                            api_get: `${api_get_municipio}`,
-                                            api_post: `${api_get_municipio}`,
-                                            api_filter: `${api_get_municipio}`,
-                                        }}
-                                    />
+                                    <form
+                                        className="was-validated"
+                                        onSubmit={(e) => {
+                                            e.preventDefault();
+                                            submitAllForms(`filtro-${origemForm}`);
+                                        }}>
+                                        <AppSelect
+                                            parametros={parametros}
+                                            formData={formData}
+                                            setFormData={setFormData}
+                                            fieldAttributes={{
+                                                attributeOrigemForm: `${origemForm}`,
+                                                labelField: 'Municípoio',
+                                                nameField: 'Municipio',
+                                                errorMessage: '', // Mensagem de Erro personalizada
+                                                attributeFieldKey: ['nome_municipio', 'key'], // Alterado para ex. id_municipio 
+                                                attributeFieldName: ['nome_municipio', 'value'], // Alterado o segundo valor para ex. 'value'
+                                                attributeRequired: true,
+                                                attributeDisabled: false,
+                                                objetoArrayKey: [
+                                                    { key: '1', value: 'Opção 1' },
+                                                    { key: '2', value: 'Opção 2' },
+                                                    { key: '3', value: 'Opção 3' },
+                                                    { key: '4', value: 'Opção 4' }
+                                                ],
+                                                api_get: `${api_get_municipio}`,
+                                                api_post: `${api_get_municipio}`,
+                                                api_filter: `${api_get_municipio}`,
+                                            }}
+                                        />
+                                    </form>
                                 </div>
                             ) : (
                                 <div>
                                     {/* MUNICÍPIO/TEXT */}
-                                    <AppText parametros={parametros} formData={formData} setFormData={setFormData}
-                                        fieldAttributes={{
-                                            attributeOrigemForm: `${origemForm}`,
-                                            labelField: 'Município',
-                                            labelColor: 'black', // gray, red, black,
-                                            nameField: 'Municipio',
-                                            errorMessage: '', // Mensagem de Erro personalizada
-                                            attributePlaceholder: '', // placeholder 
-                                            attributeMinlength: 4, // minlength 
-                                            attributeMaxlength: 100, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
-                                            attributePattern: 'Caracter', // Inteiro, Caracter, Senha
-                                            attributeAutocomplete: 'on', // on, off ]
-                                            attributeRequired: true,
-                                            attributeReadOnly: true,
-                                            attributeDisabled: false,
-                                            attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
-                                        }}
-                                    />
+                                    <form
+                                        className="was-validated"
+                                        onSubmit={(e) => {
+                                            e.preventDefault();
+                                            submitAllForms(`filtro-${origemForm}`);
+                                        }}>
+                                        <AppText parametros={parametros} formData={formData} setFormData={setFormData}
+                                            fieldAttributes={{
+                                                attributeOrigemForm: `${origemForm}`,
+                                                labelField: 'Município',
+                                                labelColor: 'black', // gray, red, black,
+                                                nameField: 'Municipio',
+                                                errorMessage: '', // Mensagem de Erro personalizada
+                                                attributePlaceholder: '', // placeholder 
+                                                attributeMinlength: 4, // minlength 
+                                                attributeMaxlength: 100, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
+                                                attributePattern: 'Caracter', // Inteiro, Caracter, Senha
+                                                attributeAutocomplete: 'on', // on, off ]
+                                                attributeRequired: true,
+                                                attributeReadOnly: true,
+                                                attributeDisabled: false,
+                                                attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
+                                            }}
+                                        />
+                                    </form>
                                 </div>
                             )}
                         </div>
                         <div className="col-12 col-sm-6">
                             {/* UF */}
-                            <AppText parametros={parametros} formData={formData} setFormData={setFormData}
-                                fieldAttributes={{
-                                    attributeOrigemForm: `${origemForm}`,
-                                    labelField: 'UF',
-                                    labelColor: 'black', // gray, red, black,
-                                    nameField: 'UF',
-                                    errorMessage: '', // Mensagem de Erro personalizada
-                                    attributePlaceholder: '', // placeholder 
-                                    attributeMinlength: 1, // minlength 
-                                    attributeMaxlength: 2, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
-                                    attributePattern: 'Caracter', // Inteiro, Caracter, Senha
-                                    attributeAutocomplete: 'on', // on, off ]
-                                    attributeRequired: true,
-                                    attributeReadOnly: false,
-                                    attributeDisabled: false,
-                                    attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
-                                }}
-                            />
-
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
+                                <AppText parametros={parametros} formData={formData} setFormData={setFormData}
+                                    fieldAttributes={{
+                                        attributeOrigemForm: `${origemForm}`,
+                                        labelField: 'UF',
+                                        labelColor: 'black', // gray, red, black,
+                                        nameField: 'UF',
+                                        errorMessage: '', // Mensagem de Erro personalizada
+                                        attributePlaceholder: '', // placeholder 
+                                        attributeMinlength: 1, // minlength 
+                                        attributeMaxlength: 2, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
+                                        attributePattern: 'Caracter', // Inteiro, Caracter, Senha
+                                        attributeAutocomplete: 'on', // on, off ]
+                                        attributeRequired: true,
+                                        attributeReadOnly: false,
+                                        attributeDisabled: false,
+                                        attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
+                                    }}
+                                />
+                            </form>
                         </div>
                     </div>
 
                     <div className="row">
                         <div className="col-12 col-sm-6">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {(checkWordInArray(getURI, 'consultar')) ? (
                                     <div style={formGroupStyle}>
                                         <label htmlFor="unit"
@@ -2139,10 +2199,12 @@
                             </form>
                         </div>
                         <div className="col-12 col-sm-6">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {dataLoading ? (
                                     <div>
                                         <div>&nbsp;</div>
@@ -2236,10 +2298,12 @@
                     </div>
                     <div className="row">
                         <div className="col-12 col-sm-6">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {checkWordInArray(getURI, 'consultar') ? (
                                     <div style={formGroupStyle}>
                                         <label
@@ -2283,10 +2347,12 @@
                             </form>
                         </div>
                         <div className="col-12 col-sm-6">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 <div style={formGroupStyle}>
                                     <label
                                         htmlFor="sexo_biologico_id"
@@ -2345,10 +2411,12 @@
                 <div className="border border-top-0 mb-4 p-4">
                     <div className="row">
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {/* CERTIDÃO */}
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
@@ -2371,10 +2439,12 @@
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {/* REGISTRO */}
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
@@ -2397,10 +2467,12 @@
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {/* ZONA */}
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
@@ -2425,10 +2497,12 @@
                     </div>
                     <div className="row">
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {/* FOLHA */}
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
@@ -2451,10 +2525,12 @@
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {/* LIVRO */}
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
@@ -2477,10 +2553,12 @@
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {/* NOME CIRCUNSCRIÇÃO */}
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
@@ -2506,10 +2584,12 @@
                     <div className="row">
                         {/* Opção CPF do Formulário */}
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {/* NOME ADOLESCENTE */}
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
@@ -2532,18 +2612,22 @@
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 <AppEmail formData={formData} setFormData={setFormData} parametros={parametros} />
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {(checkWordInArray(getURI, 'consultar')) ? (
                                     <div style={formGroupStyle}>
                                         <label htmlFor="Nascimento" style={formLabelStyle} className="form-label">
@@ -2580,10 +2664,12 @@
                     </div>
                     <div className="row">
                         <div className="col-12 col-sm-4">
-                            <form onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {/* RG BK */}
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
@@ -2591,25 +2677,27 @@
                                         labelField: 'RG',
                                         labelColor: 'black', // gray, red, black,
                                         nameField: 'RG',
-                                        errorMessage: '', // Mensagem de Erro personalizada
+                                        errorMessage: 'RG ou Órgão Expedidor inválidos ou ausentes.',
                                         attributePlaceholder: '', // placeholder 
-                                        attributeMinlength: 3, // minlength 
-                                        attributeMaxlength: 11, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
+                                        attributeMinlength: 12, // minlength 
+                                        attributeMaxlength: 13, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
                                         attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
                                         attributeAutocomplete: 'on', // on, off ]
-                                        attributeRequired: true,
+                                        attributeRequired: false,
                                         attributeReadOnly: false,
                                         attributeDisabled: false,
-                                        attributeMask: '', // CPF, Telefone, CEP, , SEI, Processo.
+                                        attributeMask: 'RG', // CPF, Telefone, CEP, , SEI, Processo.
                                     }}
                                 />
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
-                            <form onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
                                         attributeOrigemForm: `${origemForm}`,
@@ -2631,10 +2719,12 @@
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {/* CEP */}
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
@@ -2644,7 +2734,7 @@
                                         nameField: 'CEP',
                                         errorMessage: '', // Mensagem de Erro personalizada
                                         attributePlaceholder: '', // placeholder 
-                                        attributeMinlength: 5, // minlength 
+                                        attributeMinlength: 8, // minlength 
                                         attributeMaxlength: 9, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
                                         attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
                                         attributeAutocomplete: 'on', // on, off ]
@@ -2659,10 +2749,12 @@
                     </div>
                     <div className="row">
                         <div className="col-12 col-sm-8">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {/* LOGRADOURO */}
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
@@ -2712,32 +2804,41 @@
                         </div>
                         <div className="col-12 col-sm-2">
                             {/* NUMERO */}
-                            <AppText parametros={parametros} formData={formData} setFormData={setFormData}
-                                fieldAttributes={{
-                                    attributeOrigemForm: `${origemForm}`,
-                                    labelField: 'Número',
-                                    labelColor: 'black', // gray, red, black,
-                                    nameField: 'Numero',
-                                    errorMessage: '', // Mensagem de Erro personalizada
-                                    attributePlaceholder: '', // placeholder 
-                                    attributeMinlength: 1, // minlength 
-                                    attributeMaxlength: 6, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
-                                    attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
-                                    attributeAutocomplete: 'on', // on, off ]
-                                    attributeRequired: false,
-                                    attributeReadOnly: readOnlyNumero,
-                                    attributeDisabled: false,
-                                    attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
-                                }}
-                            />
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
+                                <AppText parametros={parametros} formData={formData} setFormData={setFormData}
+                                    fieldAttributes={{
+                                        attributeOrigemForm: `${origemForm}`,
+                                        labelField: 'Número',
+                                        labelColor: 'black', // gray, red, black,
+                                        nameField: 'Numero',
+                                        errorMessage: '', // Mensagem de Erro personalizada
+                                        attributePlaceholder: '', // placeholder 
+                                        attributeMinlength: 1, // minlength 
+                                        attributeMaxlength: 6, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
+                                        attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
+                                        attributeAutocomplete: 'on', // on, off ]
+                                        attributeRequired: false,
+                                        attributeReadOnly: readOnlyNumero,
+                                        attributeDisabled: false,
+                                        attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
+                                    }}
+                                />
+                            </form>
                         </div>
                     </div>
                     <div className="row">
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {/* COMPLEMENTO */}
                                 <AppText
                                     submitAllForms
@@ -2751,7 +2852,7 @@
                                         nameField: 'Complemento',
                                         attributeMinlength: 4,
                                         attributeMaxlength: 100,
-                                        attributePattern: 'Caracter, Inteiro',
+                                        attributePattern: 'Caracter',
                                         attributeAutocomplete: 'on',
                                         attributeRequired: false,
                                         attributeReadOnly: false, // isso já tá sendo controlado no ternário acima
@@ -2762,10 +2863,12 @@
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {/* BAIRRO */}
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
@@ -2790,25 +2893,31 @@
 
                         <div className="col-12 col-sm-4">
                             {/* UF */}
-                            <AppText parametros={parametros} formData={formData} setFormData={setFormData}
-                                fieldAttributes={{
-                                    attributeOrigemForm: `${origemForm}`,
-                                    labelField: 'UF',
-                                    labelColor: 'black', // gray, red, black,
-                                    nameField: 'UF',
-                                    errorMessage: '', // Mensagem de Erro personalizada
-                                    attributePlaceholder: '', // placeholder 
-                                    attributeMinlength: 1, // minlength 
-                                    attributeMaxlength: 2, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
-                                    attributePattern: 'Caracter', // Inteiro, Caracter, Senha
-                                    attributeAutocomplete: 'on', // on, off ]
-                                    attributeRequired: true,
-                                    attributeReadOnly: false,
-                                    attributeDisabled: false,
-                                    attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
-                                }}
-                            />
-
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
+                                <AppText parametros={parametros} formData={formData} setFormData={setFormData}
+                                    fieldAttributes={{
+                                        attributeOrigemForm: `${origemForm}`,
+                                        labelField: 'UF',
+                                        labelColor: 'black', // gray, red, black,
+                                        nameField: 'UF',
+                                        errorMessage: '', // Mensagem de Erro personalizada
+                                        attributePlaceholder: '', // placeholder 
+                                        attributeMinlength: 1, // minlength 
+                                        attributeMaxlength: 2, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
+                                        attributePattern: 'Caracter', // Inteiro, Caracter, Senha
+                                        attributeAutocomplete: 'on', // on, off ]
+                                        attributeRequired: true,
+                                        attributeReadOnly: false,
+                                        attributeDisabled: false,
+                                        attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
+                                    }}
+                                />
+                            </form>
                         </div>
                     </div>
 
@@ -2817,61 +2926,77 @@
                             {(formData.dropMunicipio) ? (
                                 <div>
                                     {/* MUNICÍPIO/SELECT */}
-                                    <AppSelect
-                                        parametros={parametros}
-                                        formData={formData}
-                                        setFormData={setFormData}
-                                        fieldAttributes={{
-                                            attributeOrigemForm: `${origemForm}`,
-                                            labelField: 'Municípoio',
-                                            nameField: 'Municipio',
-                                            errorMessage: '', // Mensagem de Erro personalizada
-                                            attributeFieldKey: ['nome_municipio', 'key'], // Alterado para ex. id_municipio 
-                                            attributeFieldName: ['nome_municipio', 'value'], // Alterado o segundo valor para ex. 'value'
-                                            attributeRequired: true,
-                                            attributeDisabled: false,
-                                            objetoArrayKey: [
-                                                { key: '1', value: 'Opção 1' },
-                                                { key: '2', value: 'Opção 2' },
-                                                { key: '3', value: 'Opção 3' },
-                                                { key: '4', value: 'Opção 4' }
-                                            ],
-                                            api_get: `${api_get_municipio}`,
-                                            api_post: `${api_get_municipio}`,
-                                            api_filter: `${api_get_municipio}`,
-                                        }}
-                                    />
+                                    <form
+                                        className="was-validated"
+                                        onSubmit={(e) => {
+                                            e.preventDefault();
+                                            submitAllForms(`filtro-${origemForm}`);
+                                        }}>
+                                        <AppSelect
+                                            parametros={parametros}
+                                            formData={formData}
+                                            setFormData={setFormData}
+                                            fieldAttributes={{
+                                                attributeOrigemForm: `${origemForm}`,
+                                                labelField: 'Municípoio',
+                                                nameField: 'Municipio',
+                                                errorMessage: '', // Mensagem de Erro personalizada
+                                                attributeFieldKey: ['nome_municipio', 'key'], // Alterado para ex. id_municipio 
+                                                attributeFieldName: ['nome_municipio', 'value'], // Alterado o segundo valor para ex. 'value'
+                                                attributeRequired: true,
+                                                attributeDisabled: false,
+                                                objetoArrayKey: [
+                                                    { key: '1', value: 'Opção 1' },
+                                                    { key: '2', value: 'Opção 2' },
+                                                    { key: '3', value: 'Opção 3' },
+                                                    { key: '4', value: 'Opção 4' }
+                                                ],
+                                                api_get: `${api_get_municipio}`,
+                                                api_post: `${api_get_municipio}`,
+                                                api_filter: `${api_get_municipio}`,
+                                            }}
+                                        />
+                                    </form>
                                 </div>
                             ) : (
                                 <div>
                                     {/* MUNICÍPIO/TEXT */}
-                                    <AppText parametros={parametros} formData={formData} setFormData={setFormData}
-                                        fieldAttributes={{
-                                            attributeOrigemForm: `${origemForm}`,
-                                            labelField: 'Município',
-                                            labelColor: 'black', // gray, red, black,
-                                            nameField: 'Municipio',
-                                            errorMessage: '', // Mensagem de Erro personalizada
-                                            attributePlaceholder: '', // placeholder 
-                                            attributeMinlength: 4, // minlength 
-                                            attributeMaxlength: 100, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
-                                            attributePattern: 'Caracter', // Inteiro, Caracter, Senha
-                                            attributeAutocomplete: 'on', // on, off ]
-                                            attributeRequired: true,
-                                            attributeReadOnly: true,
-                                            attributeDisabled: false,
-                                            attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
-                                        }}
-                                    />
+                                    <form
+                                        className="was-validated"
+                                        onSubmit={(e) => {
+                                            e.preventDefault();
+                                            submitAllForms(`filtro-${origemForm}`);
+                                        }}>
+                                        <AppText parametros={parametros} formData={formData} setFormData={setFormData}
+                                            fieldAttributes={{
+                                                attributeOrigemForm: `${origemForm}`,
+                                                labelField: 'Município',
+                                                labelColor: 'black', // gray, red, black,
+                                                nameField: 'Municipio',
+                                                errorMessage: '', // Mensagem de Erro personalizada
+                                                attributePlaceholder: '', // placeholder 
+                                                attributeMinlength: 4, // minlength 
+                                                attributeMaxlength: 100, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
+                                                attributePattern: 'Caracter', // Inteiro, Caracter, Senha
+                                                attributeAutocomplete: 'on', // on, off ]
+                                                attributeRequired: true,
+                                                attributeReadOnly: true,
+                                                attributeDisabled: false,
+                                                attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
+                                            }}
+                                        />
+                                    </form>
                                 </div>
                             )}
                         </div>
 
                         <div className="col-12 col-sm-6">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {(checkWordInArray(getURI, 'consultar')) ? (
                                     <div style={formGroupStyle}>
                                         <label htmlFor="unit"
@@ -2929,10 +3054,12 @@
                     </div>
                     <div className="row">
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 <div style={formGroupStyle}>
                                     {dataLoading ? (
                                         <div>
@@ -3024,10 +3151,12 @@
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {checkWordInArray(getURI, 'consultar') ? (
                                     <div style={formGroupStyle}>
                                         <label
@@ -3072,10 +3201,12 @@
                         </div>
 
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 <div style={formGroupStyle}>
                                     <label
                                         htmlFor="sexo_biologico_id"
@@ -3134,10 +3265,12 @@
                 <div className="border border-top-0 mb-4 p-4">
                     <div className="row">
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
 
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
@@ -3160,10 +3293,12 @@
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {/* REGISTRO */}
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
@@ -3186,10 +3321,12 @@
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {/* ZONA */}
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
@@ -3214,10 +3351,12 @@
                     </div>
                     <div className="row">
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {/* FOLHA */}
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
@@ -3240,10 +3379,12 @@
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {/* LIVRO */}
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
@@ -3266,10 +3407,12 @@
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {/* CIRCUNSCRIÇÃO */}
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
@@ -3295,10 +3438,12 @@
                     <div className="row">
                         {/* Opção CPF do Formulário */}
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {/* NOME ADOLESCENTE */}
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
@@ -3321,18 +3466,22 @@
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 <AppEmail formData={formData} setFormData={setFormData} parametros={parametros} />
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {(checkWordInArray(getURI, 'consultar')) ? (
                                     <div style={formGroupStyle}>
                                         <label htmlFor="Nascimento" style={formLabelStyle} className="form-label">
@@ -3370,10 +3519,12 @@
                     <div className="row">
                         {/* CPF / ATUALIZAR */}
                         <div className="col-12 col-sm-3">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
 
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
@@ -3414,10 +3565,12 @@
                             )}
                         </div>
                         <div className="col-12 col-sm-3">
-                            <form onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {/* RG BK */}
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
@@ -3425,25 +3578,27 @@
                                         labelField: 'RG',
                                         labelColor: 'black', // gray, red, black,
                                         nameField: 'RG',
-                                        errorMessage: '', // Mensagem de Erro personalizada
+                                        errorMessage: 'RG ou Órgão Expedidor inválidos ou ausentes.',
                                         attributePlaceholder: '', // placeholder 
-                                        attributeMinlength: 3, // minlength 
-                                        attributeMaxlength: 11, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
+                                        attributeMinlength: 12, // minlength 
+                                        attributeMaxlength: 13, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
                                         attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
                                         attributeAutocomplete: 'on', // on, off ]
-                                        attributeRequired: true,
+                                        attributeRequired: false,
                                         attributeReadOnly: false,
                                         attributeDisabled: false,
-                                        attributeMask: '', // CPF, Telefone, CEP, , SEI, Processo.
+                                        attributeMask: 'RG', // CPF, Telefone, CEP, , SEI, Processo.
                                     }}
                                 />
                             </form>
                         </div>
                         <div className="col-12 col-sm-3">
-                            <form onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
                                         attributeOrigemForm: `${origemForm}`,
@@ -3465,10 +3620,12 @@
                             </form>
                         </div>
                         <div className="col-12 col-sm-3">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {/* CEP */}
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
@@ -3478,7 +3635,7 @@
                                         nameField: 'CEP',
                                         errorMessage: '', // Mensagem de Erro personalizada
                                         attributePlaceholder: '', // placeholder 
-                                        attributeMinlength: 5, // minlength 
+                                        attributeMinlength: 8, // minlength 
                                         attributeMaxlength: 9, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
                                         attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
                                         attributeAutocomplete: 'on', // on, off ]
@@ -3493,10 +3650,12 @@
                     </div>
                     <div className="row">
                         <div className="col-12 col-sm-8">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {/* LOGRADOURO */}
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
@@ -3520,58 +3679,76 @@
                         </div>
                         {/* Numero Opcional */}
                         <div className="col-12 col-sm-2">
-                            <div style={formGroupStyle}>
-                                <label
-                                    htmlFor={`checkSemNumero`}
-                                    style={formLabelStyle}
-                                    className="form-label"
-                                >
-                                    {`Sem número`}
-                                    <strong style={requiredField}>*</strong>
-                                </label>
-                                <div className="form-check m-1">
-                                    <input
-                                        className="form-check-input"
-                                        type="checkbox"
-                                        checked={isCheckedSemNumero}
-                                        onChange={handleCheckboxChange}
-                                        id="checkSemNumero"
-                                        name="checkSemNumero"
-                                    />
-                                    <label className="form-check-label" htmlFor="checkSemNumero">
-                                        S/N
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
+                                <div style={formGroupStyle}>
+                                    <label
+                                        htmlFor={`checkSemNumero`}
+                                        style={formLabelStyle}
+                                        className="form-label"
+                                    >
+                                        {`Sem número`}
+                                        <strong style={requiredField}>*</strong>
                                     </label>
+                                    <div class="d-flex justify-content-center">
+                                        <div className="form-check m-1">
+                                            <input
+                                                className="form-check-input"
+                                                type="checkbox"
+                                                checked={isCheckedSemNumero}
+                                                onChange={handleCheckboxChange}
+                                                id="checkSemNumero"
+                                                name="checkSemNumero"
+                                            />
+                                            <label className="form-check-label" htmlFor="checkSemNumero">
+                                                S/N
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            </form>
                         </div>
                         <div className="col-12 col-sm-2">
                             {/* NUMERO */}
-                            <AppText parametros={parametros} formData={formData} setFormData={setFormData}
-                                fieldAttributes={{
-                                    attributeOrigemForm: `${origemForm}`,
-                                    labelField: 'Número',
-                                    labelColor: 'black', // gray, red, black,
-                                    nameField: 'Numero',
-                                    errorMessage: '', // Mensagem de Erro personalizada
-                                    attributePlaceholder: '', // placeholder 
-                                    attributeMinlength: 1, // minlength 
-                                    attributeMaxlength: 6, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
-                                    attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
-                                    attributeAutocomplete: 'on', // on, off ]
-                                    attributeRequired: false,
-                                    attributeReadOnly: readOnlyNumero,
-                                    attributeDisabled: false,
-                                    attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
-                                }}
-                            />
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
+                                <AppText parametros={parametros} formData={formData} setFormData={setFormData}
+                                    fieldAttributes={{
+                                        attributeOrigemForm: `${origemForm}`,
+                                        labelField: 'Número',
+                                        labelColor: 'black', // gray, red, black,
+                                        nameField: 'Numero',
+                                        errorMessage: '', // Mensagem de Erro personalizada
+                                        attributePlaceholder: '', // placeholder 
+                                        attributeMinlength: 1, // minlength 
+                                        attributeMaxlength: 6, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
+                                        attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
+                                        attributeAutocomplete: 'on', // on, off ]
+                                        attributeRequired: true,
+                                        attributeReadOnly: readOnlyNumero,
+                                        attributeDisabled: false,
+                                        attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
+                                    }}
+                                />
+                            </form>
                         </div>
                     </div>
                     <div className="row">
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {/* COMPLEMENTO */}
                                 <AppText
                                     submitAllForms
@@ -3585,7 +3762,7 @@
                                         nameField: 'Complemento',
                                         attributeMinlength: 4,
                                         attributeMaxlength: 100,
-                                        attributePattern: 'Caracter, Inteiro',
+                                        attributePattern: 'Caracter',
                                         attributeAutocomplete: 'on',
                                         attributeRequired: false,
                                         attributeReadOnly: false, // isso já tá sendo controlado no ternário acima
@@ -3596,10 +3773,12 @@
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {/* BAIRRO */}
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
@@ -3624,25 +3803,31 @@
 
                         <div className="col-12 col-sm-4">
                             {/* UF */}
-                            <AppText parametros={parametros} formData={formData} setFormData={setFormData}
-                                fieldAttributes={{
-                                    attributeOrigemForm: `${origemForm}`,
-                                    labelField: 'UF',
-                                    labelColor: 'black', // gray, red, black,
-                                    nameField: 'UF',
-                                    errorMessage: '', // Mensagem de Erro personalizada
-                                    attributePlaceholder: '', // placeholder 
-                                    attributeMinlength: 1, // minlength 
-                                    attributeMaxlength: 2, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
-                                    attributePattern: 'Caracter', // Inteiro, Caracter, Senha
-                                    attributeAutocomplete: 'on', // on, off ]
-                                    attributeRequired: true,
-                                    attributeReadOnly: false,
-                                    attributeDisabled: false,
-                                    attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
-                                }}
-                            />
-
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
+                                <AppText parametros={parametros} formData={formData} setFormData={setFormData}
+                                    fieldAttributes={{
+                                        attributeOrigemForm: `${origemForm}`,
+                                        labelField: 'UF',
+                                        labelColor: 'black', // gray, red, black,
+                                        nameField: 'UF',
+                                        errorMessage: '', // Mensagem de Erro personalizada
+                                        attributePlaceholder: '', // placeholder 
+                                        attributeMinlength: 1, // minlength 
+                                        attributeMaxlength: 2, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
+                                        attributePattern: 'Caracter', // Inteiro, Caracter, Senha
+                                        attributeAutocomplete: 'on', // on, off ]
+                                        attributeRequired: true,
+                                        attributeReadOnly: false,
+                                        attributeDisabled: false,
+                                        attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
+                                    }}
+                                />
+                            </form>
                         </div>
                     </div>
 
@@ -3680,33 +3865,42 @@
                             ) : (
                                 <div>
                                     {/* MUNICÍPIO/TEXT */}
-                                    <AppText parametros={parametros} formData={formData} setFormData={setFormData}
-                                        fieldAttributes={{
-                                            attributeOrigemForm: `${origemForm}`,
-                                            labelField: 'Município',
-                                            labelColor: 'black', // gray, red, black,
-                                            nameField: 'Municipio',
-                                            errorMessage: '', // Mensagem de Erro personalizada
-                                            attributePlaceholder: '', // placeholder 
-                                            attributeMinlength: 4, // minlength 
-                                            attributeMaxlength: 100, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
-                                            attributePattern: 'Caracter', // Inteiro, Caracter, Senha
-                                            attributeAutocomplete: 'on', // on, off ]
-                                            attributeRequired: true,
-                                            attributeReadOnly: true,
-                                            attributeDisabled: false,
-                                            attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
-                                        }}
-                                    />
+                                    <form
+                                        className="was-validated"
+                                        onSubmit={(e) => {
+                                            e.preventDefault();
+                                            submitAllForms(`filtro-${origemForm}`);
+                                        }}>
+                                        <AppText parametros={parametros} formData={formData} setFormData={setFormData}
+                                            fieldAttributes={{
+                                                attributeOrigemForm: `${origemForm}`,
+                                                labelField: 'Município',
+                                                labelColor: 'black', // gray, red, black,
+                                                nameField: 'Municipio',
+                                                errorMessage: '', // Mensagem de Erro personalizada
+                                                attributePlaceholder: '', // placeholder 
+                                                attributeMinlength: 4, // minlength 
+                                                attributeMaxlength: 100, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
+                                                attributePattern: 'Caracter', // Inteiro, Caracter, Senha
+                                                attributeAutocomplete: 'on', // on, off ]
+                                                attributeRequired: true,
+                                                attributeReadOnly: true,
+                                                attributeDisabled: false,
+                                                attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
+                                            }}
+                                        />
+                                    </form>
                                 </div>
                             )}
                         </div>
 
                         <div className="col-12 col-sm-6">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {(checkWordInArray(getURI, 'consultar')) ? (
                                     <div style={formGroupStyle}>
                                         <label htmlFor="unit"
@@ -3764,10 +3958,12 @@
                     </div>
                     <div className="row">
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {dataLoading ? (
                                     <div>
                                         <div>&nbsp;</div>
@@ -3859,10 +4055,12 @@
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {checkWordInArray(getURI, 'consultar') ? (
                                     <div style={formGroupStyle}>
                                         <label
@@ -3907,10 +4105,12 @@
                         </div>
 
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 <div style={formGroupStyle}>
                                     <label
                                         htmlFor="sexo_biologico_id"
@@ -3969,10 +4169,12 @@
                 <div className="border border-top-0 mb-4 p-4">
                     <div className="row">
                         <div className="col-12 col-sm-6">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 {checkWordInArray(getURI, 'consultar') ? (
                                     <div style={formGroupStyle}>
                                         <label
@@ -4017,10 +4219,12 @@
                                 <label htmlFor="TipoEscola" style={formLabelStyle} className="form-label">
                                     Escolaridade<strong style={requiredField}>*</strong>
                                 </label>
-                                <form className="was-validated" onSubmit={(e) => {
-                                    e.preventDefault();
-                                    submitAllForms(`filtro-${origemForm}`);
-                                }}>
+                                <form
+                                    className="was-validated"
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        submitAllForms(`filtro-${origemForm}`);
+                                    }}>
                                     {/* ESCOLARIDADE */}
                                     {typeof AppSelectRadio !== "undefined" ? (
                                         <div>
@@ -4082,7 +4286,25 @@
                                 e.preventDefault();
                                 submitAllForms(`filtro-${origemForm}`);
                             }}>
-                                <AppNomeEscola formData={formData} setFormData={setFormData} parametros={parametros} />
+                                {/* CAMPO NOME ESCOLA */}
+                                <AppText parametros={parametros} formData={formData} setFormData={setFormData}
+                                    fieldAttributes={{
+                                        attributeOrigemForm: `${origemForm}`,
+                                        labelField: 'Nome da Escola',
+                                        labelColor: 'black', // gray, red, black,
+                                        nameField: 'NomeEscola',
+                                        errorMessage: '', // Mensagem de Erro personalizada
+                                        attributePlaceholder: '', // placeholder 
+                                        attributeMinlength: 4, // minlength 
+                                        attributeMaxlength: 150, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
+                                        attributePattern: 'Caracter', // Inteiro, Caracter, Senha
+                                        attributeAutocomplete: 'on', // on, off ]
+                                        attributeRequired: true,
+                                        attributeReadOnly: false,
+                                        attributeDisabled: false,
+                                        attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
+                                    }}
+                                />
                             </form>
                         </div>
                         <div className="col-12 col-sm-6">
@@ -4134,10 +4356,12 @@
                 <div className="border border-top-0 mb-4 p-4">
                     <div className="row">
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
                                         attributeOrigemForm: `${origemForm}`,
@@ -4159,10 +4383,12 @@
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
                                         attributeOrigemForm: `${origemForm}`,
@@ -4184,10 +4410,12 @@
                             </form>
                         </div>
                         <div className="col-12 col-sm-4">
-                            <form className="was-validated" onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
+                            <form
+                                className="was-validated"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
                                         attributeOrigemForm: `${origemForm}`,
@@ -4321,6 +4549,22 @@
             );
         }
 
+        {/* CALCULA IDADE */ }
+        const calcularIdade = (Nascimento) => {
+            const hoje = new Date();
+            const nascimento = new Date(Nascimento);
+            let idade = hoje.getFullYear() - nascimento.getFullYear();
+            const mesAtual = hoje.getMonth();
+            const diaAtual = hoje.getDate();
+
+            // Ajusta a idade caso o mês ou dia atual seja antes do mês/dia de nascimento
+            if (mesAtual < nascimento.getMonth() || (mesAtual === nascimento.getMonth() && diaAtual < nascimento.getDate())) {
+                idade--;
+            }
+
+            return idade;
+        };
+
         {/* useEffect PRINCIPAL */ }
         React.useEffect(() => {
             const loadData = async () => {
@@ -4417,10 +4661,28 @@
         }, [formData.CEP]);
         {/* formData */ }
         React.useEffect(() => {
-            console.log("-------------------");
+            // console.log("-------------------");
             // console.log("src/ app/ Views/ fia/ ptpa/ adolescentes/ AppForm.php");
             // console.log("FormData atualizado:", formData);
         }, [formData]);
+        {/* OPCIONAL 16 */ }
+        React.useEffect(() => {
+            console.log("-----------");
+            console.log("Opcional 16");
+            const idade = calcularIdade(formData['Nascimento']);
+            setTimeout(() => {
+                // Valida se a idade está dentro do intervalo permitido
+                if (idade < 16 || idade > 18) {
+                    console.log(`Idade válida: ${idade} anos.`);
+                    setOpcional16(true);
+                } else {
+                    console.log(`Idade inválida: ${idade} anos.`);
+                    setIsCPFOptional(false);
+                    setOpcional16(false);
+                }
+            }, 100);
+
+        }, [formData['Nascimento']]);
 
         {/* Styles */ }
         const formGroupStyle = {
@@ -4461,10 +4723,12 @@
                         {renderConsulta()}
                     </div>
                 )}
-                <form className="was-validated" onSubmit={(e) => {
-                    e.preventDefault();
-                    submitAllForms(`filtro-${origemForm}`);
-                }}>
+                <form
+                    className="was-validated"
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        submitAllForms(`filtro-${origemForm}`);
+                    }}>
                     {formData.id !== 'erro' && (
                         <div>
                             <input
@@ -4628,10 +4892,12 @@
 
                 {(isChoiceMade && !checkWordInArray(getURI, 'consultar')) && (
                     <div className="b-3 p-3">
-                        <form className="was-validated" onSubmit={(e) => {
-                            e.preventDefault();
-                            submitAllForms(`filtro-${origemForm}`);
-                        }}>
+                        <form
+                            className="was-validated"
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                submitAllForms(`filtro-${origemForm}`);
+                            }}>
                             {(atualizar_id !== 'erro') && (
                                 <input type="hidden" id="id" name="id" value={atualizar_id} />
                             )}

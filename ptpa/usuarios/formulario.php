@@ -26,13 +26,13 @@ $parametros_backend = array(
         // 
         return (
             <div>
-                {debugMyPrint?(
+                {debugMyPrint ? (
                     <div className="row">
                         <div className="alert alert-danger" role="alert">
-                                Você esta utilizando o a Tela em modo DEBUG nenhuma API com relação a Banco de Dados irá funcionar
+                            Você esta utilizando o a Tela em modo DEBUG nenhuma API com relação a Banco de Dados irá funcionar
                         </div>
                     </div>
-                ):null}
+                ) : null}
                 <div className="m-3">
                     <form className="row g-3 needs-validation" noValidate>
                         <div className="col-md-4">

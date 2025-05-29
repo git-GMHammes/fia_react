@@ -14,6 +14,7 @@
         const getURI = parametros.getURI || [];
         const labelField = fieldAttributes.labelField || '';
         const nameField = fieldAttributes.nameField || 'AppTextName';
+        const labelColor = fieldAttributes.labelColor || 'black';
         const attributeMin = fieldAttributes.attributeMin || '';
         const attributeMax = fieldAttributes.attributeMax || '';
         const attributeRequired = fieldAttributes.attributeRequired || false;
@@ -730,15 +731,7 @@
             left: '20px',
             backgroundColor: 'white',
             padding: '0 5px',
-        };
-
-        const formLabelStyle2 = {
-            position: 'absolute',
-            top: '-15px',
-            left: '20px',
-            backgroundColor: 'white',
-            padding: '0 5px',
-            color: 'gray',
+            color: labelColor,
         };
 
         const requiredField = {
@@ -760,7 +753,7 @@
                     <>
                         <label
                             htmlFor={nameField}
-                            style={formLabelStyle2}
+                            style={formLabelStyle}
                             className="form-label"
                         >
                             {labelField}
@@ -800,9 +793,7 @@
                     <div style={formGroupStyle}>
                         <label
                             htmlFor={nameField}
-                            style={checkWordInArray(getURI, 'alocarfuncionario') && checkWordInArray(getURI, 'consultar') ||
-                                checkWordInArray(getURI, 'alocarfuncionario') && checkWordInArray(getURI, 'exibir') ||
-                                checkWordInArray(getURI, 'periodo') && checkWordInArray(getURI, 'exibir') ? formLabelStyle2 : formLabelStyle}
+                            style={formLabelStyle}
                             className="form-label"
                         >
                             {labelField}
