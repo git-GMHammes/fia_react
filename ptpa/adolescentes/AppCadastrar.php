@@ -5,7 +5,7 @@ $usersession = (session()->get('user_session')) ? (session()->get('user_session'
 
 $parametros_backend = array(
     'title' => isset($metadata['page_title']) ? ($metadata['page_title']) : ('TITULO NÃO INFORMADO'),
-    'DEBUG_MY_PRINT' => false,
+    'DEBUG_MY_PRINT' => true,
     'user_session' => $usersession,
     'request_scheme' => $_SERVER['REQUEST_SCHEME'],
     'server_name' => $_SERVER['SERVER_NAME'],

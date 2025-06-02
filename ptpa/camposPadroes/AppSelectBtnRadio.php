@@ -33,7 +33,7 @@
         const api_get = fieldAttributes.api_get || 'api/get';
         const api_post = fieldAttributes.api_post || 'api/post';
         const api_filter = fieldAttributes.api_filter || 'api/filter';
-        const getVar_page = '?page=1&limit=90000';
+        const getVar_page = '?page=1&limit=1000';
 
         const [message, setMessage] = React.useState({
             show: false,

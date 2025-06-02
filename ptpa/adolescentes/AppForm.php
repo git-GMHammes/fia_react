@@ -248,7 +248,7 @@
         // Variáveis de APIs
         const [listaSexos, setListaSexos] = React.useState([]);
         const [ListPeriodos, setListPeriodos] = React.useState([]);
-        const [generos, setGeneros] = React.useState([]);
+        const [Listgeneros, setListGeneros] = React.useState([]);
         const [escolariades, setEscolaridades] = React.useState([]);
         const [municipios, setMunicipios] = React.useState([]);
 
@@ -313,8 +313,8 @@
                 }));
             } else if (option === 'certidao') {
                 {/* CERTIDÃO - CAMPOS OBRIGATÓRIOS */ }
-                console.log(`------------------------`);
-                console.log(`option === 'certidao'`);
+                // console.log(`------------------------`);
+                // console.log(`option === 'certidao'`);
                 setFormData((prev) => ({
                     ...prev,
                     CPF: ''
@@ -554,11 +554,11 @@
         const handleChange = (event) => {
             const { name, value, checked } = event.target;
 
-            console.log('--------------------------------');
-            console.log('handleChange');
-            console.log('--------------------------------');
-            console.log('name handleChange: ', name);
-            console.log('value handleChange: ', value);
+            // console.log('--------------------------------');
+            // console.log('handleChange');
+            // console.log('--------------------------------');
+            // console.log('name handleChange: ', name);
+            // console.log('value handleChange: ', value);
 
             setFormData((prev) => ({
                 ...prev,
@@ -859,45 +859,6 @@
             }
         };
 
-        // POST fetchPostUnidade
-        const fetchPostUnidade = async (formData = {}, custonBaseURL = base_url, custonApiPostObjeto = api_get_selectunidade, customPage = '') => {
-            // console.log('-------------------');
-            // console.log('fetchPostUnidade...');
-            // console.log('-------------------');
-            const queryParams = new URLSearchParams(formData).toString();
-            const url = `${custonBaseURL}${custonApiPostObjeto}${customPage}?limit=90000&${queryParams}`;
-            // console.log('fetchPostUnidade url:', url);
-
-            try {
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
-                const data = await response.json();
-                if (data.result && Array.isArray(data.result.dbResponse) && data.result.dbResponse.length > 0) {
-                    const dbResponse = data.result.dbResponse;
-                    // console.log('fetchPostUnidade dbResponse ::', dbResponse);
-                    setUnits(dbResponse);
-                    setOriginalUnits(dbResponse);
-                    setDataLoading(false);
-                    return true;
-                } else {
-                    setMessage({
-                        show: false,
-                        type: 'light',
-                        message: 'Não foram encontradas Unidades cadastradas'
-                    });
-                    setIsLoading(false);
-                }
-            } catch (error) {
-                console.error('Erro ao enviar dados:', error);
-                // Aqui você pode adicionar lógica adicional para exibir o erro para o usuário
-                return false;
-            }
-        };
-
         const fetchAdolescentes = async () => {
             setIsLoading(true);
             const url = base_url + api_get_atualizar_adolescente;
@@ -1004,7 +965,7 @@
                     setMessage({
                         show: true,
                         type: 'light',
-                        message: 'Não foram encontradas objeto cadastradas'
+                        message: 'Não foram encontradas adolescentes cadastrados'
                     });
                 }
             } catch (error) {
@@ -1014,62 +975,72 @@
             }
         };
 
-        // Fetch para obter os Sexos
-        const fetchSexos = async () => {
+        {/* LISTAR SEXO BIOLOGICO */ }
+        const fetchGetSexo = async (custonBaseURL = base_url, custonApiGetObjeto = api_get_sexo, customPage = '?limit=10&page=1') => {
+            // console.log('---------------');
+            // console.log('fetchGetSexo...');
+            // console.log('---------------');
+            const url = custonBaseURL + custonApiGetObjeto + customPage;
+            // console.log('url :: ', url);
             try {
-                const url = base_url + api_get_sexo;
-                // console.log('fetchSexos url:', url);
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({})
-                });
+                const response = await fetch(url);
                 const data = await response.json();
-                // console.log('fetchSexos data:', data);
-                if (data.result && data.result.dbResponse && data.result.dbResponse.length > 0) {
-                    const setDbSexo = data.result.dbResponse;
-                    // console.log('setDbSexo :: ', setDbSexo);
-                    setListaSexos(setDbSexo);
-                    setDataLoading(false);
+                console.log('data - fetchGetSexo :: ', data);
+                if (data.result && Array.isArray(data.result.dbResponse) && data.result.dbResponse.length > 0) {
+                    const dbResponse = data.result.dbResponse;
+                    setListaSexos(dbResponse);
+                    // 
+                } else {
+                    setMessage({
+                        show: true,
+                        type: 'light',
+                        message: 'Campo Sexo esta vazio'
+                    });
+                    setIsLoading(false);
                 }
+
             } catch (error) {
-                setError('Erro ao carregar Sexos: ' + error.message);
+                console.error('Erro ao enviar dados:', error);
+                setMessage({
+                    show: true,
+                    type: 'light',
+                    message: 'Erro ao carregar Unidades: ' + error.message
+                });
             }
         };
 
-        // Fetch para obter os Escolaridade - DECREPTO
-        // const fetchEscolaridade = async () => {
-        // try {
-        // console.log('----------------------------------');
-        // console.log('fetchEscolaridade');
-        // console.log('----------------------------------');
-        // const url = base_url + api_get_escolaridade;
-        // console.log('url :: ', url)
-        // const response = await fetch(url);
-        // const data = await response.json();
-        // console.log('const data :: ', data);
-        // if (data.result && data.result.dbResponse && data.result.dbResponse.length > 0) {
-        // console.log('fetchEscolaridade data.result.dbResponse :: ', data.result.dbResponse);
-        // setEscolaridades(data.result.dbResponse);
-        // }
-        // } catch (error) {
-        // setError('Erro ao carregar Escolaridade: ' + error.message);
-        // }
-        // };
-
-        // Fetch para obter os Gêneros
-        const fetchGeneros = async () => {
+        {/* LISTAR IDENTIDADE DE GENERO */ }
+        const fetchPostIdentidadeGenero = async (custonBaseURL = base_url, custonApiPostObjeto = api_post_genero_filtrar, customPage = '?limit=100&page=1') => {
+            console.log('----------------------------');
+            console.log('fetchPostIdentidadeGenero...');
+            console.log('----------------------------');
+            const url = custonBaseURL + custonApiPostObjeto + customPage;
+            console.log('url :: ', url);
+            const setData = formData;
             try {
-                const response = await fetch(base_url + api_get_genero)
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(setData),
+                });
                 const data = await response.json();
-                if (data.result && data.result.dbResponse && data.result.dbResponse.length > 0) {
-                    // console.log('fetchGeneros data.result.dbResponse :: ', data.result.dbResponse);
-                    setGeneros(data.result.dbResponse);
+                console.log('data - fetchPostIdentidadeGenero :: ', data);
+                if (data.result && Array.isArray(data.result.dbResponse) && data.result.dbResponse.length > 0) {
+                    const dbResponse = data.result.dbResponse;
+                } else {
+                    setMessage({
+                        show: true,
+                        type: 'light',
+                        message: 'Falha ao enviar dados'
+                    });
+                    setIsLoading(false);
                 }
             } catch (error) {
-                setError('Erro ao carregar Gêneros: ' + error.message);
+                console.error('Erro ao enviar dados:', error);
+                // Aqui você pode adicionar lógica adicional para exibir o erro para o usuário
+                return false;
             }
         };
 
@@ -1132,26 +1103,6 @@
             }
         };
 
-        // Fetch para obter os Municípios
-        const fetchPeriodos1 = async () => {
-            try {
-                const response = await fetch(base_url + api_get_periodo, {
-                    method: 'POST', // Define o método como POST
-                    headers: {
-                        'Content-Type': 'application/json' // Define o tipo de conteúdo como JSON
-                    },
-                    body: JSON.stringify({}) // Corpo da requisição vazio
-                });
-                const data = await response.json();
-                if (data.result && data.result.dbResponse && data.result.dbResponse.length > 0) {
-                    // console.log('fetchPeriodos[1]: ', data);
-                    setListPeriodos(data.result.dbResponse);
-                }
-            } catch (error) {
-                setError('Erro ao carregar Periodos: ' + error.message);
-            }
-        };
-
         if (debugMyPrint && error) {
             return <div className="d-flex justify-content-center align-items-center min-vh-100">
                 <div className="alert alert-danger" role="alert">
@@ -1168,21 +1119,124 @@
             }, 4000);
         };
 
-        // Função para verificar se uma palavra está presente em uma string
-        const generoOptions = [
-            { id: '1', genero: 'Não Opinar' },
-            { id: '2', genero: 'Transgênero' },
-            { id: '3', genero: 'Não-binário' },
-            { id: '4', genero: 'Cisgênero' },
-            { id: '5', genero: 'Agênero' },
-            { id: '6', genero: 'Gênero-Fluido' },
-            { id: '7', genero: 'Bigênero' },
-            { id: '8', genero: 'Pangênero' },
-            { id: '9', genero: 'Genderqueer' },
-            { id: '10', genero: 'Two-Spirit' },
-            { id: '11', genero: 'Demiboy' },
-            { id: '12', genero: 'Demigirl' },
-        ];
+        {/* useEffect PRINCIPAL */ }
+        React.useEffect(() => {
+            const loadData = async () => {
+                // console.log('React.useEffect(() => {}...');
+                setIsLoading(true);
+
+                try {
+                    // Usar Promise.all para fazer todas as chamadas em paralelo
+                    const [adolescentesData, sexosData, unidadesData, generosData, municipiosData] =
+                        await Promise.all([
+                            fetchAdolescentes(),
+                            fetchPostIdentidadeGenero(),
+                            fetchGetSexo(),
+                            fetchGeneros(),
+                            fetchMunicipios(),
+                        ]);
+                    // console.log('Proicessados: fetchAdolescentes(), etchSexos(), fetchPostUnidade(), fetchGeneros(), fetchMunicipios()...');
+                } catch (error) {
+                    console.error('Erro ao carregar dados:', error);
+                } finally {
+                    setTimeout(() => {
+                        setIsLoading(false);
+                    }, 500);
+
+                }
+            };
+
+            loadData();
+        }, []);
+        {/* formData.unit, formData.unidade_id */ }
+        React.useEffect(() => {
+            // Verificar qual campo foi alterado por último e sincronizar o outro
+            const lastChanged = formData.unit !== formData.unidade_id ? 'unit' : 'unidade_id';
+
+            if (lastChanged === 'unit' && formData.unit !== formData.unidade_id) {
+                setFormData(prevData => ({
+                    ...prevData,
+                    unidade_id: formData.unit
+                }));
+            } else if (lastChanged === 'unidade_id' && formData.unidade_id !== formData.unit) {
+                setFormData(prevData => ({
+                    ...prevData,
+                    unit: formData.unidade_id
+                }));
+            }
+        }, [formData.unit, formData.unidade_id]);
+        {/* formData.termo */ }
+        React.useEffect(() => {
+            setTermoAceito(formData.termo || false);
+        }, [formData.termo]);
+        {/* ListPeriodos - formData.Nascimento */ }
+        React.useEffect(() => {
+            if (ListPeriodos.length > 0) {
+                ListPeriodos.forEach((periodo) => {
+                    let data_periodo = periodo.periodo_data_inicio
+                        ? periodo.periodo_data_inicio
+                        : '';
+
+                    if (formData.Nascimento) {
+                        let recebe_data_15_165 = funcCalculateDates(formData.Nascimento);
+
+                        // Convertendo as datas corretamente
+                        let dataPeriodo = new Date(data_periodo);
+                        // Convertendo de DD/MM/YYYY para Date
+                        let minDate = new Date(recebe_data_15_165.minDate.split('/').reverse().join('-'));
+                        let maxDate = new Date(recebe_data_15_165.maxDate.split('/').reverse().join('-'));
+
+                        // Normalizar as datas removendo o horário
+                        dataPeriodo.setHours(0, 0, 0, 0);
+                        minDate.setHours(0, 0, 0, 0);
+                        maxDate.setHours(0, 0, 0, 0);
+
+                        if (dataPeriodo >= minDate && dataPeriodo <= maxDate) {
+                            // console.log('Data está no período válido (15 a 16.5 anos)')
+                        } else {
+                            setMessage({
+                                show: true,
+                                type: 'light',
+                                // message: 'A Unidade selecionada não possui vagas para a idade de nascimento informado'
+                                message: 'Sem vagas na unidade para esse período'
+                            });
+                        }// console.log
+                    }
+                });
+            }
+        }, [ListPeriodos, formData.Nascimento]);
+        {/* formData.CEP */ }
+        React.useEffect(() => {
+            // Só executa se houver um CEP válido no formData
+            if (formData.CEP && formData.CEP.length >= 8) {
+                // console.log("Ordenando unidades pelo CEP:", formData.CEP);
+                orderUnitsByCEPProximity(formData.CEP);
+            }
+        }, [formData.CEP]);
+        {/* formData */ }
+        React.useEffect(() => {
+            // console.log("-------------------");
+            // console.log("src/ app/ Views/ fia/ ptpa/ adolescentes/ AppForm.php");
+            // console.log("FormData atualizado:", formData);
+        }, [formData]);
+        {/* OPCIONAL 16 */ }
+        React.useEffect(() => {
+            // console.log("-----------");
+            // console.log("Opcional 16");
+            const idade = calcularIdade(formData['Nascimento']);
+            setTimeout(() => {
+                // Valida se a idade está dentro do intervalo permitido
+                if (idade < 16 || idade > 18) {
+                    // console.log(`Idade válida: ${idade} anos.`);
+                    setOpcional16(true);
+                } else {
+                    // console.log(`Idade inválida: ${idade} anos.`);
+                    setIsCPFOptional(false);
+                    setOpcional16(false);
+                }
+            }, 100);
+
+        }, [formData['Nascimento']]);
 
         {/* RENDER CONSULTA BK*/ }
         const renderConsulta = () => {
@@ -2043,71 +2097,63 @@
                     </div>
                     <div className="row">
                         <div className="col-12 col-sm-6">
-                            {(formData.dropMunicipio) ? (
-                                <div>
-                                    {/* MUNICÍPIO/SELECT */}
-                                    <form
-                                        className="was-validated"
-                                        onSubmit={(e) => {
-                                            e.preventDefault();
-                                            submitAllForms(`filtro-${origemForm}`);
-                                        }}>
-                                        <AppSelect
-                                            parametros={parametros}
-                                            formData={formData}
-                                            setFormData={setFormData}
-                                            fieldAttributes={{
-                                                attributeOrigemForm: `${origemForm}`,
-                                                labelField: 'Municípoio',
-                                                nameField: 'Municipio',
-                                                errorMessage: '', // Mensagem de Erro personalizada
-                                                attributeFieldKey: ['nome_municipio', 'key'], // Alterado para ex. id_municipio 
-                                                attributeFieldName: ['nome_municipio', 'value'], // Alterado o segundo valor para ex. 'value'
-                                                attributeRequired: true,
-                                                attributeDisabled: false,
-                                                objetoArrayKey: [
-                                                    { key: '1', value: 'Opção 1' },
-                                                    { key: '2', value: 'Opção 2' },
-                                                    { key: '3', value: 'Opção 3' },
-                                                    { key: '4', value: 'Opção 4' }
-                                                ],
-                                                api_get: `${api_get_municipio}`,
-                                                api_post: `${api_get_municipio}`,
-                                                api_filter: `${api_get_municipio}`,
-                                            }}
-                                        />
-                                    </form>
-                                </div>
-                            ) : (
-                                <div>
-                                    {/* MUNICÍPIO/TEXT */}
-                                    <form
-                                        className="was-validated"
-                                        onSubmit={(e) => {
-                                            e.preventDefault();
-                                            submitAllForms(`filtro-${origemForm}`);
-                                        }}>
-                                        <AppText parametros={parametros} formData={formData} setFormData={setFormData}
-                                            fieldAttributes={{
-                                                attributeOrigemForm: `${origemForm}`,
-                                                labelField: 'Município',
-                                                labelColor: 'black', // gray, red, black,
-                                                nameField: 'Municipio',
-                                                errorMessage: '', // Mensagem de Erro personalizada
-                                                attributePlaceholder: '', // placeholder 
-                                                attributeMinlength: 4, // minlength 
-                                                attributeMaxlength: 100, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
-                                                attributePattern: 'Caracter', // Inteiro, Caracter, Senha
-                                                attributeAutocomplete: 'on', // on, off ]
-                                                attributeRequired: true,
-                                                attributeReadOnly: true,
-                                                attributeDisabled: false,
-                                                attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
-                                            }}
-                                        />
-                                    </form>
-                                </div>
-                            )}
+                            <div style={formGroupStyle}>
+                                <label
+                                    htmlFor={`checkSemNumero`}
+                                    style={formLabelStyle}
+                                    className="form-label"
+                                >
+                                    Municipio *
+                                </label>
+                                {(formData.dropMunicipio) ? (
+                                    <div>
+                                        {/* MUNICÍPIO/SELECT */}
+                                        <form
+                                            className="was-validated"
+                                            onSubmit={(e) => {
+                                                e.preventDefault();
+                                                submitAllForms(`filtro-${origemForm}`);
+                                            }}>
+                                            {/* CAMPO SELECT MUNICÍPIO */}
+                                            <div className="p-2">
+                                                <AppLoading parametros={{
+                                                    tipoLoading: "progress",
+                                                    carregando: dataLoading
+                                                }} />
+                                            </div>
+                                        </form>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        {/* MUNICÍPIO/TEXT */}
+                                        <form
+                                            className="was-validated"
+                                            onSubmit={(e) => {
+                                                e.preventDefault();
+                                                submitAllForms(`filtro-${origemForm}`);
+                                            }}>
+                                            <AppText parametros={parametros} formData={formData} setFormData={setFormData}
+                                                fieldAttributes={{
+                                                    attributeOrigemForm: `${origemForm}`,
+                                                    labelField: 'Município',
+                                                    labelColor: 'black', // gray, red, black,
+                                                    nameField: 'Municipio',
+                                                    errorMessage: '', // Mensagem de Erro personalizada
+                                                    attributePlaceholder: '', // placeholder 
+                                                    attributeMinlength: 4, // minlength 
+                                                    attributeMaxlength: 100, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
+                                                    attributePattern: 'Caracter', // Inteiro, Caracter, Senha
+                                                    attributeAutocomplete: 'on', // on, off ]
+                                                    attributeRequired: true,
+                                                    attributeReadOnly: true,
+                                                    attributeDisabled: false,
+                                                    attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
+                                                }}
+                                            />
+                                        </form>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                         <div className="col-12 col-sm-6">
                             {/* UF */}
@@ -2199,101 +2245,29 @@
                             </form>
                         </div>
                         <div className="col-12 col-sm-6">
-                            <form
-                                className="was-validated"
-                                onSubmit={(e) => {
-                                    e.preventDefault();
-                                    submitAllForms(`filtro-${origemForm}`);
-                                }}>
-                                {dataLoading ? (
-                                    <div>
-                                        <div>&nbsp;</div>
-                                        <AppLoading parametros={{
-                                            tipoLoading: "progress",
-                                            carregando: dataLoading
-                                        }} />
-                                    </div>
-                                ) : (
-                                    (checkWordInArray(getURI, 'consultar')) ? (
-                                        <div>
-                                            <div style={formGroupStyle}>
-                                                <label
-                                                    htmlFor="GeneroIdentidadeId"
-                                                    style={formLabelStyle}
-                                                    className="form-label">Gênero
-                                                    {(checkWordInArray(getURI, 'consultar')) ? null : (<strong style={requiredField}>*</strong>)}
-                                                </label>
-                                                <div className='p-2'>
-                                                    {formData.GeneroIdentidadeId
-                                                        ? formData.GeneroIdentidadeId.split(',').map(id => {
-                                                            const genero = generoOptions.find(g => String(g.id) === id.trim());
-                                                            return genero ? genero.genero : `ID ${id}`;
-                                                        }).join(', ')
-                                                        : <span className="text-muted">Não informado</span>}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div>
-                                            {/* V-2 IDENTIDADE de GENERO */}
-                                            {typeof AppSelectCheck !== "undefined" ? (
-                                                <div style={formGroupStyle}>
-                                                    <label
-                                                        htmlFor="dynamicSelect"
-                                                        style={formLabelStyle}
-                                                        className="form-label"
-                                                    >
-                                                        Gênero
-                                                        <strong style={requiredField}>*</strong>
-                                                    </label>
-                                                    {(isLoading) && (
-                                                        <div className="p-2">
-                                                            <AppLoading parametros={{
-                                                                tipoLoading: "progress",
-                                                                carregando: isLoading
-                                                            }} />
-                                                        </div>
-                                                    )}
-                                                    {(!isLoading) && (
-                                                        <AppSelectCheck
-                                                            parametros={parametros}
-                                                            formData={formData}
-                                                            setFormData={setFormData}
-                                                            fieldAttributes={{
-                                                                attributeOrigemForm: `origemForm`,
-                                                                labelField: 'Gênero',
-                                                                nameField: 'genero_identidade',
-                                                                btnCollor: '', // primary, secondary, success, info, warning, danger, light, dark
-                                                                btnOutline: true, // true ou false
-                                                                btnSize: 'sm', // sm, lg
-                                                                btnRounded: '2', // 2, 5, pill
-                                                                errorMessage: '', // Mensagem de Erro personalizada
-                                                                attributeFieldValue: 'genero', // O que será capturado da API
-                                                                attributeFieldLabel: 'genero', // O que será exibido no form = AppSelect
-                                                                attributeRequired: true,
-                                                                attributeDisabled: false,
-                                                                objetoArrayKey: [
-                                                                    { key: '1', value: 'Opção 1' },
-                                                                    { key: '2', value: 'Opção 2' },
-                                                                    { key: '3', value: 'Opção 3' },
-                                                                    { key: '4', value: 'Opção 4' }
-                                                                ],
-                                                                api_get: `${api_get_genero}`,
-                                                                api_post: `${api_post_genero_cadastrar}`,
-                                                                api_filter: `${api_post_genero_filtrar}`,
-                                                            }}
-                                                        />
-                                                    )}
-                                                </div>
-                                            ) : (
-                                                <div>
-                                                    <p className="text-danger">AppSelectCheck não lacançado.</p>
-                                                </div>
-                                            )}
-                                        </div>
-                                    )
-                                )}
-                            </form>
+                            <div style={formGroupStyle}>
+                                <label
+                                    htmlFor={`checkSemNumero`}
+                                    style={formLabelStyle}
+                                    className="form-label"
+                                >
+                                    Identidade de Genero *
+                                </label>
+                                <div>
+                                    <div>&nbsp;</div>
+                                    <AppLoading parametros={{
+                                        tipoLoading: "progress",
+                                        carregando: dataLoading
+                                    }} />
+                                </div>
+                                <form
+                                    className="was-validated"
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        submitAllForms(`filtro-${origemForm}`);
+                                    }}>
+                                </form>
+                            </div>
                         </div>
                     </div>
                     <div className="row">
@@ -2923,71 +2897,64 @@
 
                     <div className="row">
                         <div className="col-12 col-sm-6">
-                            {(formData.dropMunicipio) ? (
-                                <div>
-                                    {/* MUNICÍPIO/SELECT */}
-                                    <form
-                                        className="was-validated"
-                                        onSubmit={(e) => {
-                                            e.preventDefault();
-                                            submitAllForms(`filtro-${origemForm}`);
-                                        }}>
-                                        <AppSelect
-                                            parametros={parametros}
-                                            formData={formData}
-                                            setFormData={setFormData}
-                                            fieldAttributes={{
-                                                attributeOrigemForm: `${origemForm}`,
-                                                labelField: 'Municípoio',
-                                                nameField: 'Municipio',
-                                                errorMessage: '', // Mensagem de Erro personalizada
-                                                attributeFieldKey: ['nome_municipio', 'key'], // Alterado para ex. id_municipio 
-                                                attributeFieldName: ['nome_municipio', 'value'], // Alterado o segundo valor para ex. 'value'
-                                                attributeRequired: true,
-                                                attributeDisabled: false,
-                                                objetoArrayKey: [
-                                                    { key: '1', value: 'Opção 1' },
-                                                    { key: '2', value: 'Opção 2' },
-                                                    { key: '3', value: 'Opção 3' },
-                                                    { key: '4', value: 'Opção 4' }
-                                                ],
-                                                api_get: `${api_get_municipio}`,
-                                                api_post: `${api_get_municipio}`,
-                                                api_filter: `${api_get_municipio}`,
-                                            }}
-                                        />
-                                    </form>
-                                </div>
-                            ) : (
-                                <div>
-                                    {/* MUNICÍPIO/TEXT */}
-                                    <form
-                                        className="was-validated"
-                                        onSubmit={(e) => {
-                                            e.preventDefault();
-                                            submitAllForms(`filtro-${origemForm}`);
-                                        }}>
-                                        <AppText parametros={parametros} formData={formData} setFormData={setFormData}
-                                            fieldAttributes={{
-                                                attributeOrigemForm: `${origemForm}`,
-                                                labelField: 'Município',
-                                                labelColor: 'black', // gray, red, black,
-                                                nameField: 'Municipio',
-                                                errorMessage: '', // Mensagem de Erro personalizada
-                                                attributePlaceholder: '', // placeholder 
-                                                attributeMinlength: 4, // minlength 
-                                                attributeMaxlength: 100, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
-                                                attributePattern: 'Caracter', // Inteiro, Caracter, Senha
-                                                attributeAutocomplete: 'on', // on, off ]
-                                                attributeRequired: true,
-                                                attributeReadOnly: true,
-                                                attributeDisabled: false,
-                                                attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
-                                            }}
-                                        />
-                                    </form>
-                                </div>
-                            )}
+                            <div style={formGroupStyle}>
+                                <label
+                                    htmlFor={`checkSemNumero`}
+                                    style={formLabelStyle}
+                                    className="form-label"
+                                >
+                                    Municipio *
+                                </label>
+                                {(formData.dropMunicipio) ? (
+                                    <div>
+                                        {/* MUNICÍPIO/SELECT */}
+                                        <div className="p-2">
+                                            <AppLoading parametros={{
+                                                tipoLoading: "progress",
+                                                carregando: dataLoading
+                                            }} />
+                                        </div>
+                                        <form
+                                            className="was-validated"
+                                            onSubmit={(e) => {
+                                                e.preventDefault();
+                                                submitAllForms(`filtro-${origemForm}`);
+                                            }}>
+                                            {/* CAMPO SELECT MUNICIPIO */}
+
+                                        </form>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        {/* MUNICÍPIO/TEXT */}
+                                        <form
+                                            className="was-validated"
+                                            onSubmit={(e) => {
+                                                e.preventDefault();
+                                                submitAllForms(`filtro-${origemForm}`);
+                                            }}>
+                                            <AppText parametros={parametros} formData={formData} setFormData={setFormData}
+                                                fieldAttributes={{
+                                                    attributeOrigemForm: `${origemForm}`,
+                                                    labelField: 'Município',
+                                                    labelColor: 'black', // gray, red, black,
+                                                    nameField: 'Municipio',
+                                                    errorMessage: '', // Mensagem de Erro personalizada
+                                                    attributePlaceholder: '', // placeholder 
+                                                    attributeMinlength: 4, // minlength 
+                                                    attributeMaxlength: 100, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
+                                                    attributePattern: 'Caracter', // Inteiro, Caracter, Senha
+                                                    attributeAutocomplete: 'on', // on, off ]
+                                                    attributeRequired: true,
+                                                    attributeReadOnly: true,
+                                                    attributeDisabled: false,
+                                                    attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
+                                                }}
+                                            />
+                                        </form>
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         <div className="col-12 col-sm-6">
@@ -3100,44 +3067,13 @@
                                                             Gênero
                                                             <strong style={requiredField}>*</strong>
                                                         </label>
-                                                        {(isLoading) && (
-                                                            <div className="p-2">
-                                                                <AppLoading parametros={{
-                                                                    tipoLoading: "progress",
-                                                                    carregando: isLoading
-                                                                }} />
-                                                            </div>
-                                                        )}
-                                                        {(!isLoading) && (
-                                                            <AppSelectCheck
-                                                                parametros={parametros}
-                                                                formData={formData}
-                                                                setFormData={setFormData}
-                                                                fieldAttributes={{
-                                                                    attributeOrigemForm: `origemForm`,
-                                                                    labelField: 'Gênero',
-                                                                    nameField: 'genero_identidade',
-                                                                    btnCollor: '', // primary, secondary, success, info, warning, danger, light, dark
-                                                                    btnOutline: true, // true ou false
-                                                                    btnSize: 'sm', // sm, lg
-                                                                    btnRounded: '2', // 2, 5, pill
-                                                                    errorMessage: '', // Mensagem de Erro personalizada
-                                                                    attributeFieldValue: 'genero', // O que será capturado da API
-                                                                    attributeFieldLabel: 'genero', // O que será exibido no form = AppSelect
-                                                                    attributeRequired: true,
-                                                                    attributeDisabled: false,
-                                                                    objetoArrayKey: [
-                                                                        { key: '1', value: 'Opção 1' },
-                                                                        { key: '2', value: 'Opção 2' },
-                                                                        { key: '3', value: 'Opção 3' },
-                                                                        { key: '4', value: 'Opção 4' }
-                                                                    ],
-                                                                    api_get: `${api_get_genero}`,
-                                                                    api_post: `${api_post_genero_cadastrar}`,
-                                                                    api_filter: `${api_post_genero_filtrar}`,
-                                                                }}
-                                                            />
-                                                        )}
+                                                        <div className="p-2">
+                                                            <AppLoading parametros={{
+                                                                tipoLoading: "progress",
+                                                                carregando: isLoading
+                                                            }} />
+                                                        </div>
+
                                                     </div>
                                                 ) : (
                                                     <div>
@@ -4226,55 +4162,12 @@
                                         submitAllForms(`filtro-${origemForm}`);
                                     }}>
                                     {/* ESCOLARIDADE */}
-                                    {typeof AppSelectRadio !== "undefined" ? (
-                                        <div>
-                                            {(isLoading) && (
-                                                <div className="p-2">
-                                                    <AppLoading parametros={{
-                                                        tipoLoading: "progress",
-                                                        carregando: isLoading
-                                                    }} />
-                                                </div>
-                                            )}
-                                            {(!isLoading) && (
-                                                <AppSelectRadio
-                                                    parametros={parametros}
-                                                    formData={formData}
-                                                    setFormData={setFormData}
-                                                    fieldAttributes={{
-                                                        attributeOrigemForm: `origemForm`,
-                                                        labelField: 'Escolaridade',
-                                                        nameField: 'Escolaridade',
-                                                        btnCollor: '', // primary, secondary, success, info, warning, danger, light, dark
-                                                        btnOutline: true, // true ou false
-                                                        btnSize: 'sm', // sm, lg
-                                                        btnRounded: '2', // 2, 5, pill
-                                                        errorMessage: '', // Mensagem de Erro personalizada
-                                                        attributeFieldValue: 'escolaridade', // O que será capturado da API
-                                                        attributeFieldLabel: 'escolaridade', // O que será exibido no form = nameField
-                                                        attributeRequired: true,
-                                                        attributeDisabled: false,
-                                                        objetoArrayKey: [
-                                                            { key: '1', value: 'Opção 1' },
-                                                            { key: '2', value: 'Opção 2' },
-                                                            { key: '3', value: 'Opção 3' },
-                                                            { key: '4', value: 'Opção 4' }
-                                                        ],
-                                                        api_get: `${api_get_escolaridade}`,
-                                                        api_post: `${api_post_escolaridade_cadastrar}`,
-                                                        api_filter: `${api_post_escolaridade_filtrar}`,
-                                                    }}
-                                                />
-                                            )}
-                                            {/* api_get: {api_get_escolaridade},*/}
-                                            {/* api_post: {api_post_escolaridade_cadastrar},*/}
-                                            {/* api_filter: {api_post_escolaridade_filtrar},*/}
-                                        </div>
-                                    ) : (
-                                        <div>
-                                            <p className="text-danger">AppSelectRadio não lacançado.</p>
-                                        </div>
-                                    )}
+                                    <div className="p-2">
+                                        <AppLoading parametros={{
+                                            tipoLoading: "progress",
+                                            carregando: isLoading
+                                        }} />
+                                    </div>
 
                                 </form>
                             </div>
@@ -4564,125 +4457,6 @@
 
             return idade;
         };
-
-        {/* useEffect PRINCIPAL */ }
-        React.useEffect(() => {
-            const loadData = async () => {
-                // console.log('React.useEffect(() => {}...');
-                setIsLoading(true);
-
-                try {
-                    // Usar Promise.all para fazer todas as chamadas em paralelo
-                    const [adolescentesData, sexosData, unidadesData, generosData, municipiosData] =
-                        await Promise.all([
-                            fetchAdolescentes(),
-                            fetchSexos(),
-                            fetchPostUnidade(),
-                            fetchGeneros(),
-                            fetchMunicipios(),
-                            // fetchEscolaridade() - DECREPTO
-                        ]);
-                    // console.log('Proicessados: fetchAdolescentes(), etchSexos(), fetchPostUnidade(), fetchGeneros(), fetchMunicipios()...');
-                } catch (error) {
-                    console.error('Erro ao carregar dados:', error);
-                } finally {
-                    setTimeout(() => {
-                        setIsLoading(false);
-                    }, 500);
-
-                }
-            };
-
-            loadData();
-        }, []);
-        {/* formData.unit, formData.unidade_id */ }
-        React.useEffect(() => {
-            // Verificar qual campo foi alterado por último e sincronizar o outro
-            const lastChanged = formData.unit !== formData.unidade_id ? 'unit' : 'unidade_id';
-
-            if (lastChanged === 'unit' && formData.unit !== formData.unidade_id) {
-                setFormData(prevData => ({
-                    ...prevData,
-                    unidade_id: formData.unit
-                }));
-            } else if (lastChanged === 'unidade_id' && formData.unidade_id !== formData.unit) {
-                setFormData(prevData => ({
-                    ...prevData,
-                    unit: formData.unidade_id
-                }));
-            }
-        }, [formData.unit, formData.unidade_id]);
-        {/* formData.termo */ }
-        React.useEffect(() => {
-            setTermoAceito(formData.termo || false);
-        }, [formData.termo]);
-        {/* ListPeriodos - formData.Nascimento */ }
-        React.useEffect(() => {
-            if (ListPeriodos.length > 0) {
-                ListPeriodos.forEach((periodo) => {
-                    let data_periodo = periodo.periodo_data_inicio
-                        ? periodo.periodo_data_inicio
-                        : '';
-
-                    if (formData.Nascimento) {
-                        let recebe_data_15_165 = funcCalculateDates(formData.Nascimento);
-
-                        // Convertendo as datas corretamente
-                        let dataPeriodo = new Date(data_periodo);
-                        // Convertendo de DD/MM/YYYY para Date
-                        let minDate = new Date(recebe_data_15_165.minDate.split('/').reverse().join('-'));
-                        let maxDate = new Date(recebe_data_15_165.maxDate.split('/').reverse().join('-'));
-
-                        // Normalizar as datas removendo o horário
-                        dataPeriodo.setHours(0, 0, 0, 0);
-                        minDate.setHours(0, 0, 0, 0);
-                        maxDate.setHours(0, 0, 0, 0);
-
-                        if (dataPeriodo >= minDate && dataPeriodo <= maxDate) {
-                            // console.log('Data está no período válido (15 a 16.5 anos)')
-                        } else {
-                            setMessage({
-                                show: true,
-                                type: 'light',
-                                message: 'A Unidade selecionada não possui vagas para a idade de nascimento informado'
-                            });
-                        }// console.log
-                    }
-                });
-            }
-        }, [ListPeriodos, formData.Nascimento]);
-        {/* formData.CEP */ }
-        React.useEffect(() => {
-            // Só executa se houver um CEP válido no formData
-            if (formData.CEP && formData.CEP.length >= 8) {
-                // console.log("Ordenando unidades pelo CEP:", formData.CEP);
-                orderUnitsByCEPProximity(formData.CEP);
-            }
-        }, [formData.CEP]);
-        {/* formData */ }
-        React.useEffect(() => {
-            // console.log("-------------------");
-            // console.log("src/ app/ Views/ fia/ ptpa/ adolescentes/ AppForm.php");
-            // console.log("FormData atualizado:", formData);
-        }, [formData]);
-        {/* OPCIONAL 16 */ }
-        React.useEffect(() => {
-            console.log("-----------");
-            console.log("Opcional 16");
-            const idade = calcularIdade(formData['Nascimento']);
-            setTimeout(() => {
-                // Valida se a idade está dentro do intervalo permitido
-                if (idade < 16 || idade > 18) {
-                    console.log(`Idade válida: ${idade} anos.`);
-                    setOpcional16(true);
-                } else {
-                    console.log(`Idade inválida: ${idade} anos.`);
-                    setIsCPFOptional(false);
-                    setOpcional16(false);
-                }
-            }, 100);
-
-        }, [formData['Nascimento']]);
 
         {/* Styles */ }
         const formGroupStyle = {
