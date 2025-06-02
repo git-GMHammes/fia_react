@@ -247,10 +247,10 @@
 
         // Variáveis de APIs
         const [listaSexos, setListaSexos] = React.useState([]);
-        const [ListPeriodos, setListPeriodos] = React.useState([]);
-        const [Listgeneros, setListGeneros] = React.useState([]);
-        const [escolariades, setEscolaridades] = React.useState([]);
-        const [municipios, setMunicipios] = React.useState([]);
+        const [listPeriodos, setListPeriodos] = React.useState([]);
+        const [listgeneros, setListGeneros] = React.useState([]);
+        const [listEscolariades, setEscolaridades] = React.useState([]);
+        const [listMunicipios, setListMunicipios] = React.useState([]);
 
         // Cadastro Sem Numero no endereço -  Estado para armazenar o valor Y/N diretamente
         // const [responsaveis, setResponsaveis] = React.useState([]);
@@ -817,7 +817,7 @@
             }
         };
 
-        // POST Padrão 
+        {/* ENVIAR E-MAIL AO FIM DO CADASTRO */ }
         const fetchPostconfirmaEmail = async (custonBaseURL = base_url, custonApiPostObjeto = api_post_confirma_email) => {
             // console.log('fetchPostconfirmaEmail...');
 
@@ -859,6 +859,7 @@
             }
         };
 
+        {/* ATUALIZAR ADOLESCENTE */ }
         const fetchAdolescentes = async () => {
             setIsLoading(true);
             const url = base_url + api_get_atualizar_adolescente;
@@ -985,7 +986,7 @@
             try {
                 const response = await fetch(url);
                 const data = await response.json();
-                console.log('data - fetchGetSexo :: ', data);
+                // console.log('data - fetchGetSexo :: ', data);
                 if (data.result && Array.isArray(data.result.dbResponse) && data.result.dbResponse.length > 0) {
                     const dbResponse = data.result.dbResponse;
                     setListaSexos(dbResponse);
@@ -1010,106 +1011,70 @@
         };
 
         {/* LISTAR IDENTIDADE DE GENERO */ }
-        const fetchPostIdentidadeGenero = async (custonBaseURL = base_url, custonApiPostObjeto = api_post_genero_filtrar, customPage = '?limit=100&page=1') => {
-            console.log('----------------------------');
-            console.log('fetchPostIdentidadeGenero...');
-            console.log('----------------------------');
-            const url = custonBaseURL + custonApiPostObjeto + customPage;
-            console.log('url :: ', url);
-            const setData = formData;
+        const fetchGetIdentidadeGenero = async (custonBaseURL = base_url, custonApiGetObjeto = api_get_genero, customPage = '?limit=100&page=1') => {
+            // console.log('----------------------------');
+            // console.log('fetchGetIdentidadeGenero...');
+            // console.log('----------------------------');
+            const url = custonBaseURL + custonApiGetObjeto + customPage;
             try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(setData),
-                });
+                const response = await fetch(url);
                 const data = await response.json();
-                console.log('data - fetchPostIdentidadeGenero :: ', data);
+                // console.log('data - fetchGetIdentidadeGenero :: ', data);
                 if (data.result && Array.isArray(data.result.dbResponse) && data.result.dbResponse.length > 0) {
                     const dbResponse = data.result.dbResponse;
+                    setListGeneros(dbResponse);
+                    return dbResponse;
                 } else {
                     setMessage({
                         show: true,
                         type: 'light',
-                        message: 'Falha ao enviar dados'
+                        message: 'Não foram encontradas objeto cadastradas'
                     });
                     setIsLoading(false);
                 }
             } catch (error) {
                 console.error('Erro ao enviar dados:', error);
-                // Aqui você pode adicionar lógica adicional para exibir o erro para o usuário
-                return false;
+                setMessage({
+                    show: true,
+                    type: 'light',
+                    message: 'Erro ao carregar Unidades: ' + error.message
+                });
             }
         };
 
-        // Fetch para obter os Municípios
-        const fetchMunicipios = async () => {
+        {/* LISTAR MUNICIPIOS */ }
+        const fetchGetMunicipios = async (custonBaseURL = base_url, custonApiGetObjeto = api_get_municipio, customPage = '?limit=100&page=1') => {
+            // console.log('----------------------------');
+            // console.log('fetchGetMunicipios...');
+            // console.log('----------------------------');
+            const url = custonBaseURL + custonApiGetObjeto + customPage;
+            // console.log('url :: ', url);
             try {
-                const response = await fetch(base_url + api_get_municipio, {
-                    method: 'POST', // Define o método como POST
-                    headers: {
-                        'Content-Type': 'application/json' // Define o tipo de conteúdo como JSON
-                    },
-                    body: JSON.stringify({}) // Corpo da requisição vazio
-                });
+                const response = await fetch(url);
                 const data = await response.json();
-                if (data.result && data.result.dbResponse && data.result.dbResponse.length > 0) {
-                    // console.log('Municipio: ', data);
-                    setMunicipios(data.result.dbResponse);
-                }
-            } catch (error) {
-                setError('Erro ao carregar Municípios: ' + error.message);
-            }
-        };
-
-        // Fetch para obter os Periodos
-        const fetchPeriodos = async (formData = {}, custonBaseURL = base_url, custonApiPostObjeto = api_get_periodo, customPage = '') => {
-            // console.log('fetchPeriodos... ');
-
-            const url = custonBaseURL + custonApiPostObjeto + customPage + '?limit=90000';
-            // console.log('fetchPeriodos url:', url);
-
-            const setData = formData;
-            // console.log('fetchPeriodos setData ::', setData);
-
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(setData),
-                });
-                const data = await response.json();
-                // console.log('fetchPeriodos data ::', data);
-
+                console.log('data - fetchGetMunicipios :: ', data);
                 if (data.result && Array.isArray(data.result.dbResponse) && data.result.dbResponse.length > 0) {
                     const dbResponse = data.result.dbResponse;
-                    // console.log('fetchPeriodos dbResponse ::', dbResponse);
-                    // 
-                    setListPeriodos(dbResponse);
-                    setPagination('list');
-                    // 
+                    setListMunicipios(dbResponse);
+                    return dbResponse;
                 } else {
-                    setListPeriodos([]);
+                    setMessage({
+                        show: true,
+                        type: 'light',
+                        message: 'Não foram encontradas objeto cadastradas'
+                    });
                     setIsLoading(false);
                 }
+
             } catch (error) {
                 console.error('Erro ao enviar dados:', error);
-                // Aqui você pode adicionar lógica adicional para exibir o erro para o usuário
-                return false;
+                setMessage({
+                    show: true,
+                    type: 'light',
+                    message: 'Erro ao carregar Unidades: ' + error.message
+                });
             }
         };
-
-        if (debugMyPrint && error) {
-            return <div className="d-flex justify-content-center align-items-center min-vh-100">
-                <div className="alert alert-danger" role="alert">
-                    {error}
-                </div>
-            </div>
-        }
 
         // Função para redirecionar após 4 segundos
         const redirectTo = (url) => {
@@ -1121,32 +1086,25 @@
 
         {/* useEffect PRINCIPAL */ }
         React.useEffect(() => {
-            const loadData = async () => {
-                // console.log('React.useEffect(() => {}...');
-                setIsLoading(true);
+            setIsLoading(true);
 
-                try {
-                    // Usar Promise.all para fazer todas as chamadas em paralelo
-                    const [adolescentesData, sexosData, unidadesData, generosData, municipiosData] =
-                        await Promise.all([
-                            fetchAdolescentes(),
-                            fetchPostIdentidadeGenero(),
-                            fetchGetSexo(),
-                            fetchGeneros(),
-                            fetchMunicipios(),
-                        ]);
-                    // console.log('Proicessados: fetchAdolescentes(), etchSexos(), fetchPostUnidade(), fetchGeneros(), fetchMunicipios()...');
-                } catch (error) {
+            Promise.all([
+                fetchAdolescentes(),
+                fetchGetIdentidadeGenero(),
+                fetchGetMunicipios(),
+                fetchGetSexo(),
+            ])
+                .then(([adolescentesData, sexosData, unidadesData, generosData, municipiosData]) => {
+                    // Processar dados aqui
+                })
+                .catch(error => {
                     console.error('Erro ao carregar dados:', error);
-                } finally {
+                })
+                .finally(() => {
                     setTimeout(() => {
                         setIsLoading(false);
                     }, 500);
-
-                }
-            };
-
-            loadData();
+                });
         }, []);
         {/* formData.unit, formData.unidade_id */ }
         React.useEffect(() => {
@@ -1169,10 +1127,10 @@
         React.useEffect(() => {
             setTermoAceito(formData.termo || false);
         }, [formData.termo]);
-        {/* ListPeriodos - formData.Nascimento */ }
+        {/* listPeriodos - formData.Nascimento */ }
         React.useEffect(() => {
-            if (ListPeriodos.length > 0) {
-                ListPeriodos.forEach((periodo) => {
+            if (listPeriodos.length > 0) {
+                listPeriodos.forEach((periodo) => {
                     let data_periodo = periodo.periodo_data_inicio
                         ? periodo.periodo_data_inicio
                         : '';
@@ -1204,7 +1162,7 @@
                     }
                 });
             }
-        }, [ListPeriodos, formData.Nascimento]);
+        }, [listPeriodos, formData.Nascimento]);
         {/* formData.CEP */ }
         React.useEffect(() => {
             // Só executa se houver um CEP válido no formData
@@ -1237,6 +1195,141 @@
             }, 100);
 
         }, [formData['Nascimento']]);
+
+
+        {/* Styles */ }
+        const formGroupStyle = {
+            position: 'relative',
+            marginTop: '20px',
+            padding: '5px',
+            borderRadius: '8px',
+            border: '1px solid #000',
+        };
+
+        const formLabelStyle = {
+            position: 'absolute',
+            top: '-15px',
+            left: '20px',
+            backgroundColor: 'white',
+            padding: '0 5px',
+        };
+
+        const formControlStyle = {
+            fontSize: '1rem',
+            borderColor: '#fff',
+        };
+
+        const requiredField = {
+            color: '#FF0000',
+        };
+
+        const dropdownStyle = {
+            ...formGroupStyle, // Reaproveita o estilo base
+            cursor: 'pointer',
+        };
+
+        {/* RENDER CAMPO MUNICIPIO */ }
+        const renderCampoMunicipio = (tipoMunicipio) => {
+            return (
+                <>
+                    {(tipoMunicipio === 'text_list') && (
+                        <>
+                            <input
+                                type="text"
+                                className="form-control w-100"
+                                id="Municipio"
+                                name="Municipio"
+                                value={formData.Municipio || ''}
+                                onChange={handleChange}
+                                onFocus={handleFocus}
+                                list="municipio"
+                                autoComplete="off"
+                                required={true}
+                            />
+                            <datalist id="municipio">
+                                {listMunicipios.map((list_municipios, index) => (
+                                    <option key={index} value={list_municipios.nome_municipio}>
+                                        {list_municipios.nome_municipio}
+                                    </option>
+                                ))}
+                            </datalist>
+                        </>
+                    )}
+                    {(tipoMunicipio === 'drop_select') && (
+                        <>
+                            <select
+                                className="form-select w-100"
+                                id="Municipio"
+                                name="Municipio"
+                                value={formData.Municipio || ''}
+                                onChange={handleChange}
+                                onFocus={handleFocus}
+                                required={true}
+                            >
+                                <option value="">Selecione o Município</option>
+                                {listMunicipios.map((list_municipios, index) => (
+                                    <option key={index} value={list_municipios.nome_municipio}>
+                                        {list_municipios.nome_municipio}
+                                    </option>
+                                ))}
+                            </select>
+                        </>
+                    )}
+
+                </>
+            );
+        };
+
+        {/* RENDER CAMPO UNIDADE */ }
+        const renderCampoUnidade = (tipoUnidade) => {
+            return (
+                <>
+                    {(tipoUnidade === 'text_list') && (
+                        <>
+                            <input
+                                type="text"
+                                className="form-control w-100"
+                                id="Unidade"
+                                name="Unidade"
+                                value={formData.Unidade || ''}
+                                onChange={handleChange}
+                                onFocus={handleFocus}
+                                list="unidades"
+                                autoComplete="off"
+                                required={true}
+                            />
+                            <datalist id="unidades">
+                                {list.map((unit, index) => (
+                                    <option key={index} value={unit.id}>
+                                        {unit.unidades_nome} - {unit.unidades_CEP}
+                                    </option>
+                                ))}
+                            </datalist>
+                        </>
+                    )}
+                    {(tipoUnidade === 'drop_select') && (
+                        <>
+                            <select
+                                className="form-select w-100"
+                                id="unit"
+                                name="unit"
+                                value={formData.unit || ''}
+                                onChange={handleChange}
+                                onFocus={handleFocus}
+                                required={true}
+                            >
+                                <option value="">Selecione a Unidade</option>
+                                {units.map((unit, index) => (
+                                    <option key={index} value={unit.id}>
+                                        {unit.unidades_nome} - {unit.unidades_CEP}
+                                    </option>
+                                ))}
+                            </select>
+                        </>
+                    )}
+                </>
+            );
+        };
 
         {/* RENDER CONSULTA BK*/ }
         const renderConsulta = () => {
@@ -2103,11 +2196,11 @@
                                     style={formLabelStyle}
                                     className="form-label"
                                 >
-                                    Municipio *
+                                    Municipio <strong style={requiredField}>*</strong>
                                 </label>
                                 {(formData.dropMunicipio) ? (
                                     <div>
-                                        {/* MUNICÍPIO/SELECT */}
+                                        {/* CAMPO MUNICIPIO */}
                                         <form
                                             className="was-validated"
                                             onSubmit={(e) => {
@@ -2115,12 +2208,19 @@
                                                 submitAllForms(`filtro-${origemForm}`);
                                             }}>
                                             {/* CAMPO SELECT MUNICÍPIO */}
-                                            <div className="p-2">
-                                                <AppLoading parametros={{
-                                                    tipoLoading: "progress",
-                                                    carregando: dataLoading
-                                                }} />
-                                            </div>
+                                            {(listMunicipios.length === 0) && (
+                                                <div className="p-2">
+                                                    <AppLoading parametros={{
+                                                        tipoLoading: "progress",
+                                                        carregando: dataLoading
+                                                    }} />
+                                                </div>
+                                            )}
+                                            {(listMunicipios.length > 0) && (
+                                                <>
+                                                    {renderCampoMunicipio('drop_select')}
+                                                </>
+                                            )}
                                         </form>
                                     </div>
                                 ) : (
@@ -4456,37 +4556,6 @@
             }
 
             return idade;
-        };
-
-        {/* Styles */ }
-        const formGroupStyle = {
-            position: 'relative',
-            marginTop: '20px',
-            padding: '5px',
-            borderRadius: '8px',
-            border: '1px solid #000',
-        };
-
-        const formLabelStyle = {
-            position: 'absolute',
-            top: '-15px',
-            left: '20px',
-            backgroundColor: 'white',
-            padding: '0 5px',
-        };
-
-        const formControlStyle = {
-            fontSize: '1rem',
-            borderColor: '#fff',
-        };
-
-        const requiredField = {
-            color: '#FF0000',
-        };
-
-        const dropdownStyle = {
-            ...formGroupStyle, // Reaproveita o estilo base
-            cursor: 'pointer',
         };
 
         return (
