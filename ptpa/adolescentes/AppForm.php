@@ -113,7 +113,7 @@
         };
 
         // Sexo Biologico
-        const arraySexoBiologico = ["1", "2"];
+        const arraySexoBiologico = ["Masculino", "Feminino"];
         const randomSexoBiologico = arraySexoBiologico[gerarIndice(arraySexoBiologico)];
 
         // Gerar nome completo
@@ -246,11 +246,20 @@
         // const api_get_responsavel = parametros.api_get_responsavel;
 
         // Variáveis de APIs
-        const [listaSexos, setListaSexos] = React.useState([]);
+        const [listSexos, setListSexos] = React.useState([]);
         const [listPeriodos, setListPeriodos] = React.useState([]);
-        const [listgeneros, setListGeneros] = React.useState([]);
-        const [listEscolariades, setEscolaridades] = React.useState([]);
+        const [listGeneros, setListGeneros] = React.useState([]);
+        const [listEscolaridades, setListEscolaridades] = React.useState([]);
+        const [listUnidades, setListUnidades] = React.useState([]);
         const [listMunicipios, setListMunicipios] = React.useState([]);
+        const [listEtnias, setListEtnias] = React.useState(etniasNoBrasil);
+        const [guardaSexos, setGuardaSexos] = React.useState([]);
+        const [guardaPeriodos, setGuardaPeriodos] = React.useState([]);
+        const [guardaGeneros, setGuardaGeneros] = React.useState([]);
+        const [guardaUnidades, setGuardaUnidades] = React.useState([]);
+        const [guardaMunicipios, setGuardaMunicipios] = React.useState([]);
+        const [guardaEtnias, setGuardaEtnias] = React.useState(etniasNoBrasil);
+        const [guardaEscolaridades, setGuardaEscolaridades] = React.useState(etniasNoBrasil);
 
         // Cadastro Sem Numero no endereço -  Estado para armazenar o valor Y/N diretamente
         // const [responsaveis, setResponsaveis] = React.useState([]);
@@ -268,11 +277,6 @@
         const [choice, setChoice] = React.useState(''); // CPF Obrigatorio
         const [camposObrigatorios, setCamposObrigatorios] = React.useState({});
         const [opcional16, setOpcional16] = React.useState(true);
-
-        // const [openCloseField, setOpenCloseField] = React.useState(false); DECREPTO
-        // const [indexEscolariadde, setIndexEscolariadde] = React.useState(randomInt(4)); DECREPTO
-        // const [prioritizesSelect, setPrioritizesSelect] = React.useState(true); DECREPTO
-        // const [prioritizesOther, setPrioritizesOther] = React.useState(false); DECREPTO
 
         {/* CAMPOS OBRIGATÓRIOS */ }
         const handleChoice = (option) => {
@@ -327,7 +331,6 @@
                     Folha: 'Folha',
                     Livro: 'Livro',
                     Circunscricao: 'Circunscrição',
-                    unidade_id: 'Unidade',
                     //
                     Nome: 'Nome Completo',
                     Email: 'Email',
@@ -354,15 +357,43 @@
             }
         };
 
+
+        {/* CAMPO SEXO */ }
+        const [selectSexoShow, setSelectSexoShow] = React.useState(false);
+        const sexoRef = React.useRef(null);
+
+        {/* CAMPO GENERO */ }
+        const [selectGeneroShow, setSelectGeneroShow] = React.useState(false);
+        const generoRef = React.useRef(null);
+
+        {/* CAMPO UNIDADE */ }
+        const [selectUnidadeShow, setSelectUnidadeShow] = React.useState(false);
+        const unidadeRef = React.useRef(null);
+
+        {/* CAMPO ETINIA */ }
+        const [selectEtniaShow, setSelectEtniaShow] = React.useState(false);
+        const etniaRef = React.useRef(null);
+
+        {/* CAMPO MUNICÍPIO */ }
+        const [selectMunicipioShow, setSelectMunicipioShow] = React.useState(false);
+        const municipioRef = React.useRef(null);
+
+        {/* CAMPO ESCOLARIDADE */ }
+        const [selectEscolaridadeShow, setSelectEscolaridadeShow] = React.useState(false);
+        const escolaridadeRef = React.useRef(null);
+
+        const debounceRef = React.useRef(null);
+
         // Variáveis 
         // const [datasPeriodos, setDatasPeriodos] = React.useState([]);
         // const [showEmptyMessage, setShowEmptyMessage] = React.useState(false);
+
         const [onEscolaridade, setOnEscolaridade] = React.useState(true);
         const [termoAceito, setTermoAceito] = React.useState(false);
-        const [error, setError] = React.useState(null);
-        const [isLoading, setIsLoading] = React.useState(true);
         const [pagination, setPagination] = React.useState(null);
+        const [isLoading, setIsLoading] = React.useState(true);
         const [tabNav, setTabNav] = React.useState('dadosCPF');
+        const [error, setError] = React.useState(null);
         const [message, setMessage] = React.useState({
             show: false,
             type: null,
@@ -431,7 +462,7 @@
             perfil_id: '1',
             PerfilDescricao: null,
             sexo_biologico_id: debugMyPrint ? '1' : null,
-            SexoBiologico: null,
+            SexoBiologico: debugMyPrint ? randomSexoBiologico : null,
             genero_identidade: debugMyPrint ? identidadeGeneroRandom : null,
             GeneroIdentidadeDescricao: null,
             AcessoCadastroID: null,
@@ -531,17 +562,49 @@
             }));
         };
 
-        // Função handleFocus para garantir que o modal não seja exibido ao receber o foco
+        {/* handleFocus */ }
         const handleFocus = (event) => {
             const { name, value } = event.target;
 
-            // console.log('handleChange: ', name);
-            // console.log('handleChange: ', value);
+            // console.log('handleFocus: ', name);
+            // console.log('handleFocus: ', value);
 
             setMessage({ show: false, type: null, message: null });
 
             if (name === 'cep') {
                 setUnits(originalUnits);
+            }
+            {/* CAMPO MUNICÍPIO */ }
+            if (name === "Municipio") {
+                setSelectMunicipioShow(true);
+                setListMunicipios(guardaMunicipios);
+                setTimeout(() => {
+                    municipioRef.current?.focus();
+                }, 0);
+            }
+            {/* CAMPO ETNIA */ }
+            if (name === "Etnia") {
+                setSelectEtniaShow(true);
+                setListEtnias(guardaEtnias);
+                setTimeout(() => {
+                    etniaRef.current?.focus();
+                }, 0);
+            }
+            {/* CAMPO SEXO */ }
+            if (name === "SexoBiologico") {
+                setSelectSexoShow(true);
+                setListSexos(guardaSexos);
+                setTimeout(() => {
+                    sexoRef.current?.focus();
+                }, 0);
+            }
+            {/* CAMPO ESCOLARIDADE */ }
+            if (name === "Escolaridade") {
+                setSelectEscolaridadeShow(true);
+                setListEscolaridades(guardaEscolaridades);
+                setTimeout(() => {
+                    escolaridadeRef.current?.focus();
+                }, 0);
             }
 
             setFormData((prev) => ({
@@ -564,21 +627,107 @@
                 ...prev,
                 [name]: value
             }));
+            {/* CAMPO MUNICIPIO */ }
+            if (name === "Municipio") {
+                setSelectMunicipioShow(true);
+                if (debounceRef.current) {
+                    clearTimeout(debounceRef.current);
+                }
+
+                debounceRef.current = setTimeout(() => {
+                    const termo = value.trim().toLowerCase();
+                    if (termo.length === 0) {
+                        setListMunicipios(guardaMunicipios);
+                        return;
+                    }
+
+                    const filtrados = listMunicipios.filter((m) =>
+                        m.nome_municipio.toLowerCase().includes(termo)
+                    );
+                    if (filtrados.length === 0) {
+                        setListMunicipios(guardaMunicipios);
+                    } else {
+                        setListMunicipios(filtrados);
+                    }
+                }, 300);
+            }
+            {/* CAMPO GENERO */ }
+            if (name === "genero_identidade") {
+                setSelectGeneroShow(true);
+                if (debounceRef.current) {
+                    clearTimeout(debounceRef.current);
+                }
+
+                debounceRef.current = setTimeout(() => {
+                    const termo = value.trim().toLowerCase();
+                    if (termo.length === 0) {
+                        setListGeneros(guardaGeneros);
+                        return;
+                    }
+
+                    const filtrados = listGeneros.filter((m) =>
+                        m.genero.toLowerCase().includes(termo)
+                    );
+                    if (filtrados.length === 0) {
+                        setListGeneros(guardaGeneros);
+                    } else {
+                        setListGeneros(filtrados);
+                    }
+                }, 300);
+            }
+            {/* CAMPO ESCOLARIDADE */ }
+            if (name === "Escolaridade") {
+                // console.log('name === "Escolaridade"');
+                setSelectEscolaridadeShow(true);
+                if (debounceRef.current) {
+                    clearTimeout(debounceRef.current);
+                }
+
+                debounceRef.current = setTimeout(() => {
+                    const termo = value.trim().toLowerCase();
+                    if (termo.length === 0) {
+                        setListEscolaridades(guardaEscolaridades);
+                        return;
+                    }
+
+                    const filtrados = listEscolaridades.filter((m) =>
+                        m.escolaridade.toLowerCase().includes(termo)
+                    );
+                    if (filtrados.length === 0) {
+                        setListEscolaridades(guardaEscolaridades);
+                    } else {
+                        setListEscolaridades(filtrados);
+                    }
+                }, 300);
+            }
+            {/* CAMPO UNIDADE */ }
+            if (name === "Unidade") {
+                // console.log('name === "Unidade"');
+                setSelectUnidadeShow(true);
+                if (debounceRef.current) {
+                    clearTimeout(debounceRef.current);
+                }
+
+                debounceRef.current = setTimeout(() => {
+                    const termo = value.trim().toLowerCase();
+                    if (termo.length === 0) {
+                        setListUnidades(guardaUnidades);
+                        return;
+                    }
+
+                    const filtrados = listUnidades.filter((m) =>
+                        m.unidades_nome.toLowerCase().includes(termo)
+                    );
+                    if (filtrados.length === 0) {
+                        setListUnidades(guardaUnidades);
+                    } else {
+                        setListUnidades(filtrados);
+                    }
+                }, 300);
+            }
 
             if (name === "isCPFOptional") {
                 setIsCPFOptional(checked);
-            }
-
-            if (name === 'Escolaridade' && prioritizesSelect === true) {
-                const myTimer = setTimeout(() => {
-                    setFormData((prev) => ({
-                        ...prev,
-                        [name]: value
-                    }));
-                    setPrioritizesOther(false);
-                }, 300);
-
-                return true;
             }
 
             let processedValue = value;
@@ -600,9 +749,52 @@
             }
         };
 
+        const handleBlurConfirm = async (event) => {
+            const { name, value } = event.target;
+
+            console.log('-----------|------------');
+            console.log('name handleBlurConfirm: ', name);
+            console.log('value handleBlurConfirm: ', value);
+
+            {/* CAMPO UNIDADE */ }
+            if (name === "Unidade") {
+                // console.log('name === "Unidade"');
+                setSelectUnidadeShow(true);
+                if (debounceRef.current) {
+                    clearTimeout(debounceRef.current);
+                }
+
+                debounceRef.current = setTimeout(() => {
+                    const termo = value.trim().toLowerCase();
+                    console.log('termo - handleBlurConfirm: ', termo);
+                    const filtrados = listUnidades.filter((m) =>
+                        m.unidades_nome.toLowerCase() === termo.toLowerCase()
+                    );
+                    console.log('filtrados.length ::', filtrados.length);
+                    console.log('formData.Unidade ::', formData.Unidade);
+                    console.log('formData.unidade_id ::', formData.unidade_id);
+                    if (
+                        filtrados[0] === undefined &&
+                        formData.Unidade !== '' &&
+                        formData.unidade_id === null
+                    ) {
+                        console.log('-------------');
+                        setFormData((prev) => ({
+                            ...prev,
+                            Unidade: null,
+                            unidade_id: null
+                        }));
+                    } else {
+                        console.log('Unidade encontrada: ', filtrados[0]);
+                    }
+                }, 300);
+            }
+        }
+
         const handleBlur = async (event) => {
             const { name, value } = event.target;
 
+            // console.log('-----------------------');
             // console.log('name handleBlur: ', name);
             // console.log('value handleBlur: ', value);
 
@@ -626,9 +818,37 @@
                 value.length >= 8 &&
                 checkWordInArray(getURI, 'cadastrar') === false
             ) {
-                // Buscar endereço pelo CEP
-                // console.log("Alteração de CEP realizada no handleBlur");
+
+                // console.log('name handleBlur: ', name);
+                // console.log('value handleBlur: ', value);
                 orderUnitsByCEPProximity(value);
+            }
+
+            {/* CAMPO UNIDADE */ }
+            if (name === "Unidade") {
+                // console.log('name === "Unidade"');
+                setSelectUnidadeShow(true);
+                if (debounceRef.current) {
+                    clearTimeout(debounceRef.current);
+                }
+
+                debounceRef.current = setTimeout(() => {
+                    const termo = value.trim().toLowerCase();
+                    // console.log('termo - handleBlur: ', termo);
+                    if (termo.length === 0) {
+                        setListUnidades(guardaUnidades);
+                        return;
+                    }
+
+                    const filtrados = listUnidades.filter((m) =>
+                        m.unidades_nome.toLowerCase().includes(termo)
+                    );
+                    if (filtrados.length === 0) {
+                        setListUnidades(guardaUnidades);
+                    } else {
+                        setListUnidades(filtrados);
+                    }
+                }, 300);
             }
 
             if (name === 'DataAdmissao' && value === '') {
@@ -723,6 +943,56 @@
             }
         };
 
+        const handleClick = (event) => {
+            // console.log('-----------');
+            // console.log('handleClick');
+            const campo = event.target.getAttribute('data-campo');
+            // console.log('handleClick: ', campo);
+            const value = event.target.value;
+            {/* CAMPO MUNICIPIO */ }
+            if (campo === "Municipio") {
+                setFormData(prev => ({
+                    ...prev,
+                    Municipio: value
+                }));
+            }
+            {/* CAMPO SEXO*/ }
+            if (campo === "SexoBiologico") {
+                setFormData(prev => ({
+                    ...prev,
+                    SexoBiologico: value
+                }));
+            }
+            {/* CAMPO ETNIA*/ }
+            if (campo === "Etnia") {
+                setFormData(prev => ({
+                    ...prev,
+                    Etnia: value
+                }));
+            }
+            {/* CAMPO GENERO*/ }
+            if (campo === "genero_identidade") {
+                setFormData(prev => ({
+                    ...prev,
+                    genero_identidade: value
+                }));
+            }
+            {/* CAMPO UNIDADE*/ }
+            if (campo === "Unidade") {
+                setFormData(prev => ({
+                    ...prev,
+                    Unidade: value
+                }));
+            }
+            {/* CAMPO ESCOLARIDADE*/ }
+            if (campo === "Escolaridade") {
+                setFormData(prev => ({
+                    ...prev,
+                    Escolaridade: value
+                }));
+            }
+        }
+
         // Função para trocar de aba
         const handleTabClick = (tab) => {
             // console.log('handleTabClick: ', tab);
@@ -773,48 +1043,47 @@
             }
         };
 
-        // Função para ordenar unidades pelo CEP mais próximo
+        {/* CAMPO UNIDAE CAMPO CEP */ }
         const orderUnitsByCEPProximity = (userCEP) => {
-            // Remover caracteres não-numéricos do CEP do usuário
-            const cleanUserCEP = userCEP.replace(/\D/g, '');
-
-            if (!cleanUserCEP || cleanUserCEP.length !== 8) {
-                console.error('CEP inválido para ordenação:', userCEP);
-                return;
+            if (
+                !userCEP ||
+                userCEP.length < 8 ||
+                !units ||
+                units.length === 0
+            ) {
+                console.error('CEP inválido ou unidades não carregadas');
+                return false;
             }
 
-            // Cria uma cópia do array original para ordenar
-            const sortedUnits = [...originalUnits].map(unit => {
-                // Limpa o CEP da unidade (remove caracteres não-numéricos)
-                const cleanUnitCEP = unit.unidades_CEP ? unit.unidades_CEP.replace(/\D/g, '') : '';
+            // Remove hífen e converte para número
+            const cleanCEP = (cep) => parseInt(cep.replace('-', ''), 10);
 
-                // Calcula a "proximidade" - quanto menor este número, mais próximo o CEP
-                // Método: calcular a diferença absoluta entre os CEPs como números
-                const proximity = cleanUnitCEP ? Math.abs(parseInt(cleanUserCEP) - parseInt(cleanUnitCEP)) : Number.MAX_SAFE_INTEGER;
+            const userCEPClean = cleanCEP(userCEP);
 
-                // Retorna objeto com a unidade original e sua proximidade
-                return { ...unit, proximity };
+            // Ordena
+            const orderedUnits = [...units].sort((a, b) => {
+                const cepA = a.unidades_CEP ? cleanCEP(a.unidades_CEP) : 0;
+                const cepB = b.unidades_CEP ? cleanCEP(b.unidades_CEP) : 0;
+                const diffA = Math.abs(userCEPClean - cepA);
+                const diffB = Math.abs(userCEPClean - cepB);
+                return diffA - diffB;
             });
-
-            // Ordena pelo valor de proximidade (do mais próximo ao mais distante)
-            sortedUnits.sort((a, b) => a.proximity - b.proximity);
-
-            // Atualiza o estado units com a nova ordem
-            setUnits(sortedUnits);
-
-            // Se houver unidades, define a mais próxima como selecionada
-            if (sortedUnits.length > 0) {
-                const closestUnit = sortedUnits[0];
-                // console.log('Unidade mais próxima:', closestUnit.unidades_nome, '- CEP:', closestUnit.unidades_CEP);
-
-                // Atualiza o formData com a unidade mais próxima
-                setFormData(prevData => ({
-                    ...prevData,
-                    UnidadeId: closestUnit.id,
-                    unit: closestUnit.id,
-                    Unidade: closestUnit.unidades_nome
-                }));
+            if (orderedUnits.length === 0) {
+                return [];
             }
+            const unidadeMaisProxima = orderedUnits[0];
+            // console.log('unidadeMaisProxima: ', unidadeMaisProxima);
+            // console.log('unidade_id: ', unidadeMaisProxima.id);
+            // console.log('unidades_nome: ', unidadeMaisProxima.unidades_nome);
+            setFormData(prev => ({
+                ...prev,
+                unidade_id: unidadeMaisProxima.id,
+                Unidade: unidadeMaisProxima.unidades_nome
+            }));
+            setUnits(orderedUnits);
+            setListUnidades(orderedUnits);
+            setGuardaUnidades(orderedUnits);
+            return orderedUnits;
         };
 
         {/* ENVIAR E-MAIL AO FIM DO CADASTRO */ }
@@ -988,9 +1257,11 @@
                 const data = await response.json();
                 // console.log('data - fetchGetSexo :: ', data);
                 if (data.result && Array.isArray(data.result.dbResponse) && data.result.dbResponse.length > 0) {
+                    // console.log('data - fetchGetSexo :: ', data);
                     const dbResponse = data.result.dbResponse;
-                    setListaSexos(dbResponse);
-                    // 
+                    setListSexos(dbResponse);
+                    setGuardaSexos(dbResponse);
+                    return dbResponse;
                 } else {
                     setMessage({
                         show: true,
@@ -1022,7 +1293,9 @@
                 // console.log('data - fetchGetIdentidadeGenero :: ', data);
                 if (data.result && Array.isArray(data.result.dbResponse) && data.result.dbResponse.length > 0) {
                     const dbResponse = data.result.dbResponse;
+                    // console.log('dbResponse - fetchGetIdentidadeGenero :: ', dbResponse);
                     setListGeneros(dbResponse);
+                    setGuardaGeneros(dbResponse);
                     return dbResponse;
                 } else {
                     setMessage({
@@ -1052,10 +1325,85 @@
             try {
                 const response = await fetch(url);
                 const data = await response.json();
-                console.log('data - fetchGetMunicipios :: ', data);
+                // console.log('data - fetchGetMunicipios :: ', data);
                 if (data.result && Array.isArray(data.result.dbResponse) && data.result.dbResponse.length > 0) {
                     const dbResponse = data.result.dbResponse;
+                    // console.log('dbResponse - fetchGetMunicipios :: ', dbResponse);
                     setListMunicipios(dbResponse);
+                    setGuardaMunicipios(dbResponse);
+                    return dbResponse;
+                } else {
+                    setMessage({
+                        show: true,
+                        type: 'light',
+                        message: 'Não foram encontradas objeto cadastradas'
+                    });
+                    setIsLoading(false);
+                }
+
+            } catch (error) {
+                console.error('Erro ao enviar dados:', error);
+                setMessage({
+                    show: true,
+                    type: 'light',
+                    message: 'Erro ao carregar Unidades: ' + error.message
+                });
+            }
+        };
+
+        {/* LISTAR UNIDADES */ }
+        const fetchGetUnidade = async (custonBaseURL = base_url, custonApiGetObjeto = api_get_selectunidade, customPage = '?limit=100&page=1') => {
+            // console.log('----------------------------');
+            // console.log('fetchGetUnidade...');
+            // console.log('----------------------------');
+            const url = custonBaseURL + custonApiGetObjeto + customPage;
+            // console.log('url :: ', url);
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                // console.log('data - fetchGetUnidade :: ', data);
+                if (data.result && Array.isArray(data.result.dbResponse) && data.result.dbResponse.length > 0) {
+                    const dbResponse = data.result.dbResponse;
+                    // console.log('dbResponse - fetchGetUnidade :: ', dbResponse);
+                    setListUnidades(dbResponse);
+                    setGuardaUnidades(dbResponse);
+                    setUnits(dbResponse);
+                    return dbResponse;
+                } else {
+                    setMessage({
+                        show: true,
+                        type: 'light',
+                        message: 'Não foram encontradas objeto cadastradas'
+                    });
+                    setIsLoading(false);
+                }
+
+            } catch (error) {
+                console.error('Erro ao enviar dados:', error);
+                setMessage({
+                    show: true,
+                    type: 'light',
+                    message: 'Erro ao carregar Unidades: ' + error.message
+                });
+            }
+        };
+
+        {/* LISTAR ESCOLARIDADE */ }
+        const fetchGetEscolaridade = async (custonBaseURL = base_url, custonApiGetObjeto = api_get_escolaridade, customPage = '?limit=100&page=1') => {
+            // console.log('----------------------------');
+            // console.log('fetchGetEscolaridade...');
+            // console.log('----------------------------');
+            const url = custonBaseURL + custonApiGetObjeto + customPage;
+            // console.log('url :: ', url);
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                // console.log('data - fetchGetEscolaridade :: ', data);
+                if (data.result && Array.isArray(data.result.dbResponse) && data.result.dbResponse.length > 0) {
+                    const dbResponse = data.result.dbResponse;
+                    // console.log('dbResponse - fetchGetEscolaridade :: ', dbResponse);
+                    setListEscolaridades(dbResponse);
+                    setGuardaEscolaridades(dbResponse);
                     return dbResponse;
                 } else {
                     setMessage({
@@ -1091,10 +1439,19 @@
             Promise.all([
                 fetchAdolescentes(),
                 fetchGetIdentidadeGenero(),
+                fetchGetEscolaridade(),
                 fetchGetMunicipios(),
+                fetchGetUnidade(),
                 fetchGetSexo(),
             ])
-                .then(([adolescentesData, sexosData, unidadesData, generosData, municipiosData]) => {
+                .then(([
+                    adolescentesData,
+                    generosData,
+                    EscolaridadeData,
+                    municipiosData,
+                    unidadesData,
+                    sexosData,
+                ]) => {
                     // Processar dados aqui
                 })
                 .catch(error => {
@@ -1106,23 +1463,6 @@
                     }, 500);
                 });
         }, []);
-        {/* formData.unit, formData.unidade_id */ }
-        React.useEffect(() => {
-            // Verificar qual campo foi alterado por último e sincronizar o outro
-            const lastChanged = formData.unit !== formData.unidade_id ? 'unit' : 'unidade_id';
-
-            if (lastChanged === 'unit' && formData.unit !== formData.unidade_id) {
-                setFormData(prevData => ({
-                    ...prevData,
-                    unidade_id: formData.unit
-                }));
-            } else if (lastChanged === 'unidade_id' && formData.unidade_id !== formData.unit) {
-                setFormData(prevData => ({
-                    ...prevData,
-                    unit: formData.unidade_id
-                }));
-            }
-        }, [formData.unit, formData.unidade_id]);
         {/* formData.termo */ }
         React.useEffect(() => {
             setTermoAceito(formData.termo || false);
@@ -1163,12 +1503,14 @@
                 });
             }
         }, [listPeriodos, formData.Nascimento]);
-        {/* formData.CEP */ }
+        {/* CAMPO CEP */ }
         React.useEffect(() => {
             // Só executa se houver um CEP válido no formData
             if (formData.CEP && formData.CEP.length >= 8) {
-                // console.log("Ordenando unidades pelo CEP:", formData.CEP);
-                orderUnitsByCEPProximity(formData.CEP);
+                const newOrder = orderUnitsByCEPProximity(formData.CEP);
+                if (newOrder.Length > 0) {
+                    // console.log("Nova ordem de unidades:", newOrder);
+                }
             }
         }, [formData.CEP]);
         {/* formData */ }
@@ -1195,7 +1537,102 @@
             }, 100);
 
         }, [formData['Nascimento']]);
+        {/* CAMPO UNIDADE */ }
+        React.useEffect(() => {
+            if (!selectUnidadeShow) return;
 
+            function handleClickOutside(event) {
+                if (unidadeRef.current && !unidadeRef.current.contains(event.target)) {
+                    setSelectUnidadeShow(false);
+                }
+            }
+
+            document.addEventListener("mousedown", handleClickOutside);
+            return () => {
+                document.removeEventListener("mousedown", handleClickOutside);
+            };
+        }, [selectUnidadeShow]);
+        {/* CAMPO UNIDADE */ }
+        React.useEffect(() => {
+            if (formData.Unidade) {
+                // console.log('formData.Unidade :: ', formData.Unidade);
+            }
+        }, [formData.Unidade]);
+        {/* CAMPO MUNICÍPIO */ }
+        React.useEffect(() => {
+            if (!selectMunicipioShow) return;
+
+            function handleClickOutside(event) {
+                if (municipioRef.current && !municipioRef.current.contains(event.target)) {
+                    setSelectMunicipioShow(false);
+                }
+            }
+
+            document.addEventListener("mousedown", handleClickOutside);
+            return () => {
+                document.removeEventListener("mousedown", handleClickOutside);
+            };
+        }, [selectMunicipioShow]);
+        {/* CAMPO GENERO */ }
+        React.useEffect(() => {
+            if (!selectGeneroShow) return;
+
+            function handleClickOutside(event) {
+                if (generoRef.current && !generoRef.current.contains(event.target)) {
+                    setSelectGeneroShow(false);
+                }
+            }
+
+            document.addEventListener("mousedown", handleClickOutside);
+            return () => {
+                document.removeEventListener("mousedown", handleClickOutside);
+            };
+        }, [selectGeneroShow]);
+        {/* CAMPO SEXO */ }
+        React.useEffect(() => {
+            if (!selectSexoShow) return;
+
+            function handleClickOutside(event) {
+                if (sexoRef.current && !sexoRef.current.contains(event.target)) {
+                    setSelectSexoShow(false);
+                }
+            }
+
+            document.addEventListener("mousedown", handleClickOutside);
+            return () => {
+                document.removeEventListener("mousedown", handleClickOutside);
+            };
+        }, [selectSexoShow]);
+        {/* CAMPO ETNIA */ }
+        React.useEffect(() => {
+            if (!selectEtniaShow) return;
+
+            function handleClickOutside(event) {
+                if (etniaRef.current && !etniaRef.current.contains(event.target)) {
+                    setSelectEtniaShow(false);
+                }
+            }
+
+            document.addEventListener("mousedown", handleClickOutside);
+            return () => {
+                document.removeEventListener("mousedown", handleClickOutside);
+            };
+        }, [selectEtniaShow]);
+        {/* CAMPO ESCOLARIDADE */ }
+        React.useEffect(() => {
+            if (!selectEscolaridadeShow) return;
+
+            function handleClickOutside(event) {
+                if (escolaridadeRef.current && !escolaridadeRef.current.contains(event.target)) {
+                    setSelectEscolaridadeShow(false);
+                }
+            }
+
+            document.addEventListener("mousedown", handleClickOutside);
+            return () => {
+                document.removeEventListener("mousedown", handleClickOutside);
+            };
+        }, [selectEscolaridadeShow]);
 
         {/* Styles */ }
         const formGroupStyle = {
@@ -1229,62 +1666,64 @@
         };
 
         {/* RENDER CAMPO MUNICIPIO */ }
-        const renderCampoMunicipio = (tipoMunicipio) => {
-            return (
-                <>
-                    {(tipoMunicipio === 'text_list') && (
-                        <>
-                            <input
-                                type="text"
-                                className="form-control w-100"
-                                id="Municipio"
-                                name="Municipio"
-                                value={formData.Municipio || ''}
-                                onChange={handleChange}
-                                onFocus={handleFocus}
-                                list="municipio"
-                                autoComplete="off"
-                                required={true}
-                            />
-                            <datalist id="municipio">
+        const renderCampoMunicipio = (tipoCampo, selectMunicipioShow, setSelectMunicipioShow) => (
+            <>
+                {(tipoCampo === 'drop_select') && (
+                    <div className="dropdown w-100">
+                        <input
+                            type="text"
+                            className="form-control border-0"
+                            id="Municipio"
+                            name="Municipio"
+                            value={formData.Municipio || ''}
+                            onChange={handleChange}
+                            onFocus={handleFocus}
+                            autoComplete="off"
+                            required={true}
+                            aria-expanded={selectMunicipioShow}
+                            onClick={() => {
+                                setSelectMunicipioShow(true);
+                                setListMunicipios(guardaMunicipios);
+                            }}
+                        />
+                        <div
+                            ref={municipioRef}
+                            className={`dropdown-menu w-100  border border-1 border-top-0 border-dark mt-2 ${selectMunicipioShow ? 'show' : ''}`}
+                        >
+                            <div className="m-0 p-0" style={{ height: "300px", overflowY: "auto", overflowX: "hidden" }}>
                                 {listMunicipios.map((list_municipios, index) => (
-                                    <option key={index} value={list_municipios.nome_municipio}>
-                                        {list_municipios.nome_municipio}
-                                    </option>
+                                    <React.Fragment key={index}>
+                                        <input
+                                            type="radio"
+                                            className="btn-check"
+                                            name="municipio-radio"
+                                            id={`municipio-option${index}`}
+                                            autoComplete="off"
+                                            value={list_municipios.nome_municipio}
+                                            data-campo="Municipio"
+                                            checked={formData.Municipio === list_municipios.nome_municipio}
+                                            onChange={handleClick}
+                                        />
+                                        <label
+                                            className="btn w-100 text-start"
+                                            htmlFor={`municipio-option${index}`}
+                                        >
+                                            {list_municipios.nome_municipio}
+                                        </label>
+                                    </React.Fragment>
                                 ))}
-                            </datalist>
-                        </>
-                    )}
-                    {(tipoMunicipio === 'drop_select') && (
-                        <>
-                            <select
-                                className="form-select w-100"
-                                id="Municipio"
-                                name="Municipio"
-                                value={formData.Municipio || ''}
-                                onChange={handleChange}
-                                onFocus={handleFocus}
-                                required={true}
-                            >
-                                <option value="">Selecione o Município</option>
-                                {listMunicipios.map((list_municipios, index) => (
-                                    <option key={index} value={list_municipios.nome_municipio}>
-                                        {list_municipios.nome_municipio}
-                                    </option>
-                                ))}
-                            </select>
-                        </>
-                    )}
-
-                </>
-            );
-        };
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </>
+        );
 
         {/* RENDER CAMPO UNIDADE */ }
-        const renderCampoUnidade = (tipoUnidade) => {
+        const renderCampoUnidade = (tipoCampo, selectUnidadeShow, setSelectUnidadeShow) => {
             return (
                 <>
-                    {(tipoUnidade === 'text_list') && (
+                    {(tipoCampo === 'text_list') && (
                         <>
                             <input
                                 type="text"
@@ -1294,12 +1733,13 @@
                                 value={formData.Unidade || ''}
                                 onChange={handleChange}
                                 onFocus={handleFocus}
+                                onBlur={handleBlur}
                                 list="unidades"
                                 autoComplete="off"
                                 required={true}
                             />
                             <datalist id="unidades">
-                                {list.map((unit, index) => (
+                                {units.map((unit, index) => (
                                     <option key={index} value={unit.id}>
                                         {unit.unidades_nome} - {unit.unidades_CEP}
                                     </option>
@@ -1307,29 +1747,587 @@
                             </datalist>
                         </>
                     )}
-                    {(tipoUnidade === 'drop_select') && (
+
+                    {(tipoCampo === 'select') && (
                         <>
                             <select
-                                className="form-select w-100"
+                                data-api={`filtro-${origemForm}`}
                                 id="unit"
                                 name="unit"
                                 value={formData.unit || ''}
-                                onChange={handleChange}
                                 onFocus={handleFocus}
-                                required={true}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                style={formControlStyle}
+                                className="form-select form-select-sm"
+                                required
+                                aria-label="Default select 2"
                             >
-                                <option value="">Selecione a Unidade</option>
-                                {units.map((unit, index) => (
-                                    <option key={index} value={unit.id}>
-                                        {unit.unidades_nome} - {unit.unidades_CEP}
+                                <option value="">Seleção Nula</option>
+                                {units.map(escolaridade_list => (
+                                    <option key={`${escolaridade_list.id}`} value={escolaridade_list.id}>
+                                        {escolaridade_list.unidades_nome} - {escolaridade_list.unidades_CEP}
                                     </option>
                                 ))}
                             </select>
                         </>
                     )}
+
+                    {(tipoCampo === 'drop_select') && (
+                        <div className="dropdown w-100">
+                            <input
+                                type="text"
+                                className="form-control border-0"
+                                id="Unidade"
+                                name="Unidade"
+                                value={formData.Unidade || ''}
+                                onChange={handleChange}
+                                onFocus={handleFocus}
+                                onBlur={handleBlurConfirm}
+                                autoComplete="off"
+                                required={true}
+                                aria-expanded={selectUnidadeShow}
+                                onClick={() => {
+                                    setSelectUnidadeShow(true);
+                                    setListUnidades(guardaUnidades);
+                                }}
+                            />
+                            <div
+                                ref={unidadeRef}
+                                className={`dropdown-menu w-100  border border-1 border-top-0 border-dark mt-2 ${selectUnidadeShow ? 'show' : ''}`}
+                            >
+                                <div className="m-0 p-0" style={{ height: "300px", overflowY: "auto", overflowX: "hidden" }}>
+
+                                    {listUnidades.map((list_unidades, index) => (
+                                        <React.Fragment key={index}>
+                                            <input
+                                                type="radio"
+                                                className="btn-check"
+                                                name="unidade-radio"
+                                                id={`unidade-option${index}`}
+                                                autoComplete="off"
+                                                value={list_unidades.unidades_nome}
+                                                data-campo="Unidade"
+                                                checked={formData.Unidade === list_unidades.unidades_nome}
+                                                onChange={handleClick}
+                                                onBlur={handleClick}
+                                            />
+                                            <label
+                                                className="btn w-100 text-start"
+                                                htmlFor={`unidade-option${index}`}
+                                            >
+                                                {list_unidades.unidades_nome} - {list_unidades.unidades_CEP}
+                                            </label>
+                                        </React.Fragment>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </>
             );
         };
+
+        {/* RENDER CAMPO SEXO */ }
+        const renderCampoSexo = (tipoCampo, selectSexoShow, setSelectSexoShow) => {
+            return (
+                <>
+                    {(tipoCampo === 'text_list') && (
+                        <>
+                            <input
+                                type="text"
+                                className="form-control w-100"
+                                id="SexoBiologico"
+                                name="SexoBiologico"
+                                value={formData.SexoBiologico || ''}
+                                onChange={handleChange}
+                                onFocus={handleFocus}
+                                list="sexos"
+                                autoComplete="off"
+                                required={true}
+                            />
+                            <datalist id="sexos">
+                                {listSexos.map((list_sexos, index) => (
+                                    <option key={index} value={list_sexos.sexo_biologico}>
+                                        {list_sexos.sexo_biologico}
+                                    </option>
+                                ))}
+                            </datalist>
+                        </>
+                    )}
+
+                    {(tipoCampo === 'select') && (
+                        <>
+                            <select
+                                data-api={`filtro-${origemForm}`}
+                                id="SexoBiologico"
+                                name="SexoBiologico"
+                                value={formData.SexoBiologico || ''}
+                                onFocus={handleFocus}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                style={formControlStyle}
+                                className="form-select form-select-sm"
+                                required
+                                aria-label="Default select 2"
+                            >
+                                <option value="">Seleção Nula</option>
+                                {listSexos.map(sexo_list => (
+                                    <option key={`${sexo_list.sexo_biologico}`} value={sexo_list.sexo_biologico}>
+                                        {sexo_list.listSexos}
+                                    </option>
+                                ))}
+                            </select>
+                        </>
+                    )}
+
+                    {(tipoCampo === 'drop_select') && (
+                        <div className="dropdown w-100">
+                            <input
+                                type="text"
+                                className="form-control border-0"
+                                id="SexoBiologico_off"
+                                name="SexoBiologico_off"
+                                value={formData.SexoBiologico || ''}
+                                onChange={handleChange}
+                                onFocus={handleFocus}
+                                autoComplete="off"
+                                required={true}
+                                aria-expanded={selectSexoShow}
+                                onClick={() => {
+                                    // console.log('-------------');
+                                    // console.log('CLICK NO SEXO');
+                                    setSelectSexoShow(true);
+                                    setListSexos(guardaSexos);
+                                }}
+                            />
+                            <div
+                                ref={sexoRef}
+                                className={`dropdown-menu w-100  border border-1 border-top-0 border-dark mt-2 ${selectSexoShow ? 'show' : ''}`}
+                            >
+                                <div className="m-0 p-0" style={{ height: "100px", overflowY: "auto", overflowX: "hidden" }}>
+
+                                    {listSexos.map((list_sexo, index) => (
+                                        <React.Fragment key={index}>
+                                            <input
+                                                type="radio"
+                                                className="btn-check"
+                                                name="sexo-radio"
+                                                id={`sexo-option${index}`}
+                                                autoComplete="off"
+                                                value={list_sexo.sexo_biologico}
+                                                data-campo="SexoBiologico"
+                                                checked={formData.SexoBiologico === list_sexo.sexo_biologico}
+                                                onChange={handleClick}
+
+                                            />
+                                            <label
+                                                className="btn w-100 text-start"
+                                                htmlFor={`sexo-option${index}`}
+                                            >
+                                                {list_sexo.sexo_biologico}
+                                            </label>
+                                        </React.Fragment>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </>
+            );
+        };
+
+        {/* RENDER CAMPO GENERO */ }
+        const renderCampoGenero = (tipoCampo, selectGeneroShow, setSelectGeneroShow) => {
+            return (
+                <>
+                    {(tipoCampo === 'text_list') && (
+                        <>
+                            <input
+                                type="text"
+                                className="form-control w-100"
+                                id="genero_identidade"
+                                name="genero_identidade"
+                                value={formData.genero_identidade || ''}
+                                onChange={handleChange}
+                                onFocus={handleFocus}
+                                list="generos"
+                                autoComplete="off"
+                                required={true}
+                            />
+                            <datalist id="generos">
+                                {listGeneros.map((genero_list, index) => (
+                                    <option key={index} value={genero_list.id}>
+                                        {genero_list.unidades_nome} - {genero_list.unidades_CEP}
+                                    </option>
+                                ))}
+                            </datalist>
+                        </>
+                    )}
+
+                    {(tipoCampo === 'select') && (
+                        <>
+                            <select
+                                data-api={`filtro-${origemForm}`}
+                                id="genero_identidade"
+                                name="genero_identidade"
+                                value={formData.genero_identidade || ''}
+                                onFocus={handleFocus}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                style={formControlStyle}
+                                className="form-select form-select-sm"
+                                required
+                                aria-label="Default select 2"
+                            >
+                                <option value="">Seleção Nula</option>
+                                {listGeneros.map(genero_lista => (
+                                    <option key={`${genero_lista.id}`} value={genero_lista.genero}>
+                                        {genero_lista.genero}
+                                    </option>
+                                ))}
+                            </select>
+                        </>
+                    )}
+
+                    {(tipoCampo === 'drop_radio') && (
+                        <div className="dropdown w-100">
+                            <input
+                                type="text"
+                                className="form-control border-0"
+                                id="genero_identidade"
+                                name="genero_identidade"
+                                value={formData.genero_identidade || ''}
+                                onChange={handleChange}
+                                onFocus={handleFocus}
+                                autoComplete="off"
+                                required={true}
+                                aria-expanded={selectGeneroShow}
+                                onClick={() => {
+                                    setSelectGeneroShow(true);
+                                    setListGeneros(guardaGeneros);
+                                }}
+                            />
+                            <div
+                                ref={generoRef}
+                                className={`dropdown-menu w-100  border border-1 border-top-0 border-dark mt-2 ${selectGeneroShow ? 'show' : ''}`}
+                            >
+                                <div className="m-0 p-0" style={{ height: "300px", overflowY: "auto", overflowX: "hidden" }}>
+                                    {listGeneros.map((list_generos, index) => (
+                                        <React.Fragment key={index}>
+                                            <input
+                                                type="radio"
+                                                className="btn-check"
+                                                name="genero-radio"
+                                                id={`genero-option${index}`}
+                                                autoComplete="off"
+                                                value={list_generos.genero}
+                                                data-campo="genero_identidade"
+                                                checked={formData.genero_identidade === list_generos.genero}
+                                                onChange={handleClick}
+                                            />
+                                            <label
+                                                className="btn w-100 text-start"
+                                                htmlFor={`genero-option${index}`}
+                                            >
+                                                {list_generos.genero}
+                                            </label>
+                                        </React.Fragment>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {(tipoCampo === 'drop_check') && (
+                        <div className="dropdown w-100">
+                            <input
+                                type="text"
+                                className="form-control border-0"
+                                id="genero_identidade"
+                                name="genero_identidade"
+                                value={formData.genero_identidade || ''}
+                                onChange={handleChange}
+                                onFocus={handleFocus}
+                                autoComplete="off"
+                                required={true}
+                                aria-expanded={selectGeneroShow}
+                                onClick={() => {
+                                    setSelectGeneroShow(true);
+                                    setListGeneros(guardaGeneros);
+                                }}
+                            />
+                            <div
+                                ref={generoRef}
+                                className={`dropdown-menu w-100 border border-1 border-top-0 border-dark mt-2 ${selectGeneroShow ? 'show' : ''}`}
+                            >
+                                <div className="m-0 p-0" style={{ height: "300px", overflowY: "auto", overflowX: "hidden" }}>
+                                    {listGeneros.map((list_generos, index) => {
+                                        // O formData.genero_identidade pode ser string vazio, undefined ou uma string separada por vírgula.
+                                        // Vamos criar um array dos valores selecionados:
+                                        const selectedValues = (formData.genero_identidade || "")
+                                            .split(",")
+                                            .map((v) => v.trim())
+                                            .filter((v) => v); // remove strings vazias
+
+                                        const isChecked = selectedValues.includes(list_generos.genero);
+
+                                        return (
+                                            <React.Fragment key={index}>
+                                                <input
+                                                    type="checkbox"
+                                                    className="btn-check"
+                                                    name="genero-check"
+                                                    id={`genero-option${index}`}
+                                                    autoComplete="off"
+                                                    value={list_generos.genero}
+                                                    checked={isChecked}
+                                                    data-campo="genero_identidade"
+                                                    onChange={e => {
+                                                        // Atualiza a string separada por vírgulas no formData
+                                                        let newValues = [...selectedValues];
+                                                        if (e.target.checked) {
+                                                            if (!newValues.includes(list_generos.genero)) {
+                                                                newValues.push(list_generos.genero);
+                                                            }
+                                                        } else {
+                                                            newValues = newValues.filter((v) => v !== list_generos.genero);
+                                                        }
+                                                        const newValueString = newValues.join(", ");
+                                                        // Chame sua função para atualizar o formData
+                                                        handleChange({
+                                                            target: {
+                                                                name: "genero_identidade",
+                                                                value: newValueString,
+                                                            },
+                                                        });
+                                                    }}
+                                                />
+                                                <label
+                                                    className="btn w-100 text-start"
+                                                    htmlFor={`genero-option${index}`}
+                                                >
+                                                    {list_generos.genero}
+                                                </label>
+                                            </React.Fragment>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </>
+            );
+        }
+
+        {/* RENDER CAMPO ESCOLARIDADE */ }
+        const renderCampoEscolaridade = (tipoCampo, selectEscolaridadeShow, setSelectEscolaridadeShow) => {
+            return (
+                <>
+                    {(tipoCampo === 'text_list') && (
+                        <>
+                            <input
+                                type="text"
+                                className="form-control w-100"
+                                id="Escolaridade"
+                                name="Escolaridade"
+                                value={formData.Escolaridade || ''}
+                                onChange={handleChange}
+                                onFocus={handleFocus}
+                                list="escolaridades"
+                                autoComplete="off"
+                                required={true}
+                            />
+                            <datalist id="escolaridades">
+                                {listEscolaridades.map((escolaridade, index) => (
+                                    <option key={index} value={escolaridade.id}>
+                                        {escolaridade.escolaridades_nome} - {escolaridade.escolaridades_CEP}
+                                    </option>
+                                ))}
+                            </datalist>
+                        </>
+                    )}
+
+                    {(tipoCampo === 'select') && (
+                        <>
+                            <select
+                                data-api={`filtro-${origemForm}`}
+                                id="Escolaridade"
+                                name="Escolaridade"
+                                value={formData.Escolaridade || ''}
+                                onFocus={handleFocus}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                style={formControlStyle}
+                                className="form-select form-select-sm"
+                                required
+                                aria-label="Default select 2"
+                            >
+                                <option value="">Seleção Nula</option>
+                                {listEscolaridades.map(escolaridade_lista => (
+                                    <option key={`${escolaridade_lista.escolaridade}`} value={escolaridade_lista.escolaridade}>
+                                        {escolaridade_lista.escolaridade}
+                                    </option>
+                                ))}
+                            </select>
+                        </>
+                    )}
+
+                    {(tipoCampo === 'drop_select') && (
+                        <div className="dropdown w-100">
+                            <input
+                                type="text"
+                                className="form-control border-0"
+                                id="Escolaridade"
+                                name="Escolaridade"
+                                value={formData.Escolaridade || ''}
+                                onChange={handleChange}
+                                onFocus={handleFocus}
+                                autoComplete="off"
+                                required={true}
+                                aria-expanded={selectEscolaridadeShow}
+                                onClick={() => {
+                                    setSelectEscolaridadeShow(true);
+                                    setListEscolaridades(guardaEscolaridades);
+                                }}
+                            />
+                            <div
+                                ref={escolaridadeRef}
+                                className={`dropdown-menu w-100  border border-1 border-top-0 border-dark mt-2 ${selectEscolaridadeShow ? 'show' : ''}`}
+                            >
+                                <div className="m-0 p-0" style={{ height: "300px", overflowY: "auto", overflowX: "hidden" }}>
+                                    {listEscolaridades.map((list_escolaridades, index) => (
+                                        <React.Fragment key={index}>
+                                            <input
+                                                type="radio"
+                                                className="btn-check"
+                                                name="escolaridade-radio"
+                                                id={`escolaridade-option${index}`}
+                                                autoComplete="off"
+                                                value={list_escolaridades.escolaridade}
+                                                data-campo="Escolaridade"
+                                                checked={formData.Escolaridade === list_escolaridades.escolaridade}
+                                                onChange={handleClick}
+                                            />
+                                            <label
+                                                className="btn w-100 text-start"
+                                                htmlFor={`escolaridade-option${index}`}
+                                            >
+                                                {list_escolaridades.escolaridade}
+                                            </label>
+                                        </React.Fragment>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </>
+            );
+        }
+
+        {/* RENDER CAMPO ETNIA */ }
+        const renderCampoEtnia = (tipoCampo, selectEtniaShow, setSelectEtniaShow) => {
+            return (
+                <>
+                    {(tipoCampo === 'text_list') && (
+                        <>
+                            <input
+                                type="text"
+                                className="form-control w-100"
+                                id="Etnia"
+                                name="Etnia"
+                                value={formData.Etnia || ''}
+                                onChange={handleChange}
+                                onFocus={handleFocus}
+                                list="etnias"
+                                autoComplete="off"
+                                required={true}
+                            />
+                            <datalist id="etnias">
+                                {listEtnias.map((etnia, index) => (
+                                    <option key={index} value={etnia.id}>
+                                        {etnia.etnias_nome} - {etnia.etnias_CEP}
+                                    </option>
+                                ))}
+                            </datalist>
+                        </>
+                    )}
+
+                    {(tipoCampo === 'select') && (
+                        <>
+                            <select
+                                data-api={`filtro-${origemForm}`}
+                                id={`etnia-option${index}`}
+                                name="Etnia"
+                                value={formData.Etnia || ''}
+                                onFocus={handleFocus}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                style={formControlStyle}
+                                className="form-select form-select-sm"
+                                required
+                                aria-label="Default select 2"
+                            >
+                                <option value="">Seleção Nula</option>
+                                {listEtnias.map(etnia_lista => (
+                                    <option key={`${etnia_lista.id}`} value={etnia_lista.etnia}>
+                                        {etnia_lista.etnia}
+                                    </option>
+                                ))}
+                            </select>
+                        </>
+                    )}
+
+                    {(tipoCampo === 'drop_select') && (
+                        <div className="dropdown w-100">
+                            <input
+                                type="text"
+                                className="form-control border-0"
+                                id="Etnia_Off"
+                                name="Etnia_Off"
+                                value={formData.Etnia || ''}
+                                onChange={handleChange}
+                                onFocus={handleFocus}
+                                autoComplete="off"
+                                required={true}
+                                aria-expanded={selectEtniaShow}
+                                onClick={() => {
+                                    setSelectEtniaShow(true);
+                                    setListEtnias(guardaEtnias);
+                                }}
+                            />
+                            <div
+                                ref={etniaRef}
+                                className={`dropdown-menu w-100  border border-1 border-top-0 border-dark mt-2 ${selectEtniaShow ? 'show' : ''}`}
+                            >
+                                <div className="m-0 p-0" style={{ height: "200px", overflowY: "auto", overflowX: "hidden" }}>
+                                    {listEtnias.map((list_etnias, index) => (
+                                        <React.Fragment key={index}>
+                                            <input
+                                                type="radio"
+                                                className="btn-check"
+                                                name="etnia-radio"
+                                                id={`etnia-option${index}`}
+                                                autoComplete="off"
+                                                value={list_etnias || ''}
+                                                data-campo="Etnia"
+                                                checked={formData.Etnia === list_etnias}
+                                                onChange={handleClick}
+                                            />
+                                            <label
+                                                className="btn w-100 text-start"
+                                                htmlFor={`etnia-option${index}`}
+                                            >
+                                                {list_etnias}
+                                            </label>
+                                        </React.Fragment>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </>
+            );
+        }
 
         {/* RENDER CONSULTA BK*/ }
         const renderConsulta = () => {
@@ -1681,7 +2679,7 @@
                                         Sexo
                                     </label>
                                     <div className="m-2">
-                                        {listaSexos.find(item => item.id == formData.sexo_biologico_id)?.sexo_biologico || (
+                                        {listSexos.find(item => item.id == formData.sexo_biologico_id)?.sexo_biologico || (
                                             <span className="text-muted">Não informado</span>
                                         )}
                                     </div>
@@ -1815,7 +2813,7 @@
 
         {/* RENDER CPF BK*/ }
         const renderCPF = () => {
-            // console.log('listaSexos :: ', listaSexos);
+            // console.log('listSexos :: ', listSexos);
             // console.log('formData :: ', formData);
             // console.log('setFormData :: ', setFormData);
             return (
@@ -1844,7 +2842,7 @@
                                         attributeRequired: true,
                                         attributeReadOnly: false,
                                         attributeDisabled: false,
-                                        attributeMask: 'CPF', // CPF, Telefone, CEP, , SEI, Processo.
+                                        attributeMask: 'CPF', // CPF, Telefone, CEP, SEI, Processo.
                                     }}
                                 />
                             </form>
@@ -1978,7 +2976,7 @@
                                         attributeRequired: false,
                                         attributeReadOnly: false,
                                         attributeDisabled: false,
-                                        attributeMask: 'RG', // CPF, Telefone, CEP, , SEI, Processo.
+                                        attributeMask: 'RG', // CPF, Telefone, CEP, SEI, Processo.
                                     }}
                                 />
 
@@ -2006,7 +3004,7 @@
                                         attributeRequired: false,
                                         attributeReadOnly: false,
                                         attributeDisabled: false,
-                                        attributeMask: '', // CPF, Telefone, CEP, , SEI, Processo.
+                                        attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
                                     }}
                                 />
                             </form>
@@ -2036,7 +3034,7 @@
                                         attributeRequired: true,
                                         attributeReadOnly: false,
                                         attributeDisabled: false,
-                                        attributeMask: 'CEP', // CPF, Telefone, CEP, , SEI, Processo.
+                                        attributeMask: 'CEP', // CPF, Telefone, CEP, SEI, Processo.
                                     }}
                                 />
                             </form>
@@ -2064,7 +3062,7 @@
                                         attributeRequired: true,
                                         attributeReadOnly: false,
                                         attributeDisabled: false,
-                                        attributeMask: '', // CPF, Telefone, CEP, , SEI, Processo.
+                                        attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
                                     }}
                                 />
                             </form>
@@ -2191,24 +3189,24 @@
                     <div className="row">
                         <div className="col-12 col-sm-6">
                             <div style={formGroupStyle}>
-                                <label
-                                    htmlFor={`checkSemNumero`}
-                                    style={formLabelStyle}
-                                    className="form-label"
-                                >
-                                    Municipio <strong style={requiredField}>*</strong>
-                                </label>
-                                {(formData.dropMunicipio) ? (
-                                    <div>
-                                        {/* CAMPO MUNICIPIO */}
-                                        <form
-                                            className="was-validated"
-                                            onSubmit={(e) => {
-                                                e.preventDefault();
-                                                submitAllForms(`filtro-${origemForm}`);
-                                            }}>
-                                            {/* CAMPO SELECT MUNICÍPIO */}
-                                            {(listMunicipios.length === 0) && (
+                                <form
+                                    className="was-validated"
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        submitAllForms(`filtro-${origemForm}`);
+                                    }}>
+                                    <label
+                                        htmlFor={`checkSemNumero`}
+                                        style={formLabelStyle}
+                                        className="form-label"
+                                    >
+                                        Municipio <strong style={requiredField}>*</strong>
+                                    </label>
+                                    <>
+                                        {(
+                                            listMunicipios.length === 0
+                                            && isLoading
+                                        ) && (
                                                 <div className="p-2">
                                                     <AppLoading parametros={{
                                                         tipoLoading: "progress",
@@ -2216,43 +3214,14 @@
                                                     }} />
                                                 </div>
                                             )}
-                                            {(listMunicipios.length > 0) && (
-                                                <>
-                                                    {renderCampoMunicipio('drop_select')}
-                                                </>
-                                            )}
-                                        </form>
-                                    </div>
-                                ) : (
-                                    <div>
-                                        {/* MUNICÍPIO/TEXT */}
-                                        <form
-                                            className="was-validated"
-                                            onSubmit={(e) => {
-                                                e.preventDefault();
-                                                submitAllForms(`filtro-${origemForm}`);
-                                            }}>
-                                            <AppText parametros={parametros} formData={formData} setFormData={setFormData}
-                                                fieldAttributes={{
-                                                    attributeOrigemForm: `${origemForm}`,
-                                                    labelField: 'Município',
-                                                    labelColor: 'black', // gray, red, black,
-                                                    nameField: 'Municipio',
-                                                    errorMessage: '', // Mensagem de Erro personalizada
-                                                    attributePlaceholder: '', // placeholder 
-                                                    attributeMinlength: 4, // minlength 
-                                                    attributeMaxlength: 100, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
-                                                    attributePattern: 'Caracter', // Inteiro, Caracter, Senha
-                                                    attributeAutocomplete: 'on', // on, off ]
-                                                    attributeRequired: true,
-                                                    attributeReadOnly: true,
-                                                    attributeDisabled: false,
-                                                    attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
-                                                }}
-                                            />
-                                        </form>
-                                    </div>
-                                )}
+                                        {(listMunicipios.length > 0) && (
+                                            <>
+                                                {/* CAMPO MUNICIPIO */}
+                                                {renderCampoMunicipio('drop_select', selectMunicipioShow, setSelectMunicipioShow)}
+                                            </>
+                                        )}
+                                    </>
+                                </form>
                             </div>
                         </div>
                         <div className="col-12 col-sm-6">
@@ -2287,28 +3256,18 @@
 
                     <div className="row">
                         <div className="col-12 col-sm-6">
-                            <form
-                                className="was-validated"
-                                onSubmit={(e) => {
-                                    e.preventDefault();
-                                    submitAllForms(`filtro-${origemForm}`);
-                                }}>
-                                {(checkWordInArray(getURI, 'consultar')) ? (
-                                    <div style={formGroupStyle}>
+                            <div style={formGroupStyle}>
+                                <form
+                                    className="was-validated"
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        submitAllForms(`filtro-${origemForm}`);
+                                    }}>
+                                    <>
                                         <label htmlFor="unit"
                                             style={formLabelStyle}
-                                            className="form-label">Unidade
-                                            {!checkWordInArray(getURI, 'consultar') ? (<strong style={requiredField}>*</strong>) : null}
-                                        </label>
-                                        <div className="p-2">
-                                            {formData.NomeUnidade
-                                                ? formData.NomeUnidade
-                                                : <span className="text-muted">Não informado</span>}
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div style={formGroupStyle}>
-                                        <label htmlFor="unit" style={formLabelStyle} className="form-label">
+                                            className="form-label"
+                                        >
                                             Unidade<strong style={requiredField}>*</strong>
                                         </label>
                                         {(dataLoading && units) ? (
@@ -2319,53 +3278,47 @@
                                                 }} />
                                             </div>
                                         ) : (
-                                            <select
-                                                data-api={`filtro-${origemForm}`}
-                                                id="unit"
-                                                name="unit"
-                                                value={formData.unit || ''}
-                                                onFocus={handleFocus}
-                                                onChange={handleChange}
-                                                onBlur={handleBlur}
-                                                style={formControlStyle}
-                                                className="form-select form-select-sm"
-                                                required
-                                                aria-label="Default select 2"
-                                            >
-                                                <option value="">Seleção Nula</option>
-                                                {units.map(escolaridade_list => (
-                                                    <option key={`${escolaridade_list.id}`} value={escolaridade_list.id}>
-                                                        {escolaridade_list.unidades_nome} - {escolaridade_list.unidades_CEP}
-                                                    </option>
-                                                ))}
-                                            </select>
+                                            <>
+                                                {/* CAMPO UNIDADE */}
+                                                {renderCampoUnidade('drop_select', selectUnidadeShow, setSelectUnidadeShow)}
+                                            </>
                                         )}
-                                    </div>
-                                )}
-                            </form>
+                                    </>
+                                </form>
+                            </div>
                         </div>
                         <div className="col-12 col-sm-6">
                             <div style={formGroupStyle}>
-                                <label
-                                    htmlFor={`checkSemNumero`}
-                                    style={formLabelStyle}
-                                    className="form-label"
-                                >
-                                    Identidade de Genero *
-                                </label>
-                                <div>
-                                    <div>&nbsp;</div>
-                                    <AppLoading parametros={{
-                                        tipoLoading: "progress",
-                                        carregando: dataLoading
-                                    }} />
-                                </div>
                                 <form
                                     className="was-validated"
                                     onSubmit={(e) => {
                                         e.preventDefault();
                                         submitAllForms(`filtro-${origemForm}`);
                                     }}>
+                                    <label
+                                        htmlFor={`checkSemNumero`}
+                                        style={formLabelStyle}
+                                        className="form-label"
+                                    >
+                                        Identidade de Genero *
+                                    </label>
+                                    <div>
+                                        {(
+                                            listGeneros.length === 0
+                                            && isLoading
+                                        ) && (
+                                                <AppLoading parametros={{
+                                                    tipoLoading: "progress",
+                                                    carregando: dataLoading
+                                                }} />
+                                            )}
+                                        {(listGeneros.length > 0) && (
+                                            <>
+                                                {/* CAMPO GENERO */}
+                                                {renderCampoGenero('drop_check', selectGeneroShow, setSelectGeneroShow)}
+                                            </>
+                                        )}
+                                    </div>
                                 </form>
                             </div>
                         </div>
@@ -2378,46 +3331,28 @@
                                     e.preventDefault();
                                     submitAllForms(`filtro-${origemForm}`);
                                 }}>
-                                {checkWordInArray(getURI, 'consultar') ? (
-                                    <div style={formGroupStyle}>
-                                        <label
-                                            htmlFor="Etnia"
-                                            style={formLabelStyle}>Etnia
-                                            {!checkWordInArray(getURI, 'consultar') ? (<strong style={requiredField}>*</strong>) : null}
-                                        </label>
-                                        <div className="p-2">
-                                            {formData.Etnia ? (
-                                                <span>{formData.Etnia}</span>
-                                            ) : (
-                                                <span className="text-muted">Não informado</span>
-                                            )}
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div style={formGroupStyle}>
-                                        <label htmlFor="Etnia" style={formLabelStyle}>
-                                            Etnia<strong style={requiredField}>*</strong>
-                                        </label>
-                                        <select
-                                            data-api="form-adolescente"
-                                            id="Etnia"
-                                            name="Etnia"
-                                            className="form-select form-select-sm"
-                                            value={formData.Etnia || ''}
-                                            onChange={handleChange}
-                                            style={formControlStyle}
-                                            required
-                                            aria-label="Default select 0"
-                                        >
-                                            <option value="">Seleção Nula</option>
-                                            {etniasNoBrasil.map(etinia_select => (
-                                                <option key={etinia_select} value={etinia_select}>
-                                                    {etinia_select}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                )}
+                                <div style={formGroupStyle}>
+                                    <label htmlFor="Etnia" style={formLabelStyle}>
+                                        Etnia<strong style={requiredField}>*</strong>
+                                    </label>
+                                    {(
+                                        listEtnias.length === 0
+                                        && isLoading
+                                    ) && (
+                                            <>
+                                                <AppLoading parametros={{
+                                                    tipoLoading: "progress",
+                                                    carregando: dataLoading
+                                                }} />
+                                            </>
+                                        )}
+                                    {(listEtnias.length > 0) && (
+                                        <>
+                                            {/* CAMPO ETNIA */}
+                                            {renderCampoEtnia('drop_select', selectEtniaShow, setSelectEtniaShow)}
+                                        </>
+                                    )}
+                                </div>
                             </form>
                         </div>
                         <div className="col-12 col-sm-6">
@@ -2434,48 +3369,28 @@
                                         className="form-label">Sexo
                                         {!checkWordInArray(getURI, 'consultar') ? (<strong style={requiredField}>*</strong>) : null}
                                     </label>
-                                    {dataLoading ? (
-                                        <div className="p-2">
-                                            <AppLoading parametros={{
-                                                tipoLoading: "progress",
-                                                carregando: dataLoading
-                                            }} />
-                                        </div>
-                                    ) : (
+                                    {(
+                                        listSexos.length === 0
+                                        && isLoading
+                                    ) && (
+                                            <div className="p-2">
+                                                <AppLoading parametros={{
+                                                    tipoLoading: "progress",
+                                                    carregando: dataLoading
+                                                }} />
+                                            </div>
+                                        )}
+                                    {(listSexos.length > 0) && (
                                         <>
-                                            {(checkWordInArray(getURI, 'consultar')) ? (
-                                                <div className="p-2">
-                                                    {listaSexos.find(item => item.id == formData.sexo_biologico_id)?.sexo_biologico || (
-                                                        <span className="text-muted">Não informado</span>
-                                                    )}
-                                                </div>
-                                            ) : (
-                                                <select
-                                                    data-api={`filtro-${origemForm}`}
-                                                    id="sexo_biologico_id"
-                                                    name="sexo_biologico_id"
-                                                    value={formData.sexo_biologico_id || ''}
-                                                    onChange={handleChange}
-                                                    style={formControlStyle}
-                                                    className="form-select form-select-sm"
-                                                    required
-                                                    aria-label="Default select 2"
-                                                >
-                                                    <option value="">Seleção Nula</option>
-                                                    {listaSexos.map(sexo_select => (
-                                                        <option key={sexo_select.id} value={sexo_select.id}>
-                                                            {sexo_select.sexo_biologico}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            )}
+                                            {/* CAMPO SEXO */}
+                                            {renderCampoSexo('drop_select', selectSexoShow, setSelectSexoShow)}
                                         </>
                                     )}
                                 </div>
                             </form>
                         </div>
                     </div>
-                </div>
+                </div >
             )
         }
 
@@ -2760,7 +3675,7 @@
                                         attributeRequired: false,
                                         attributeReadOnly: false,
                                         attributeDisabled: false,
-                                        attributeMask: 'RG', // CPF, Telefone, CEP, , SEI, Processo.
+                                        attributeMask: 'RG', // CPF, Telefone, CEP, SEI, Processo.
                                     }}
                                 />
                             </form>
@@ -2787,7 +3702,7 @@
                                         attributeRequired: true,
                                         attributeReadOnly: false,
                                         attributeDisabled: false,
-                                        attributeMask: '', // CPF, Telefone, CEP, , SEI, Processo.
+                                        attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
                                     }}
                                 />
                             </form>
@@ -2815,7 +3730,7 @@
                                         attributeRequired: true,
                                         attributeReadOnly: false,
                                         attributeDisabled: false,
-                                        attributeMask: 'CEP', // CPF, Telefone, CEP, , SEI, Processo.
+                                        attributeMask: 'CEP', // CPF, Telefone, CEP, SEI, Processo.
                                     }}
                                 />
                             </form>
@@ -2845,7 +3760,7 @@
                                         attributeRequired: true,
                                         attributeReadOnly: false,
                                         attributeDisabled: false,
-                                        attributeMask: '', // CPF, Telefone, CEP, , SEI, Processo.
+                                        attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
                                     }}
                                 />
                             </form>
@@ -3108,7 +4023,7 @@
                                                 <option value="">Seleção Nula</option>
                                                 {units.map(escolaridade_list => (
                                                     <option key={`${escolaridade_list.id}`} value={escolaridade_list.id}>
-                                                        {escolaridade_list.unidades_nome} - {escolaridade_list.unidades_CEP}
+                                                        {escolaridade_list.escolaridades_nome} - {escolaridade_list.unidades_CEP}
                                                     </option>
                                                 ))}
                                             </select>
@@ -3193,6 +4108,7 @@
                                     e.preventDefault();
                                     submitAllForms(`filtro-${origemForm}`);
                                 }}>
+
                                 {checkWordInArray(getURI, 'consultar') ? (
                                     <div style={formGroupStyle}>
                                         <label
@@ -3209,29 +4125,25 @@
                                         </div>
                                     </div>
                                 ) : (
-                                    <div style={formGroupStyle}>
-                                        <label htmlFor="Etnia" style={formLabelStyle}>
-                                            Etnia<strong style={requiredField}>*</strong>
-                                        </label>
-                                        <select
-                                            data-api="form-adolescente"
-                                            id="Etnia"
-                                            name="Etnia"
-                                            className="form-select form-select-sm"
-                                            value={formData.Etnia || ''}
-                                            onChange={handleChange}
-                                            style={formControlStyle}
-                                            required
-                                            aria-label="Default select 0"
-                                        >
-                                            <option value="">Seleção Nula</option>
-                                            {etniasNoBrasil.map(etinia_select => (
-                                                <option key={etinia_select} value={etinia_select}>
-                                                    {etinia_select}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
+
+                                    <select
+                                        data-api="form-adolescente"
+                                        id="Etnia"
+                                        name="Etnia"
+                                        className="form-select form-select-sm"
+                                        value={formData.Etnia || ''}
+                                        onChange={handleChange}
+                                        style={formControlStyle}
+                                        required
+                                        aria-label="Default select 0"
+                                    >
+                                        <option value="">Seleção Nula</option>
+                                        {etniasNoBrasil.map(etinia_select => (
+                                            <option key={etinia_select} value={etinia_select}>
+                                                {etinia_select}
+                                            </option>
+                                        ))}
+                                    </select>
                                 )}
                             </form>
                         </div>
@@ -3261,7 +4173,7 @@
                                         <>
                                             {(checkWordInArray(getURI, 'consultar')) ? (
                                                 <div className="p-2">
-                                                    {listaSexos.find(item => item.id == formData.sexo_biologico_id)?.sexo_biologico || (
+                                                    {listSexos.find(item => item.id == formData.sexo_biologico_id)?.sexo_biologico || (
                                                         <span className="text-muted">Não informado</span>
                                                     )}
                                                 </div>
@@ -3278,7 +4190,7 @@
                                                     aria-label="Default select 2"
                                                 >
                                                     <option value="">Seleção Nula</option>
-                                                    {listaSexos.map(sexo_select => (
+                                                    {listSexos.map(sexo_select => (
                                                         <option key={sexo_select.id} value={sexo_select.id}>
                                                             {sexo_select.sexo_biologico}
                                                         </option>
@@ -3577,7 +4489,7 @@
                                         attributeRequired: true,
                                         attributeReadOnly: false,
                                         attributeDisabled: false,
-                                        attributeMask: 'CPF', // CPF, Telefone, CEP, , SEI, Processo.
+                                        attributeMask: 'CPF', // CPF, Telefone, CEP, SEI, Processo.
                                     }}
                                 />
 
@@ -3623,7 +4535,7 @@
                                         attributeRequired: false,
                                         attributeReadOnly: false,
                                         attributeDisabled: false,
-                                        attributeMask: 'RG', // CPF, Telefone, CEP, , SEI, Processo.
+                                        attributeMask: 'RG', // CPF, Telefone, CEP, SEI, Processo.
                                     }}
                                 />
                             </form>
@@ -3650,7 +4562,7 @@
                                         attributeRequired: true,
                                         attributeReadOnly: false,
                                         attributeDisabled: false,
-                                        attributeMask: '', // CPF, Telefone, CEP, , SEI, Processo.
+                                        attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
                                     }}
                                 />
                             </form>
@@ -3678,7 +4590,7 @@
                                         attributeRequired: true,
                                         attributeReadOnly: false,
                                         attributeDisabled: false,
-                                        attributeMask: 'CEP', // CPF, Telefone, CEP, , SEI, Processo.
+                                        attributeMask: 'CEP', // CPF, Telefone, CEP, SEI, Processo.
                                     }}
                                 />
                             </form>
@@ -3708,7 +4620,7 @@
                                         attributeRequired: true,
                                         attributeReadOnly: false,
                                         attributeDisabled: false,
-                                        attributeMask: '', // CPF, Telefone, CEP, , SEI, Processo.
+                                        attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
                                     }}
                                 />
                             </form>
@@ -3730,7 +4642,7 @@
                                         {`Sem número`}
                                         <strong style={requiredField}>*</strong>
                                     </label>
-                                    <div class="d-flex justify-content-center">
+                                    <div className="d-flex justify-content-center">
                                         <div className="form-check m-1">
                                             <input
                                                 className="form-check-input"
@@ -4165,7 +5077,7 @@
                                         <>
                                             {(checkWordInArray(getURI, 'consultar')) ? (
                                                 <div className="p-2">
-                                                    {listaSexos.find(item => item.id == formData.sexo_biologico_id)?.sexo_biologico || (
+                                                    {listSexos.find(item => item.id == formData.sexo_biologico_id)?.sexo_biologico || (
                                                         <span className="text-muted">Não informado</span>
                                                     )}
                                                 </div>
@@ -4182,7 +5094,7 @@
                                                     aria-label="Default select 2"
                                                 >
                                                     <option value="">Seleção Nula</option>
-                                                    {listaSexos.map(sexo_select => (
+                                                    {listSexos.map(sexo_select => (
                                                         <option key={sexo_select.id} value={sexo_select.id}>
                                                             {sexo_select.sexo_biologico}
                                                         </option>
@@ -4199,7 +5111,7 @@
             )
         }
 
-        {/* RENDER DADOS ESCOLARES - DECREPTO*/ }
+        {/* RENDER DADOS ESCOLARES*/ }
         const renderEscolaridade = () => {
             return (
                 <div className="border border-top-0 mb-4 p-4">
@@ -4211,24 +5123,21 @@
                                     e.preventDefault();
                                     submitAllForms(`filtro-${origemForm}`);
                                 }}>
+                                <label
+                                    htmlFor="TipoEscola"
+                                    style={formLabelStyle}
+                                    className="form-label">
+                                    Tipo de escola
+                                    {!checkWordInArray(getURI, 'consultar') ? (<strong style={requiredField}>*</strong>) : null}
+                                </label>
                                 {checkWordInArray(getURI, 'consultar') ? (
                                     <div style={formGroupStyle}>
-                                        <label
-                                            htmlFor="TipoEscola"
-                                            style={formLabelStyle}
-                                            className="form-label">
-                                            Tipo de escola
-                                            {!checkWordInArray(getURI, 'consultar') ? (<strong style={requiredField}>*</strong>) : null}
-                                        </label>
                                         <div className="p-2">
                                             {formData.TipoEscola}
                                         </div>
                                     </div>
                                 ) : (
                                     <div style={formGroupStyle}>
-                                        <label htmlFor="TipoEscola" style={formLabelStyle} className="form-label">
-                                            Tipo de escola<strong style={requiredField}>*</strong>
-                                        </label>
                                         <select
                                             data-api={`filtro-${origemForm}`}
                                             id="TipoEscola"
@@ -4250,7 +5159,7 @@
                             </form>
                         </div>
                         <div className="col-12 col-sm-6">
-                            {/* ESCOLARIDADE */}
+                            {/* CAMPO ESCOLARIDADE */}
                             <div style={formGroupStyle}>
                                 <label htmlFor="TipoEscola" style={formLabelStyle} className="form-label">
                                     Escolaridade<strong style={requiredField}>*</strong>
@@ -4261,14 +5170,24 @@
                                         e.preventDefault();
                                         submitAllForms(`filtro-${origemForm}`);
                                     }}>
-                                    {/* ESCOLARIDADE */}
-                                    <div className="p-2">
-                                        <AppLoading parametros={{
-                                            tipoLoading: "progress",
-                                            carregando: isLoading
-                                        }} />
-                                    </div>
-
+                                    {(
+                                        listEscolaridades.length === 0
+                                        && isLoading
+                                    ) && (
+                                            <div className="p-2">
+                                                <AppLoading parametros={{
+                                                    tipoLoading: "progress",
+                                                    carregando: isLoading
+                                                }}
+                                                />
+                                            </div>
+                                        )}
+                                    {(listEscolaridades.length > 0) && (
+                                        <>
+                                            {/* CAMPO ESCOLARIDADE */}
+                                            {renderCampoEscolaridade('drop_select', selectEscolaridadeShow, setSelectEscolaridadeShow)}
+                                        </>
+                                    )}
                                 </form>
                             </div>
                         </div>
@@ -4760,7 +5679,9 @@
                                 {renderCertidao()}
                             </div>
                         )}
-
+                        <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+                            {JSON.stringify(formData, null, 2)}
+                        </pre>
                         {/* Formulário de Escolaridade */}
                         <ul className="nav nav-tabs">
                             <li className="nav-item">
@@ -4768,7 +5689,9 @@
                             </li>
                         </ul>
                         {renderEscolaridade()}
-
+                        <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+                            {JSON.stringify(formData, null, 2)}
+                        </pre>
                         {/* Formulário Dados Responsável */}
                         <ul className="nav nav-tabs">
                             <li className="nav-item">

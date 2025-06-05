@@ -561,18 +561,18 @@
         const handleBlur = async (event) => {
             // setModalMessage({ show: false, type: 'light', message: '' });
             const { name, value } = event.target;
-            console.log("-------------------------");
-            console.log("handleBlur");
-            console.log("-------------------------");
-            console.log("name :: ", name);
-            console.log("value :: ", value);
-            console.log("attributeMinlength :: ", attributeMinlength);
+            // console.log("-------------------------");
+            // console.log("handleBlur");
+            // console.log("-------------------------");
+            // console.log("name :: ", name);
+            // console.log("value :: ", value);
+            // console.log("attributeMinlength :: ", attributeMinlength);
             let message = errorMessage === '' ? `Por favor, informe um ${attributeMask} válido.` : errorMessage;
             let isValid = true;
             let dataColuna = {};
 
-            console.log('------------');
-            console.log('errorMessage :: ', errorMessage);
+            // console.log('------------');
+            // console.log('errorMessage :: ', errorMessage);
 
             if (labelColor !== 'gray') {
                 const countValue = value;
@@ -655,10 +655,10 @@
                         InitialValue !== value
                     ) {
                         // console.log('------------------------');
-                        console.log(`isDuplicadoCPF &&`);
-                        console.log(`name :: `, name);
-                        console.log(`labelColor !== 'gray' &&`);
-                        console.log(`InitialValue !== value`);
+                        // console.log(`isDuplicadoCPF &&`);
+                        // console.log(`name :: `, name);
+                        // console.log(`labelColor !== 'gray' &&`);
+                        // console.log(`InitialValue !== value`);
                         setModalId(`modal_form_cpf_duplicado${gerarContagemAleatoria(6)}`);
                         let message = errorMessage === '' ? `Campo ${labelField} Duplicado` : errorMessage;
                         // console.log('HOP-2');
@@ -689,9 +689,9 @@
                             labelColor !== 'gray'
                         ) {
                             // console.log('------------------------');
-                            console.log(`checkWordInArray(getURI, 'atualizar')`);
-                            console.log(`value !== InitialValue`);
-                            console.log(`labelColor !== 'gray'`);
+                            // console.log(`checkWordInArray(getURI, 'atualizar')`);
+                            // console.log(`value !== InitialValue`);
+                            // console.log(`labelColor !== 'gray'`);
                             setModalId(`modal_form_${gerarContagemAleatoria(6)}`);
                             setAttributeDisabled(true);
                             setMsgError(message);
@@ -763,16 +763,16 @@
                 // CEP
                 case 'CEP':
                     const cleanedCEP = cleanInputOnlyNumber(value);
-                    console.log("name, value :: ", name, value);
-                    console.log("name, value :: ", cleanedCEP);
-                    console.log("cleanedCEP.length :: ", cleanedCEP.length);
+                    // console.log("name, value :: ", name, value);
+                    // console.log("name, value :: ", cleanedCEP);
+                    // console.log("cleanedCEP.length :: ", cleanedCEP.length);
                     if (cleanedCEP.length !== 8 && cleanedCEP.length > 0) {
                         // Mostra mensagem de erro para CEPs incompletos
                         setModalId(`modal_form_${gerarContagemAleatoria(4)}`);
                         isValid = false;
                         let message = `O Campo ${labelField} deve ter 8 Números`;
-                        console.log('------------------------');
-                        console.log('message :: ', message);
+                        // console.log('------------------------');
+                        // console.log('message :: ', message);
                         setModalMessage({
                             show: true,
                             type: 'light',
@@ -907,7 +907,7 @@
                 // Continuar com a lógica específica para Certidão...
             } else {
                 // Caso nenhum dos dois seja fornecido
-                console.log("Tipo de dado não identificado");
+                // console.log("Tipo de dado não identificado");
                 return null; // ou throw new Error("Tipo de dado inválido");
             }
 
@@ -965,7 +965,7 @@
         // Fetch para GET
         const fetchGetCEP = async (cleanedCEP) => {
             const url = `${viacep}${cleanedCEP}/json`;
-            console.log('fetchGetCEP URL ::', url);
+            // console.log('fetchGetCEP URL ::', url);
             try {
                 const response = await fetch(url);
                 const data = await response.json();
