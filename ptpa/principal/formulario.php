@@ -98,7 +98,7 @@ $parametros_backend = array(
                             <button className="btn btn-primary" type="submit">Submit form</button>
                         </div>
                     </form>
-                    <form className="was-validated">
+                    <form className="needs-validation">
                         <div className="mb-3">
                             <label htmlFor="validationTextarea" className="form-label">Textarea</label>
                             <textarea id="validationTextarea" className="form-control" placeholder="Required example textarea" required defaultValue={""} />

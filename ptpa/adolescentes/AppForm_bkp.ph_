@@ -661,9 +661,9 @@
 
             // console.log('--------------------------------');
             // console.log('handleChange');
-            // console.log('--------------------------------');
-            // console.log('name handleChange: ', name);
-            // console.log('value handleChange: ', value);
+            console.log('--------------------------------');
+            console.log('name handleChange: ', name);
+            console.log('value handleChange: ', value);
 
             setFormData((prev) => ({
                 ...prev,
@@ -1092,7 +1092,7 @@
                 const filtrado = listUnidades.filter((m) =>
                     m.unidades_nome.toLowerCase() === termo
                 );
-                // console.log('filtrado :: ', filtrado);
+                console.log('filtrado :: ', filtrado);
                 if (filtrado[0]) {
                     setFormData(prev => ({
                         ...prev,
@@ -1175,8 +1175,8 @@
             }
 
             const { isValid, camposVazios } = validarCamposObrigatorios(setData, camposObrigatorios);
-            // console.log('isValid: ', isValid);
-            // console.log('camposVazios: ', camposVazios);
+            console.log('isValid: ', isValid);
+            console.log('camposVazios: ', camposVazios);
             if (!isValid) {
                 const nomesCamposVazios = camposVazios.map(campo => camposObrigatorios[campo]);
                 setTimeout(() => {
@@ -1220,6 +1220,49 @@
                 // console.log('submitAllForms - filtro-adolescente...');
                 fetchPostAdolescente(setData);
             }
+        };
+
+        {/* CAMPO UNIDAE CAMPO CEP */ }
+        const orderUnitsByCEPProximity = (userCEP) => {
+            if (
+                !userCEP ||
+                userCEP.length < 8 ||
+                !units ||
+                units.length === 0
+            ) {
+                console.error('CEP inválido ou unidades não carregadas');
+                return false;
+            }
+
+            // Remove hífen e converte para número
+            const cleanCEP = (cep) => parseInt(cep.replace('-', ''), 10);
+
+            const userCEPClean = cleanCEP(userCEP);
+
+            // Ordena
+            const orderedUnits = [...units].sort((a, b) => {
+                const cepA = a.unidades_CEP ? cleanCEP(a.unidades_CEP) : 0;
+                const cepB = b.unidades_CEP ? cleanCEP(b.unidades_CEP) : 0;
+                const diffA = Math.abs(userCEPClean - cepA);
+                const diffB = Math.abs(userCEPClean - cepB);
+                return diffA - diffB;
+            });
+            if (orderedUnits.length === 0) {
+                return [];
+            }
+            const unidadeMaisProxima = orderedUnits[0];
+            // console.log('unidadeMaisProxima: ', unidadeMaisProxima);
+            // console.log('unidade_id: ', unidadeMaisProxima.id);
+            // console.log('unidades_nome: ', unidadeMaisProxima.unidades_nome);
+            setFormData(prev => ({
+                ...prev,
+                unidade_id: unidadeMaisProxima.id,
+                Unidade: unidadeMaisProxima.unidades_nome
+            }));
+            setUnits(orderedUnits);
+            setListUnidades(orderedUnits);
+            setGuardaUnidades(orderedUnits);
+            return orderedUnits;
         };
 
         {/* ENVIAR E-MAIL AO FIM DO CADASTRO */ }
@@ -1638,74 +1681,12 @@
                 });
             }
         }, [listPeriodos, formData.Nascimento]);
-
-        {/* CAMPO UNIDAE CAMPO CEP */ }
-        const orderUnitsByCEPProximity = (userCEP) => {
-            console.log('userCEP:', userCEP);
-            console.log('units:', units);
-            if (
-                !userCEP ||
-                userCEP.length < 9 ||
-                !units ||
-                units.length === 0
-            ) {
-                console.error('CEP inválido ou unidades não carregadas');
-                return false;
-            }
-
-            // Remove hífen e converte para número
-            const cleanCEP = (cep) => parseInt(cep.replace('-', ''), 10);
-
-            const userCEPClean = cleanCEP(userCEP);
-
-            // Ordena
-            const orderedUnits = [...units].sort((a, b) => {
-                const cepA = a.unidades_CEP ? cleanCEP(a.unidades_CEP) : 0;
-                const cepB = b.unidades_CEP ? cleanCEP(b.unidades_CEP) : 0;
-                const diffA = Math.abs(userCEPClean - cepA);
-                const diffB = Math.abs(userCEPClean - cepB);
-                return diffA - diffB;
-            });
-            if (orderedUnits.length === 0) {
-                return [];
-            }
-            const unidadeMaisProxima = orderedUnits[0];
-            // console.log('unidadeMaisProxima: ', unidadeMaisProxima);
-            // console.log('unidade_id: ', unidadeMaisProxima.id);
-            // console.log('unidades_nome: ', unidadeMaisProxima.unidades_nome);
-            setFormData(prev => ({
-                ...prev,
-                unidade_id: unidadeMaisProxima.id,
-                Unidade: unidadeMaisProxima.unidades_nome
-            }));
-            setUnits(orderedUnits);
-            setListUnidades(orderedUnits);
-            setGuardaUnidades(orderedUnits);
-            return orderedUnits;
-        };
-
-        React.useEffect(() => {
-            async function loadUnits() {
-                const response = await fetchGetUnidade(); // ou outro método que você use
-                if (response && response.length > 0) {
-                    setUnits(response);
-                    setListUnidades(response); // se você quiser manter as outras cópias
-                    setGuardaUnidades(response);
-                }
-            }
-
-            loadUnits();
-        }, []);
-
         {/* CAMPO CEP */ }
         React.useEffect(() => {
             // Só executa se houver um CEP válido no formData
-            if (
-                formData.CEP &&
-                formData.CEP.length >= 8
-            ) {
+            if (formData.CEP && formData.CEP.length >= 8) {
                 const newOrder = orderUnitsByCEPProximity(formData.CEP);
-                if (newOrder.length > 0) {
+                if (newOrder.Length > 0) {
                     // console.log("Nova ordem de unidades:", newOrder);
                 }
             }

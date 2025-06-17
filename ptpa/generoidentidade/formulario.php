@@ -212,7 +212,7 @@ $parametros_backend['base_paginator'] = implode('/', $parametros_backend['getURI
                     </div>
                 </div>
                 {/* formulario Genero Identidade*/}
-                <form action={base_url+'index.php/fia/ptpa/genero/api/cadastrar'} method="post" className="row was-validated m-2">
+                <form action={base_url+'index.php/fia/ptpa/genero/api/cadastrar'} method="post" className="row needs-validation m-2">
 
                     <input type="hidden" id="id" name="id" value={formData.id || ''} className="form-control" required />
                     <input type="hidden" id="token_csrf" name="token_csrf" value={token_csrf} className="form-control" required />

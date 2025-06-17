@@ -24,6 +24,7 @@
         }, []);
 
         // Estado para mensagens e validação
+        const [error, setError] = React.useState('');
         const [showEmptyMessage, setShowEmptyMessage] = React.useState(false);
         const [message, setMessage] = React.useState({
             show: false,
@@ -59,6 +60,7 @@
                 ...prev,
                 [name]: value
             }));
+            setError('');
         };
 
         // Função handleBlur para validação ao perder o foco
@@ -78,6 +80,7 @@
                             type: 'light',
                             message: 'Email inválido. Por favor, insira um Email válido.'
                         });
+                        setError('Email inválido. Por favor, insira um Email válido.');
                     }
 
                     // Limpa o campo se o Email for inválido
@@ -141,6 +144,7 @@
                         </div>
                     ) : (
                         <input
+                            className={`form-control form-control-sm ${error ? 'is-invalid' : formData.Email ? 'is-valid' : ''}`}
                             data-api={`filtro-${origemForm}`}
                             type="email"
                             id="Email"
@@ -151,7 +155,6 @@
                             onBlur={handleBlur}
                             style={formControlStyle}
                             onKeyDown={handleKeyDown}
-                            className="form-control form-control-sm"
                             disabled={(checkWordInArray(getURI, 'alocarfuncionario') && checkWordInArray(getURI, 'atualizar')) ? true : false}
                             required
                         />

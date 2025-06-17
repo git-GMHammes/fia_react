@@ -17,6 +17,7 @@
 
         // Estado para mensagens e validação
         // const [showEmptyMessage, setShowEmptyMessage] = React.useState(false);
+        const [error, setError] = React.useState('');
         const [message, setMessage] = React.useState({
             show: false,
             type: null,
@@ -59,6 +60,7 @@
                     type: 'light',
                     message: 'Nome completo é obrigatório e deve conter apenas letras e espaços.'
                 });
+                setError('Nome completo é obrigatório e deve conter apenas letras e espaços.');
             } else if (name === 'Nome') {
                 const clearedValue = value
                     .replace(/[^A-Za-zÀ-ÖØ-öø-ÿ\s']/g, '')
@@ -69,6 +71,7 @@
                     ...prev,
                     [name]: clearedValue
                 }));
+                setError('');
             } else {
                 setMessage({ show: false, type: null, message: null });
             }
@@ -88,6 +91,7 @@
                     type: 'light',
                     message: 'Nome inválido. Por favor, insira um nome contendo apenas letras.'
                 });
+                setError('Nome inválido. Por favor, insira um nome contendo apenas letras.');
 
                 setFormData((prev) => ({
                     ...prev,
@@ -143,6 +147,7 @@
                         </div>
                     ) : (
                         <input data-api={`filtro-${origemForm}`}
+                            className={`form-control form-control-sm ${error ? 'is-invalid' : formData.Nome ? 'is-valid' : ''}`}
                             type="text"
                             id="Nome"
                             name="Nome"
@@ -151,7 +156,6 @@
                             onChange={handleChange}
                             onBlur={handleBlur}
                             style={formControlStyle}
-                            className="form-control form-control-sm"
                             disabled={(checkWordInArray(getURI, 'alocarfuncionario') && checkWordInArray(getURI, 'atualizar')) ? true : false}
                             required
                         />

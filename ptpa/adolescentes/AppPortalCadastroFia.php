@@ -21,7 +21,7 @@ $parametros_backend = array(
         const parametros = JSON.parse(document.querySelector('.app_posrtal_cad_fia').getAttribute('data-result'));
         const [objeto, setObjeto] = React.useState([]);
         const base_url = parametros.base_url;
-        const caminhoImagem = `${base_url}assets/img/fia/mascote5.png`;
+        const caminhoImagem = `${base_url}assets/img/logos/PRODERJ_2T.png`;
         console.log('caminhoImagem :: ', caminhoImagem)
 
         return (
@@ -29,15 +29,18 @@ $parametros_backend = array(
                 <h2 className="text-center my-4">Portal FIA</h2>
 
                 {/* Imagem adicionada no meio do componente */}
-                <div className="text-center my-4">
-                    <img
-                        src={`${caminhoImagem}`}
-                        alt="Logo do Sistema"
-                        className="img-fluid rounded"
-                        style={{ maxWidth: '400px', boxShadow: '0 16px 30px rgba(0,0,0,0.1)' }}
-                    />
+                <div className="container">
+                    <div className="text-center my-4">
+                        <img
+                            src={caminhoImagem}
+                            alt="Logo do Sistema"
+                            className="img-fluid rounded"
+                            style={{ maxWidth: '600px', boxShadow: '0 16px 30px rgba(0,0,0,0.1)' }}
+                        />
+                    </div>
                 </div>
-                <h2 className="text-center my-4">Confirmação de Cadastro</h2>
+                <h2 className="text-center my-4">Cadastro confirmado com sucesso.</h2>
+                <h4 className="text-center my-4">Um e-mail de confirmação será encaminhado.</h4>
             </div>
         );
     };

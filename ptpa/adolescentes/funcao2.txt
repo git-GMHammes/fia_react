@@ -1,0 +1,97 @@
+{/* CERTIDÃO (ANTIGO/NOVO) */ }
+const certidaoAntigoNovo = (nCertidao) => {
+    console.log('Iniciando análise do número:', nCertidao)
+    if (typeof nCertidao !== 'string' || nCertidao.length !== 32) {
+        console.log('Tamanho incorreto:', nCertidao.length)
+        return 'erro'
+    }
+    let antigo = true
+    let novo = true
+
+    let anoAtual = new Date().getFullYear()
+
+    // Modelo Novo
+    let p16 = nCertidao.substring(0, 6)
+    console.log('Novo [1–6] Código da Serventia:', p16, /^\d{6}$/.test(p16) ? 'certo' : 'errado')
+    if (!/^\d{6}$/.test(p16)) novo = false
+
+    let p7 = nCertidao.substring(6, 7)
+    console.log('Novo [7] Dígito verificador:', p7, /^\d$/.test(p7) ? 'certo' : 'errado')
+    if (!/^\d$/.test(p7)) novo = false
+
+    let p815 = nCertidao.substring(7, 15)
+    let anoNovo = Number(p815.substring(0, 4))
+    let mesNovo = Number(p815.substring(4, 6))
+    let diaNovo = Number(p815.substring(6, 8))
+    let dataValidaNovo = false
+    if (/^\d{8}$/.test(p815)) {
+        let data = new Date(anoNovo, mesNovo - 1, diaNovo)
+        dataValidaNovo = data.getFullYear() === anoNovo && data.getMonth() === mesNovo - 1 && data.getDate() === diaNovo
+        if (anoNovo < 2000 || anoNovo > anoAtual) dataValidaNovo = false
+    }
+    console.log('Novo [8–15] Data do Registro (AAAAMMDD):', p815, dataValidaNovo ? 'certo' : 'errado')
+    if (!dataValidaNovo) novo = false
+
+    let p1617 = nCertidao.substring(15, 17)
+    console.log('Novo [16–17] UF (código IBGE):', p1617, /^\d{2}$/.test(p1617) ? 'certo' : 'errado')
+    if (!/^\d{2}$/.test(p1617)) novo = false
+
+    let p1821 = nCertidao.substring(17, 21)
+    console.log('Novo [18–21] Município (código IBGE):', p1821, /^\d{4}$/.test(p1821) ? 'certo' : 'errado')
+    if (!/^\d{4}$/.test(p1821)) novo = false
+
+    let p2223 = nCertidao.substring(21, 23)
+    console.log('Novo [22–23] Livro:', p2223, /^\d{2}$/.test(p2223) ? 'certo' : 'errado')
+    if (!/^\d{2}$/.test(p2223)) novo = false
+
+    let p2426 = nCertidao.substring(23, 26)
+    console.log('Novo [24–26] Folha:', p2426, /^\d{3}$/.test(p2426) ? 'certo' : 'errado')
+    if (!/^\d{3}$/.test(p2426)) novo = false
+
+    let p2732 = nCertidao.substring(26, 32)
+    console.log('Novo [27–32] Termo de Registro:', p2732, /^\d{6}$/.test(p2732) ? 'certo' : 'errado')
+    if (!/^\d{6}$/.test(p2732)) novo = false
+
+    // Modelo Antigo
+    let a16 = nCertidao.substring(0, 6)
+    console.log('Antigo [1–6] Zona/Cartório:', a16, /^\d{6}$/.test(a16) ? 'certo' : 'errado')
+    if (!/^\d{6}$/.test(a16)) antigo = false
+
+    let a78 = nCertidao.substring(6, 8)
+    console.log('Antigo [7–8] UF:', a78, /^\d{2}$/.test(a78) ? 'certo' : 'errado')
+    if (!/^\d{2}$/.test(a78)) antigo = false
+
+    let a912 = nCertidao.substring(8, 12)
+    let anoAntigo = parseInt(a912)
+    let anoAntigoValido = /^\d{4}$/.test(a912) && anoAntigo >= 1900 && anoAntigo <= anoAtual
+    console.log('Antigo [9–12] Ano de registro:', a912, anoAntigoValido ? 'certo' : 'errado')
+    if (!anoAntigoValido) antigo = false
+
+    let a13 = nCertidao.substring(12, 13)
+    console.log('Antigo [13] Tipo de certidão:', a13, /^[1-9]$/.test(a13) ? 'certo' : 'errado')
+    if (!/^[1-9]$/.test(a13)) antigo = false
+
+    let a1418 = nCertidao.substring(13, 18)
+    console.log('Antigo [14–18] Livro:', a1418, /^\d{5}$/.test(a1418) ? 'certo' : 'errado')
+    if (!/^\d{5}$/.test(a1418)) antigo = false
+
+    let a1921 = nCertidao.substring(18, 21)
+    console.log('Antigo [19–21] Folha:', a1921, /^\d{3}$/.test(a1921) ? 'certo' : 'errado')
+    if (!/^\d{3}$/.test(a1921)) antigo = false
+
+    let a2228 = nCertidao.substring(21, 28)
+    console.log('Antigo [22–28] Termo de Registro:', a2228, /^\d{7}$/.test(a2228) ? 'certo' : 'errado')
+    if (!/^\d{7}$/.test(a2228)) antigo = false
+
+    let a2930 = nCertidao.substring(28, 30)
+    let dvOk = a2930 === '' || /^\d{2}$/.test(a2930)
+    console.log('Antigo [29–30] DV (Dígito Verificador):', a2930, dvOk ? 'certo' : 'errado')
+    if (!(a2930 === '' || /^\d{2}$/.test(a2930))) antigo = false
+
+    let a3132 = nCertidao.substring(30, 32)
+    console.log('Antigo [31–32] Reservado:', a3132, 'ignorado')
+
+    if (novo && !antigo) return 'novo'
+    if (antigo && !novo) return 'antigo'
+    return 'erro'
+}

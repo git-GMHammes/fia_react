@@ -847,7 +847,7 @@
                     <div className="card-body">
 
                         {/* INÍCIO FORM 1 */}
-                        <form className="was-validated" onSubmit={(e) => {
+                        <form className="needs-validation" onSubmit={(e) => {
                             e.preventDefault();
                             submitAllForms(`filtro-${origemForm}`, formData);
                         }}>
@@ -903,7 +903,7 @@
                         {/* FIM FORM 1 */}
 
                         {/* INÍCIO FORM 2 */}
-                        <form className="was-validated" onSubmit={(e) => {
+                        <form className="needs-validation" onSubmit={(e) => {
                             e.preventDefault();
                             submitAllForms(`filtro-${origemForm}`, formData);
                         }}>
@@ -995,7 +995,7 @@
                 </div>
 
                 {/* INÍCIO FORM 3 */}
-                <form className="was-validated" onSubmit={(e) => {
+                <form className="needs-validation" onSubmit={(e) => {
                     e.preventDefault();
                     submitAllForms(`filtro-${origemForm}`, formData);
                 }}>
@@ -1066,7 +1066,7 @@
 
                                         <div className="d-flex justify-content-center mb-3 mt-3">
                                             <div className="fs-5">
-                                                <form className="was-validated" onSubmit={(e) => {
+                                                <form className="needs-validation" onSubmit={(e) => {
                                                     e.preventDefault();
                                                     submitAllForms(`filtro-capacidade`);
                                                 }}>
@@ -1115,7 +1115,7 @@
                                     </div>
                                     {capacidadeUnidade && (
                                         <div>
-                                            <form className="was-validated" onSubmit={(e) => {
+                                            <form className="needs-validation" onSubmit={(e) => {
                                                 e.preventDefault();
                                                 submitAllForms(`filtro-capacidade`);
                                             }}>

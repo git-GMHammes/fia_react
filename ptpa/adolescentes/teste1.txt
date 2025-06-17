@@ -1,0 +1,34 @@
+            {/* CAMPO MUNICIPIO */ }
+            if (name === "Municipio") {
+                setSelectMunicipioShow(true);
+                if (debounceRef.current) {
+                    clearTimeout(debounceRef.current);
+                }
+
+                debounceRef.current = setTimeout(() => {
+                    const termo = value
+                        .replace(/\s+/g, ' ')
+                        .trimEnd()
+                        .toLowerCase();
+                    if (termo.length === 0) {
+                        setListMunicipios(guardaMunicipios);
+                        return;
+                    }
+
+                    const filtrados = listMunicipios.filter((m) =>
+                        m.nome_municipio.toLowerCase().includes(termo)
+                    );
+                    if (filtrados.length === 0) {
+                        setListMunicipios(guardaMunicipios);
+                    } else {
+                        setListMunicipios(filtrados);
+                    }
+                }, 300);
+                const newValue = value.trimEnd();
+                debounceRef.current = setTimeout(() => {
+                    setFormData((prev) => ({
+                        ...prev,
+                        [name]: newValue
+                    }));
+                }, 400);
+            }

@@ -251,7 +251,7 @@
                                                             />
                                                         </div>
                                                     </form>
-                                                    <form className="was-validated" onSubmit={(e) => {
+                                                    <form className="needs-validation" noValidate  onSubmit={(e) => {
                                                         e.preventDefault();
                                                         submitAllForms(`botao-termo`);
                                                     }}>
@@ -266,7 +266,7 @@
                                         </div>
                                     </div>
                                     <div className="modal-footer">
-                                        <form className="was-validated" onSubmit={(e) => {
+                                        <form className="needs-validation" noValidate  onSubmit={(e) => {
                                             e.preventDefault();
                                             submitAllForms(`botao-termo-off`);
                                         }}>

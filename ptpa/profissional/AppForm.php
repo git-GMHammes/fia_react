@@ -644,7 +644,7 @@
         const renderCampoUnidade = () => {
             return (
                 <div>
-                    <form className="was-validated" onSubmit={(e) => {
+                    <form className="needs-validation" onSubmit={(e) => {
                         e.preventDefault();
                         submitAllForms(`filtro-${origemForm}`, formData);
                     }}>
@@ -761,7 +761,7 @@
                     <div className="card-body">
                         <div className="row">
                             <div className="col-12 col-sm-4">
-                                <form className="was-validated" onSubmit={(e) => {
+                                <form className="needs-validation" onSubmit={(e) => {
                                     e.preventDefault();
                                     submitAllForms(`filtro-${origemForm}`, formData);
                                 }}>
@@ -825,7 +825,7 @@
                                 </form>
 
                                 {/* Nome / CPF / E-mail*/}
-                                <form className="was-validated" onSubmit={(e) => {
+                                <form className="needs-validation" onSubmit={(e) => {
                                     e.preventDefault();
                                     submitAllForms(`filtro-${origemForm}`, formData);
                                 }}>
@@ -833,7 +833,7 @@
                                 </form>
                             </div>
                             <div className="col-12 col-sm-4">
-                                <form className="was-validated" onSubmit={(e) => {
+                                <form className="needs-validation" onSubmit={(e) => {
                                     e.preventDefault();
                                     submitAllForms(`filtro-${origemForm}`, formData);
                                 }}>
@@ -888,7 +888,7 @@
                                 </form>
                             </div>
                             <div className="col-12 col-sm-4">
-                                <form className="was-validated" onSubmit={(e) => {
+                                <form className="needs-validation" onSubmit={(e) => {
                                     e.preventDefault();
                                     submitAllForms(`filtro-${origemForm}`, formData);
                                 }}>
@@ -904,7 +904,7 @@
                     <div className="card-body">
                         <div className="row">
                             <div className="col-12 col-sm-4">
-                                <form className="was-validated" onSubmit={(e) => {
+                                <form className="needs-validation" onSubmit={(e) => {
                                     e.preventDefault();
                                     submitAllForms(`filtro-${origemForm}`, formData);
                                 }}>
@@ -912,7 +912,7 @@
                                 </form>
                             </div>
                             <div className="col-12 col-sm-4">
-                                <form className="was-validated" onSubmit={(e) => {
+                                <form className="needs-validation" onSubmit={(e) => {
                                     e.preventDefault();
                                     submitAllForms(`filtro-${origemForm}`, formData);
                                 }}>
@@ -966,7 +966,7 @@
                             </div>
 
                             <div className="col-12 col-sm-4">
-                                <form className="was-validated" onSubmit={(e) => {
+                                <form className="needs-validation" onSubmit={(e) => {
                                     e.preventDefault();
                                     submitAllForms(`filtro-${origemForm}`, formData);
                                 }}>
@@ -1027,7 +1027,7 @@
                         <div className="row">
                             {/* Cargo */}
                             <div className="col-12 col-sm-4">
-                                <form className="was-validated" onSubmit={(e) => {
+                                <form className="needs-validation" onSubmit={(e) => {
                                     e.preventDefault();
                                     submitAllForms(`filtro-${origemForm}`, formData);
                                 }}>
@@ -1076,7 +1076,7 @@
 
                             {/* Admissão */}
                             <div className="col-12 col-sm-4">
-                                <form className="was-validated" onSubmit={(e) => {
+                                <form className="needs-validation" onSubmit={(e) => {
                                     e.preventDefault();
                                     submitAllForms(`filtro-${origemForm}`, formData);
                                 }}>
@@ -1146,7 +1146,7 @@
 
                                     ) && (
 
-                                        <form className="was-validated" onSubmit={(e) => {
+                                        <form className="needs-validation" onSubmit={(e) => {
                                             e.preventDefault();
                                             submitAllForms(`filtro-${origemForm}`, formData);
                                         }}>
@@ -1245,7 +1245,7 @@
                     <div className="row">
                         <div className="col-12">
                             <form
-                                className="was-validated d-flex justify-content-between align-items-center"
+                                className="needs-validation d-flex justify-content-between align-items-center"
                                 onSubmit={(e) => {
                                     e.preventDefault();
                                     submitAllForms(`filtro-${origemForm}`, formData);

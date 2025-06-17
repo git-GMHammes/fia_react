@@ -1,0 +1,34 @@
+            {/* CAMPO GENERO */ }
+            if (name === "genero_identidade") {
+                setSelectGeneroShow(true);
+                if (debounceRef.current) {
+                    clearTimeout(debounceRef.current);
+                }
+
+                debounceRef.current = setTimeout(() => {
+                    const termo = value
+                        .replace(/\s+/g, ' ')
+                        .trimEnd()
+                        .toLowerCase();
+                    if (termo.length === 0) {
+                        setListGeneros(guardaGeneros);
+                        return;
+                    }
+
+                    const filtrados = listGeneros.filter((m) =>
+                        m.genero.toLowerCase().includes(termo)
+                    );
+                    if (filtrados.length === 0) {
+                        setListGeneros(guardaGeneros);
+                    } else {
+                        setListGeneros(filtrados);
+                    }
+                }, 300);
+                const newValue = value.trimEnd();
+                debounceRef.current = setTimeout(() => {
+                    setFormData((prev) => ({
+                        ...prev,
+                        [name]: newValue
+                    }));
+                }, 4000);
+            }

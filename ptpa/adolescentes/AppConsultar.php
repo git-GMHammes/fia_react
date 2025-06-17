@@ -45,7 +45,7 @@ $parametros_backend['api_get_atualizar_adolescente'] = ($atualizar_id !== 'erro'
         const server_name = parametros.server_name;
         const user_session = parametros.user_session.FIA || {};
         const getURI = parametros.getURI || [];
-        const debugMyPrint = parametros.DEBUG_MY_PRINT;
+        const debugMyPrint = parametros.DEBUG_MY_PRINT || false;;
         const base_url = parametros.base_url;
         const title = parametros.title;
 

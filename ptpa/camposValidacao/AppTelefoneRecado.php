@@ -10,6 +10,7 @@
         const checkWordInArray = (array, word) => array.includes(word) ? true : false;
 
         // Estado para mensagens e validação
+        const [error, setError] = React.useState('');
         const [showEmptyMessage, setShowEmptyMessage] = React.useState(false);
         const [message, setMessage] = React.useState({
             show: false,
@@ -57,6 +58,7 @@
                 ...prev,
                 [name]: maskedValue
             }));
+            setError('');
         };
 
         // Função handleBlur
@@ -74,6 +76,7 @@
                         type: 'light',
                         message: 'Telefone inválido. Por favor, insira um telefone válido.'
                     });
+                    setError('Telefone inválido. Por favor, insira um telefone válido.');
 
                     setFormData((prev) => ({
                         ...prev,
@@ -126,6 +129,7 @@
                         </div>
                     ) : (
                         <input data-api={`filtro-${origemForm}`}
+                            className={`form-control form-control-sm ${error ? 'is-invalid' : formData.TelefoneRecado ? 'is-valid' : ''}`}
                             type="text"
                             id="TelefoneRecado"
                             name="TelefoneRecado"
@@ -135,7 +139,6 @@
                             onFocus={handleFocus}
                             onBlur={handleBlur}
                             style={formControlStyle}
-                            className="form-control form-control-sm"
                             disabled={(checkWordInArray(getURI, 'alocarfuncionario') && checkWordInArray(getURI, 'atualizar')) ? true : false}
                             required
                         />

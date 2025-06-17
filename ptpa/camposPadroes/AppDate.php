@@ -99,7 +99,7 @@
                     dataMinima.setFullYear(dataMinima.getFullYear() - 18);
 
                     const dataMaxima = new Date();
-                    dataMaxima.setFullYear(dataMaxima.getFullYear() - 14);
+                    dataMaxima.setFullYear(dataMaxima.getFullYear() - 15);
 
                     const calcularIdade = (Nascimento) => {
                         const hoje = new Date();

@@ -369,12 +369,10 @@
 
         };
 
-        const filterFormData = (data) => {
-            return Object.fromEntries(Object.entries(data).filter(([key, value]) => value != null));
-        };
-
         const submitAllForms = async (filtro, href = '') => {
-            const setData = filterFormData(formData);
+            const setData = formData;
+            console.log('setData :: ', setData);
+
             let data = '';
             let dbResponse = [];
             let response = '';
@@ -384,89 +382,10 @@
             }
 
             if (filtro === 'filtro-prontuario') {
-                await fetchPostProntuarioFiltrar();
+                await fetchPostProntuarioFiltrar(setData);
                 return true;
             }
 
-            // if (filtro === 'filtro-prontuario') {
-            //     // Convertendo os dados do setPost em JSON
-            //     response = await fetch(url, {
-            //         method: 'POST',
-            //         body: JSON.stringify(setData),
-            //         headers: {
-            //             'Content-Type': 'application/json',
-            //         },
-            //     });
-
-            //     if (!response.ok) {
-            //         console.error('Erro na requisição:', response.statusText);
-            //         throw new Error(`Erro na requisição: ${response.statusText}`);
-            //     }
-
-            //     data = await response.json();
-
-            //     // Processa os dados recebidos da resposta
-            //     if (
-            //         data.result && data.result.dbResponse && data.result.dbResponse.length > 0
-            //     ) {
-            //         dbResponse = data.result.dbResponse;
-            //         setProntuario(dbResponse);
-            //         setPagination('filter');
-            //         // console.log('dbResponse: ', dbResponse);
-            //     } else {
-            //         setMessage({
-            //             show: true,
-            //             type: 'light',
-            //             message: "Certifique-se de que a combinação informada corresponde a um único período. Para datas, verifique se coincidem com as informações cadastradas."
-            //         });
-            //     }
-
-            //     if (data.result && data.result.linksArray && data.result.linksArray.length > 0) {
-            //         setPaginacaoLista(data.result.linksArray);
-            //         setIsLoading(false);
-            //     }
-            // }
-
-            // const url = href ? `${base_url + api_post_filter_prontuario}${href}` : `${base_url + api_post_filter_prontuario}`;
-
-            // if (filtro === 'filtro-prontuario') {
-            //     // Convertendo os dados do setPost em JSON
-            //     response = await fetch(url, {
-            //         method: 'POST',
-            //         body: JSON.stringify(setData),
-            //         headers: {
-            //             'Content-Type': 'application/json',
-            //         },
-            //     });
-
-            //     if (!response.ok) {
-            //         console.error('Erro na requisição:', response.statusText);
-            //         throw new Error(`Erro na requisição: ${response.statusText}`);
-            //     }
-
-            //     data = await response.json();
-
-            //     // Processa os dados recebidos da resposta
-            //     if (
-            //         data.result && data.result.dbResponse && data.result.dbResponse.length > 0
-            //     ) {
-            //         dbResponse = data.result.dbResponse;
-            //         setProntuario(dbResponse);
-            //         setPagination('filter');
-            //         // console.log('dbResponse: ', dbResponse);
-            //     } else {
-            //         setMessage({
-            //             show: true,
-            //             type: 'light',
-            //             message: "Certifique-se de que a combinação informada corresponde a um único período. Para datas, verifique se coincidem com as informações cadastradas."
-            //         });
-            //     }
-
-            //     if (data.result && data.result.linksArray && data.result.linksArray.length > 0) {
-            //         setPaginacaoLista(data.result.linksArray);
-            //         setIsLoading(false);
-            //     }
-            // }
         };
 
         React.useEffect(() => {
@@ -522,10 +441,6 @@
                     setProntuario(dbResponse);
                     setPagination('list');
                     //
-                    setFormData((prev) => ({
-                        ...prev,
-                        ...dbResponse
-                    }));
                 } else {
                     setMessage({
                         show: true,
@@ -547,49 +462,9 @@
         };
 
         // POST Padrão 
-        // const fetchPostProntuarioFiltrar = async (custonBaseURL = base_url, custonApiPostObjeto = api_post_filter_prontuario, customPage = getVar_page) => {
-        //     const url = custonBaseURL + custonApiPostObjeto + customPage;
-        //     console.log('fetchPostProntuarioFiltrar(url): ', url);
-        //     const SetData = setFormData;
-        //     try {
-        //         const response = await fetch(url, {
-        //             method: 'POST',
-        //             headers: {
-        //                 'Content-Type': 'application/json',
-        //             },
-        //             body: JSON.stringify(SetData),
-        //         });
-        //         const data = await response.json();
-        //         console.log('fetchPostProntuarioFiltrar(data): ', data);
-        //         // return data;
-        //         if (data.result && data.result.dbResponse && data.result.dbResponse.length > 0) {
-        //             const dbResponse = data.result.dbResponse;
-        //             // 
-        //             setProntuario(dbResponse);
-        //             setPagination('list');
-        //             //
-        //             setFormData((prev) => ({
-        //                 ...prev,
-        //                 ...dbResponse
-        //             }));
-        //         } else {
-        //             setMessage({
-        //                 show: true,
-        //                 type: 'light',
-        //                 message: 'Não foram encontradas prontuários cadastrados'
-        //             });
-        //         }
-        //     } catch (error) {
-        //         console.error('Erro ao enviar dados:', error);
-        //         // Aqui você pode adicionar lógica adicional para exibir o erro para o usuário
-        //         return null;
-        //     }
-        // };
-
-        // POST Padrão 
-        const fetchPostProntuarioFiltrar = async (custonBaseURL = base_url, custonApiPostObjeto = api_post_filter_prontuario, customPage = getVar_page) => {
+        const fetchPostProntuarioFiltrar = async (formDataFilter, custonBaseURL = base_url, custonApiPostObjeto = api_post_filter_prontuario, customPage = getVar_page) => {
             const url = custonBaseURL + custonApiPostObjeto + customPage + '&limit=90000';
-            const SetData = formData;
+            const setData = formDataFilter;
             // console.log('url :: ', url);
 
             try {
@@ -598,7 +473,7 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(SetData),
+                    body: JSON.stringify(setData),
                 });
                 const data = await response.json();
                 // console.log('data(fetchPostProntuarioFiltrar2) ::', data);
@@ -610,7 +485,7 @@
                     setMessage({
                         show: true,
                         type: 'light',
-                        message: 'Não foram encontrados cadastros de Prontuario'
+                        message: 'Adolescente não encontrado. Verifique as informações ou cadastre o adolescente antes de continuar.'
                     });
                     setIsLoading(false);
                 }
@@ -809,7 +684,7 @@
                                                         attributeOrigemForm: `${origemForm}`,
                                                         labelField: 'Certidão',
                                                         labelColor: 'gray', // gray, red, black,
-                                                        nameField: 'adolescente_numero_matricula',
+                                                        nameField: 'adolescente_Certidao',
                                                         attributePlaceholder: '', // placeholder 
                                                         attributeMinlength: 2, // minlength 
                                                         attributeMaxlength: 100, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
@@ -818,7 +693,7 @@
                                                         attributeRequired: false,
                                                         attributeReadOnly: false,
                                                         attributeDisabled: false,
-                                                        attributeMask: '', // CPF, Telefone, CEP, , SEI, Processo.
+                                                        attributeMask: 'Certidao', // CPF, Certidao, Telefone, CEP, , SEI, Processo.
                                                     }}
                                                 />
                                             </form>
@@ -842,7 +717,7 @@
                                                         attributeRequired: false,
                                                         attributeReadOnly: false,
                                                         attributeDisabled: false,
-                                                        attributeMask: '', // CPF, Telefone, CEP, , SEI, Processo.
+                                                        attributeMask: 'Telefone', // CPF, Telefone, CEP, , SEI, Processo.
                                                     }}
                                                 />
                                             </form>
@@ -1005,6 +880,7 @@
                                                 </div>
                                             </td>
                                             <td>
+                                                {/* COLUNA VULNERABILIDADE */}
                                                 <div className="d-flex justify-content-center">
                                                     {formatarVulnerabilidade(prontuario_value.prontuario_Vulnerabilidade)}
                                                 </div>

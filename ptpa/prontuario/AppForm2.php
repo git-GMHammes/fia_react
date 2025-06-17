@@ -1,6 +1,8 @@
 <script type="text/babel">
     const AppForm2 = ({ parametros = {} }) => {
 
+        const checkWordInArray = (array, word) => array.includes(word) ? true : false;
+
         // Prepara as Variáveis do REACT recebidas pelo BACKEND
         // const atualizar_id = parametros.atualizar_id || 'erro';
         const user_session = parametros.user_session.FIA || {};
@@ -17,6 +19,7 @@
         // console.log('debugMyPrint ::', debugMyPrint);
 
         //Base Cadastro Prontuario
+        const api_get_adolescente = parametros.api_get_adolescente || '';
         const api_get_exibir_adolescente = parametros.api_get_exibir_adolescente || '';
         const api_get_exibir_profissional = parametros.api_get_exibir_profissional || '';
         const api_post_filtrar_adolescente = parametros.api_post_filtrar_adolescente || '';
@@ -26,18 +29,37 @@
 
         // Variáveis da API
         const [profissionais, setProfissionais] = React.useState([]);
+        const [listFuncionarios, setListFuncionarios] = React.useState([]);
+        const [listAdolescentes, setListAdolescentes] = React.useState([]);
+        const [guardaFuncionarios, setGuardaFuncionarios] = React.useState([]);
+        const [guardaAdolescentes, setGuardaAdolescentes] = React.useState([]);
         const [adolescentes, setAdolescentes] = React.useState([]);
         const [prontuario, setProntuarios] = React.useState([]);
 
         // Variáveis Uteis
-        const checkWordInArray = (array, word) => array.includes(word) ? true : false;
         const [pagination, setPagination] = React.useState(null);
         const [isLoading, setIsLoading] = React.useState(true);
         const [idade, setIdade] = React.useState([0, 0]);
         const [error, setError] = React.useState(null);
-        const [vulnerabilidadeIdade, setVulnerabilidadeIdade] = React.useState(0);
-        const [vulnerabilidadeEscolaridade, setVulnerabilidadeEscolaridade] = React.useState(0);
-        const [vulnerabilidadeBase, setVulnerabilidadeBase] = React.useState(0);
+
+        // Vulnerabilidade
+        const [ptsTotal, setPtsTotal] = React.useState(0);
+        const [ptsIdade, setPtsIdade] = React.useState(0);
+        const [ptsEscolaridade, setPtsEscolaridade] = React.useState(0);
+        const [ptsVulnerabilidade, setPtsVulnerabilidade] = React.useState(0);
+
+        {/* CAMPO FUNCIONARIO */ }
+        const [selectFuncionarioShow, setSelectFuncionarioShow] = React.useState(false);
+        const funcionarioRef = React.useRef(null);
+        const [errorFuncionario, setErrorFuncionario] = React.useState(false);
+
+        {/* CAMPO DOLESCENTE */ }
+        const [selectAdolescenteShow, setSelectAdolescenteShow] = React.useState(false);
+        const adolescenteRef = React.useRef(null);
+        const [errorAdolescente, setErrorAdolescente] = React.useState(false);
+
+        const debounceRef = React.useRef(null);
+        const validationTimeoutRef = React.useRef(null);
 
         // Loading
         const [dataLoading, setDataLoading] = React.useState(true);
@@ -74,7 +96,25 @@
             "vulneravel": 10
         };
 
-        // Função handleChange corrigida
+        // Função do onlyFocus
+        const handleFocus = (event) => {
+            const { name, value } = event.target;
+
+            // console.log('handleFocus: ', name);
+            // console.log('handleFocus: ', value);
+
+            setMessage({ show: false, type: null, message: null });
+            {/* CAMPO FUNCIONARIO */ }
+            if (name === "profissional_Nome") {
+                setSelectFuncionarioShow(true);
+                setListFuncionarios(guardaFuncionarios);
+                setTimeout(() => {
+                    funcionarioRef.current?.focus();
+                }, 0);
+            }
+        };
+
+        // FUNÇÃO HANDLECHANGE CORRIGIDA
         const handleChange = (event) => {
             const { name, value } = event.target;
             // console.log('--------------------');
@@ -82,9 +122,147 @@
             // console.log('--------------------');
             // console.log('NOME/VALOR', name, value);
 
+            {/* CAMPO FUNCIONARIO */ }
+            if (name === "profissional_Nome") {
+                setSelectFuncionarioShow(true);
+
+                // Limpa timeouts anteriores
+                if (debounceRef.current) {
+                    clearTimeout(debounceRef.current);
+                }
+
+                // Timeout para filtrar a lista
+                debounceRef.current = setTimeout(() => {
+                    const termo = value
+                        .replace(/\s+/g, ' ')
+                        .trimEnd()
+                        .toLowerCase();
+
+                    if (termo.length === 0) {
+                        setListFuncionarios(guardaFuncionarios);
+                        return;
+                    }
+
+                    const filtrados = guardaFuncionarios.filter((m) =>
+                        m.Nome.toLowerCase().includes(termo)
+                    );
+
+                    // console.log('filtrados :: ', filtrados);
+
+                    if (filtrados.length === 0) {
+                        // console.log('filtrados.length === 0');
+                        setListFuncionarios(guardaFuncionarios);
+                        setErrorFuncionario(true);
+                    } else {
+                        // console.log('else');
+                        setListFuncionarios(filtrados);
+                        setErrorFuncionario(false);
+                    }
+                }, 300);
+
+                // Timeout para validar se o município é válido (apenas se não foi selecionado via click)
+                // Verifica se o valor exato existe na lista original
+                const funcionarioExato = guardaFuncionarios.find((m) =>
+                    m.Nome.toLowerCase() === value.toLowerCase()
+                );
+
+                if (!funcionarioExato && value.trim() !== '') {
+                    // Se não encontrou correspondência exata e o campo não está vazio
+                    // Aplica timeout maior para dar tempo do usuário selecionar
+                    if (validationTimeoutRef.current) {
+                        clearTimeout(validationTimeoutRef.current);
+                    }
+
+                    validationTimeoutRef.current = setTimeout(() => {
+                        // Verifica novamente se ainda não há correspondência exata
+                        const currentValue = formData.profissional_Nome;
+                        const funcionarioAtual = guardaFuncionarios.find((m) =>
+                            m.Nome.toLowerCase() === currentValue?.toLowerCase()
+                        );
+
+                        if (!funcionarioAtual && currentValue && currentValue.trim() !== '') {
+                            setFormData((prev) => ({
+                                ...prev,
+                                profissional_Nome: 'Escolha um Funcionário abaixo para prosseguir.'
+                            }));
+                            setErrorFuncionario(true);
+                        }
+                    }, 4000);
+                }
+            }
+
+            {/* CAMPO ADOLESCENTE */ }
+            if (name === "adolescente_Nome") {
+                setSelectAdolescenteShow(true);
+
+                // Limpa timeouts anteriores
+                if (debounceRef.current) {
+                    clearTimeout(debounceRef.current);
+                }
+
+                // Timeout para filtrar a lista
+                debounceRef.current = setTimeout(() => {
+                    const termo = value
+                        .replace(/\s+/g, ' ')
+                        .trimEnd()
+                        .toLowerCase();
+
+                    if (termo.length === 0) {
+                        setListAdolescentes(guardaAdolescentes);
+                        return;
+                    }
+
+                    const filtrados = guardaAdolescentes.filter((m) =>
+                        m.Nome.toLowerCase().includes(termo)
+                    );
+
+                    // console.log('filtrados :: ', filtrados);
+
+                    if (filtrados.length === 0) {
+                        // console.log('filtrados.length === 0');
+                        setListAdolescentes(guardaAdolescentes);
+                        setErrorAdolescente(true);
+                    } else {
+                        // console.log('else');
+                        setListAdolescentes(filtrados);
+                        setErrorAdolescente(false);
+                    }
+                }, 300);
+
+                // Timeout para validar se o município é válido (apenas se não foi selecionado via click)
+                // Verifica se o valor exato existe na lista original
+                const adolescenteExato = guardaAdolescentes.find((m) =>
+                    m.Nome.toLowerCase() === value.toLowerCase()
+                );
+
+                if (!adolescenteExato && value.trim() !== '') {
+                    // Se não encontrou correspondência exata e o campo não está vazio
+                    // Aplica timeout maior para dar tempo do usuário selecionar
+                    if (validationTimeoutRef.current) {
+                        clearTimeout(validationTimeoutRef.current);
+                    }
+
+                    validationTimeoutRef.current = setTimeout(() => {
+                        // Verifica novamente se ainda não há correspondência exata
+                        const currentValue = formData.adolescente_Nome;
+                        const adolescenteAtual = guardaAdolescentes.find((m) =>
+                            m.Nome.toLowerCase() === currentValue?.toLowerCase()
+                        );
+
+                        if (!adolescenteAtual && currentValue && currentValue.trim() !== '') {
+                            setFormData((prev) => ({
+                                ...prev,
+                                adolescente_Nome: 'Escolha um Adolescente abaixo para prosseguir.'
+                            }));
+                            setErrorAdolescente(true);
+                        }
+                    }, 4000);
+                }
+            }
+
             if (name === "adolescente_id") {
-                // Chama a função fetchGetAdolescentes com o id do adolescente
-                fetchGetAdolescentes(value);
+                // Chama a função fetchGetAdolescente com o id do adolescente
+                fetchGetAdolescente(value);
                 setFormData((prev) => ({
                     ...prev,
                     [name]: value
@@ -105,28 +283,43 @@
         const handleRadioChange = (event) => {
             const { name, value } = event.target;
 
-            // console.log('--------------------');
-            // console.log('handleRadioChange');
-            // console.log('--------------------');
+            console.log('--------------------');
+            console.log('handleRadioChange');
+            console.log('--------------------');
+            console.log('name, value :: ', name, value);
 
-            // Abordagem mais direta
-            event.target.checked = true;
-            if (name === "prontuario_Vulnerabilidade") {
-                // Atualiza o estado de forma assíncrona
-                const ptsVulnerabilidade = pontuacaoMap[value] || '';
-                // console.log('ptsVulnerabilidade :: ', ptsVulnerabilidade);
-                // console.log('vulnerabilidadeBase :: ', vulnerabilidadeBase);
-                // console.log('vulnerabilidadeEscolaridade :: ', vulnerabilidadeEscolaridade);
-                // console.log('vulnerabilidadeIdade :: ', vulnerabilidadeIdade);
+            if (name === 'prontuario_Vulnerabilidade') {
+                switch (value) {
+                    case 'extremamente-vulneravel':
+                        setPtsVulnerabilidade(40);
+                        setFormData((prev) => ({
+                            ...prev,
+                            prontuario_PontuacaoVulnerabilidade: 40,
+                            prontuario_Vulnerabilidade: 'extremamente-vulneravel',
+                        }));
+                        break;
 
-                setFormData((prev) => ({
-                    ...prev,
-                    prontuario_Vulnerabilidade: value,
-                    prontuario_PontuacaoVulnerabilidade: ptsVulnerabilidade,
-                    prontuario_PontuacaoTotal: vulnerabilidadeIdade + vulnerabilidadeEscolaridade + ptsVulnerabilidade
-                }));
+                    case 'muito-vulneravel':
+                        setPtsVulnerabilidade(25);
+                        setFormData((prev) => ({
+                            ...prev,
+                            prontuario_PontuacaoVulnerabilidade: 25,
+                            prontuario_Vulnerabilidade: 'muito-vulneravel',
+                        }));
+                        break;
 
-                return;
+                    case 'vulneravel':
+                        setPtsVulnerabilidade(10);
+                        setFormData((prev) => ({
+                            ...prev,
+                            prontuario_PontuacaoVulnerabilidade: 10,
+                            prontuario_Vulnerabilidade: 'vulneravel',
+                        }));
+                        break;
+
+                    default:
+                        break;
+                }
             }
 
             setFormData(prev => ({
@@ -147,6 +340,58 @@
             atualizaVulnerabilidade();
         };
 
+        const handleClick = (event) => {
+            // console.log('-----------');
+            // console.log('handleClick');
+            const campo = event.target.getAttribute('data-campo');
+            // console.log('handleClick: ', campo);
+            const value = event.target.value;
+            // console.log('value: ', value);
+
+            {/* CAMPO FUNCIONARIO */ }
+            if (campo === "profissional_Nome") {
+                // Limpa o timeout de validação ao selecionar um município
+                if (validationTimeoutRef.current) {
+                    clearTimeout(validationTimeoutRef.current);
+                }
+                setFormData(prev => ({
+                    ...prev,
+                    profissional_Nome: value
+                }));
+                setErrorFuncionario(false);
+            }
+
+            {/* CAMPO ADOLESCENTE */ }
+            if (campo === "adolescente_Nome") {
+                // Limpa o timeout de validação ao selecionar um município
+                if (validationTimeoutRef.current) {
+                    clearTimeout(validationTimeoutRef.current);
+                }
+                setFormData(prev => ({
+                    ...prev,
+                    adolescente_Nome: value
+                }));
+                setErrorAdolescente(false);
+
+                const adolescenteExato = guardaAdolescentes.find((m) =>
+                    m.Nome.toLowerCase() === value.toLowerCase()
+                );
+
+                if (adolescenteExato && value.trim() !== '') {
+
+                    if (validationTimeoutRef.current) {
+                        clearTimeout(validationTimeoutRef.current);
+                    }
+
+                    validationTimeoutRef.current = setTimeout(() => {
+                        console.log('adolescenteExato.Nome :: ', adolescenteExato.Nome);
+                        console.log('adolescenteExato.id :: ', adolescenteExato.id);
+                        fetchGetAdolescente(adolescenteExato.id);
+                    }, 400);
+                }
+            }
+        }
+
         {/* FORMDATA */ }
         const [formData, setFormData] = React.useState({
             //
@@ -155,7 +400,7 @@
             //
             id: null,
             prontuario_id: null,
-            prontuario_profissional_id: null,
+            prontuario_funcionario_id: null,
             prontuario_adolescente_id: null,
             prontuario_MedidasSocioEducativas: null,
             prontuario_MedidasSocioEducativas_pts: null,
@@ -346,6 +591,24 @@
                 return;
             }
 
+            const camposComErro = {
+                profissional_Nome: 'Funcionário inválido. Escolha um funcionário válido da lista.',
+                // outros campos no futuro...
+            };
+            const errosDeValidacao = [];
+            if (errorFuncionario) {
+                errosDeValidacao.push(camposComErro.profissional_Nome);
+            }
+            // outros campos: if (errorOutroCampo) { errosDeValidacao.push(camposComErro.outroCampo); }
+            if (errosDeValidacao.length > 0) {
+                setMessage({
+                    show: true,
+                    type: 'light',
+                    message: `<b>Os seguintes campos apresentam erro:</b><br/>${errosDeValidacao.join("<br/>")}`,
+                });
+                return;
+            }
+
             if (filtro === `filtro-${origemForm}`) {
                 // Convertendo os dados do setPost em JSON
                 response = await fetch(`${base_url}${api_post_cadastrar_prontuariopsicosocial}`, {
@@ -407,108 +670,119 @@
             }
         };
 
-        // console.log('URL fetch:', base_url + api_get_atualizar_prontuariopsicosocial);
-        // console.log('base_url:', base_url);
-        // console.log('api_get_atualizar_prontuariopsicosocial:', api_get_atualizar_prontuariopsicosocial);
-
-        // Fetch para obter os Profissionais
-        const fetchProfissionais = async () => {
-            const url = base_url + api_post_filtrar_profissional;
+        // Fetch para GET
+        const fetchProfissionais = async (customBaseURL = base_url, customApiGetObjeto = api_post_filtrar_profissional, customPage = '?limit=100&page=1') => {
+            const url = customBaseURL + customApiGetObjeto + customPage;
             // console.log('-------------------------------------');
             // console.log('src/app/Views/fia/ptpa/prontuario/AppForm2.php');
             // console.log('url :: ', url);
             try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({})
-                });
+                const response = await fetch(url);
                 const data = await response.json();
-                // console.log('Profissionais :: ', data);
-
-                if (data.result && data.result.dbResponse && data.result.dbResponse.length > 0) {
-                    setProfissionais(data.result.dbResponse);
+                if (data.result && Array.isArray(data.result.dbResponse) && data.result.dbResponse.length > 0) {
+                    const dbResponse = data.result.dbResponse;
+                    // console.log('dbResponse :: ', dbResponse);
+                    setProfissionais(dbResponse);
+                    setListFuncionarios(dbResponse);
+                    setGuardaFuncionarios(dbResponse);
+                } else {
+                    setMessage({
+                        show: true,
+                        type: 'light',
+                        message: 'Não foram encontradas Funcionários cadastrados'
+                    });
+                    setIsLoading(false);
                 }
             } catch (error) {
-                setError('Erro ao carregar Profissionais: ' + error.message);
+                console.error('Erro ao enviar dados:', error);
+                setMessage({
+                    show: true,
+                    type: 'light',
+                    message: 'Erro ao carregar Funcionários: ' + error.message
+                });
             }
         };
 
-        // Fetch para obter os Adolescentes
-        const fetchAdolescentes = async () => {
+        {/* SELECT CAMPO ADOLESCENTE */ }
+        const fetchAdolescentes = async (custonBaseURL = base_url, custonApiGetObjeto = api_get_adolescente, customPage = '?limit=100&page=1') => {
             // console.log('-------------------------------------');
             // console.log('fetchAdolescentes...');
             // console.log('-------------------------------------');
             // console.log('src/app/Views/fia/ptpa/prontuario/AppForm2.php');
-            const url = base_url + api_post_filtrar_adolescente;
+            const url = custonBaseURL + custonApiGetObjeto + customPage;
             // console.log('url :: ', url);
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({})
-                });
-                const data = await response.json();
-
-                if (data.result && data.result.dbResponse && data.result.dbResponse.length > 0) {
-                    // console.log('data.result.dbResponse :: ', data.result.dbResponse);
-                    setAdolescentes(data.result.dbResponse);
-                }
-            } catch (error) {
-                setError('Erro ao carregar Adolescentes: ' + error.message);
-            }
-        };
-
-        // Fetch para obter os Prontuário
-        const fetchProntuarios = async () => {
-            const url = base_url + api_get_atualizar_prontuariopsicosocial;
-            // console.log('-------------------------------------');
-            // console.log('src/app/Views/fia/ptpa/prontuario/AppForm2.php');
-            // console.log('url :: ', url);
-
             try {
                 const response = await fetch(url);
                 const data = await response.json();
-
-                if (data.result && data.result.dbResponse && data.result.dbResponse.length > 0) {
-                    // console.log('fetchProntuarios :: ', data.result.dbResponse[0]);
-
-                    setFormData((prev) => ({
-                        ...prev,
-                        ...data.result.dbResponse[0]
-                    }));
+                if (data.result && Array.isArray(data.result.dbResponse) && data.result.dbResponse.length > 0) {
+                    const dbResponse = data.result.dbResponse;
+                    // console.log('dbResponse :: ', dbResponse);
+                    setAdolescentes(dbResponse);
+                    setListAdolescentes(dbResponse);
+                    setGuardaAdolescentes(dbResponse);
                 }
             } catch (error) {
-                console.error('Erro ao carregar Prontuários: ' + error.message);
+                console.error('Erro ao enviar dados:', error);
+                setMessage({
+                    show: true,
+                    type: 'light',
+                    message: 'Erro ao carregar Unidades: ' + error.message
+                });
             }
         };
 
-        const fetchGetAdolescentes = async (id = null) => {
+        // Fetch para GET
+        const fetchProntuarios = async (custonBaseURL = base_url, custonApiGetObjeto = api_get_atualizar_prontuariopsicosocial, customPage = '?limit=100&page=1') => {
+            const url = custonBaseURL + custonApiGetObjeto + customPage;
+            // console.log('-------------------------------------');
+            // console.log('src/app/Views/fia/ptpa/prontuario/AppForm2.php');
+            // console.log('url :: ', url);
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.result && Array.isArray(data.result.dbResponse) && data.result.dbResponse.length > 0) {
+                    const dbResponse = data.result.dbResponse;
+                    // console.log('dbResponse :: ', dbResponse[0]);
 
-            setVulnerabilidadeIdade(0);
-            setVulnerabilidadeEscolaridade(0);
-            setVulnerabilidadeBase(0);
+                    setFormData((prev) => ({
+                        ...prev,
+                        ...dbResponse[0]
+                    }));
+
+                    setPtsVulnerabilidade(dbResponse[0]?.prontuario_PontuacaoVulnerabilidade || 0);
+
+                    return dbResponse
+                }
+
+            } catch (error) {
+                console.error('Erro ao enviar dados:', error);
+                setMessage({
+                    show: true,
+                    type: 'light',
+                    message: 'Erro ao carregar Prontuário: ' + error.message
+                });
+            }
+        };
+
+        const fetchGetAdolescente = async (id = null) => {
+
             setFormData((prev) => ({
                 ...prev,
-                "prontuario_PontuacaoTotal": 0,
-                "prontuario_Vulnerabilidade": 0,
-                "prontuario_PontuacaoVulnerabilidade": 0,
-                "prontuario_PontuacaoTotal": 0
+                "prontuario_PontuacaoTotal": formData.prontuario_PontuacaoTotal || 0,
+                "prontuario_Vulnerabilidade": formData.prontuario_Vulnerabilidade || 'Nenhum',
+                "prontuario_PontuacaoVulnerabilidade": formData.prontuario_PontuacaoVulnerabilidade || 0,
             }));
 
             if (id === null) {
                 return;
             }
-            // console.log('-------------------------------------');
-            // console.log('fetchGetAdolescentes...');
-            // console.log('-------------------------------------');
-            // console.log('src/app/Views/fia/ptpa/prontuario/AppForm2.php');
+            console.log('-------------------------------------');
+            console.log('fetchGetAdolescente...');
+            console.log('-------------------------------------');
+            console.log('src/app/Views/fia/ptpa/prontuario/AppForm2.php');
+
             const url = base_url + api_get_exibir_adolescente + '/' + id;
-            // console.log('url :: ', url);
+            console.log('url :: ', url);
             try {
                 const response = await fetch(url, {
                     method: 'POST',
@@ -524,11 +798,15 @@
                     console.log('adolescente :: ', adolescente);
 
                     const meses_vida = calcularMesesDeVida(adolescente.Nascimento);
+                    console.log('meses_vida :: ', meses_vida);
+
+
                     setTimeout(() => {
                         calcularVulnerabilidadeIdade(meses_vida);
                     }, 300);
 
                     const recebe_escolaridade = adolescente.Escolaridade;
+                    console.log('recebe_escolaridade :: ', recebe_escolaridade);
 
                     setTimeout(() => {
                         calcularVulnerabilidadeEscolaridade(recebe_escolaridade);
@@ -567,54 +845,21 @@
             // console.log('idade :: ', idade);
 
             if (idade >= 204 && idade <= 210) {
-                setVulnerabilidadeIdade(25);
-
-                setTimeout(() => {
-                    setVulnerabilidadeBase(vulnerabilidadeIdade + vulnerabilidadeEscolaridade);
-                    setFormData((prevFormData) => ({
-                        ...prevFormData,
-                        "prontuario_PontuacaoTotal": vulnerabilidadeIdade + vulnerabilidadeEscolaridade,
-                        "PontuacaoIdade": 25
-                    }));
-                }, 100);
-
-                console.log('PontuacaoIdade :: ', 25);
-
-                return true
+                setPtsIdade(25);
+                console.log('setPtsIdade(25)');
+                return 25;
             }
             if (idade >= 198 && idade <= 201) {
-                setVulnerabilidadeIdade(20);
-
-                setTimeout(() => {
-                    setVulnerabilidadeBase(vulnerabilidadeIdade + vulnerabilidadeEscolaridade);
-                    setFormData((prevFormData) => ({
-                        ...prevFormData,
-                        "prontuario_PontuacaoTotal": vulnerabilidadeIdade + vulnerabilidadeEscolaridade,
-                        "PontuacaoIdade": 20
-                    }));
-                }, 100);
-
-                console.log('PontuacaoIdade :: ', 20);
-
-                return true
+                setPtsIdade(20);
+                console.log('setPtsIdade(20)');
+                return 25
             }
             if (idade >= 192 && idade <= 197) {
-                setVulnerabilidadeIdade(10);
-
-                setTimeout(() => {
-                    setVulnerabilidadeBase(vulnerabilidadeIdade + vulnerabilidadeEscolaridade);
-                    setFormData((prevFormData) => ({
-                        ...prevFormData,
-                        "prontuario_PontuacaoTotal": vulnerabilidadeIdade + vulnerabilidadeEscolaridade,
-                        "PontuacaoIdade": 10
-                    }));
-                }, 100);
-
-                console.log('PontuacaoIdade :: ', 10);
-
-                return true
+                setPtsIdade(10);
+                console.log('setPtsIdade(10)');
+                return 10;
             }
-            console.log('HOP-FIM');
+
         };
 
         const calcularVulnerabilidadeEscolaridade = (escolaridade) => {
@@ -635,13 +880,12 @@
                 pontuacao = 20;
             }
 
-            setFormData((prevFormData) => ({
-                ...prevFormData,
-                "PontuacaoEscolaridade": pontuacao
-            }));
-            setVulnerabilidadeEscolaridade(pontuacao);
+            console.log("PontuacaoEscolaridade :: ", pontuacao);
+
+            setPtsEscolaridade(Number(pontuacao));
 
             return;
+
         };
 
         if (debugMyPrint && isLoading) {
@@ -1003,7 +1247,7 @@
         {/* FORMDATA.ADOLESCENTE_ID */ }
         React.useEffect(() => {
             // console.log('--------------------------------');
-            // console.log('React.useEffect(()...');
+            console.log('React.useEffect(()...');
             // console.log('--------------------------------');
             // console.log('src/app/Views/fia/ptpa/prontuario/AppForm2.php');
             if (!formData.adolescente_id) {
@@ -1028,42 +1272,55 @@
             }
 
             setTimeout(() => {
-                fetchGetAdolescentes(formData.adolescente_id);
+                fetchGetAdolescente(formData.adolescente_id);
             }, 300);
 
         }, [formData.adolescente_id]);
 
-        {/* [VULNERABILIDADEIDADE, VULNERABILIDADEESCOLARIDADE] */ }
+        {/* [ptsIdade, ptsEscolaridade, ptsVulnerabilidade] */ }
         React.useEffect(() => {
-            if (
-                vulnerabilidadeIdade !== 0 ||
-                vulnerabilidadeEscolaridade !== 0
-            ) {
-                setVulnerabilidadeBase(vulnerabilidadeIdade + vulnerabilidadeEscolaridade);
-            }
-        }, [vulnerabilidadeIdade, vulnerabilidadeEscolaridade]);
+            console.log('---------------');
+            console.log('ptsIdade :: ', Number(ptsIdade));
+            console.log('ptsEscolaridade :: ', Number(ptsEscolaridade));
+            console.log('ptsVulnerabilidade :: ', Number(ptsVulnerabilidade));
 
-        {/* FUNÇÃO PARA OBTENÇÃO DO ID DO USUÁRIO */ }
+            const total = Number(ptsIdade) + Number(ptsEscolaridade) + Number(ptsVulnerabilidade);
+            // console.log('--------------------------------');
+            console.log('total :: ', total);
+            setPtsTotal(Number(total));
+        }, [ptsIdade, ptsEscolaridade, ptsVulnerabilidade]);
 
-        {/* FUNÇÃO PARA IDENTIFICAR O USUÁRIO */ }
+        {/* CAMPO FUNCIONARIO */ }
         React.useEffect(() => {
-            // console.log('-------------------------);
-            // console.log('src/app/Views/fia/ptpa/prontuario/AppForm2.php');
-            // console.log('React.useEffect - Sessão');
-            if (
-                user_session &&
-                user_session.CargoFuncaoId === '5' &&
-                user_session.PerfilId === '5' &&
-                checkWordInArray(getURI, 'cadastrar') &&
-                formData.profissional_id === null
-            ) {
-                setFormData((prev) => ({
-                    ...prev,
-                    profissional_id: user_session.profissional_id,
-                    profissional_Nome: user_session.Nome
-                }));
+            if (!selectFuncionarioShow) return;
+
+            function handleClickOutside(event) {
+                if (funcionarioRef.current && !funcionarioRef.current.contains(event.target)) {
+                    setSelectFuncionarioShow(false);
+                }
             }
-        }, []);
+
+            document.addEventListener("mousedown", handleClickOutside);
+            return () => {
+                document.removeEventListener("mousedown", handleClickOutside);
+            };
+        }, [selectFuncionarioShow]);
+
+        {/* CAMPO ADOLESCENTE */ }
+        React.useEffect(() => {
+            if (!selectAdolescenteShow) return;
+
+            function handleClickOutside(event) {
+                if (adolescenteRef.current && !adolescenteRef.current.contains(event.target)) {
+                    setSelectAdolescenteShow(false);
+                }
+            }
+
+            document.addEventListener("mousedown", handleClickOutside);
+            return () => {
+                document.removeEventListener("mousedown", handleClickOutside);
+            };
+        }, [selectAdolescenteShow]);
 
         const formGroupStyle = {
             position: 'relative',
@@ -1098,6 +1355,114 @@
             Right: '10px',
         };
 
+        {/* RENDER CAMPO FUNCIONARIO */ }
+        const renderCampoFuncionario = (tipoCampo, selectFuncionarioShow, setSelectFuncionarioShow) => (
+            <>
+                {(tipoCampo === 'drop_select') && (
+                    <div className="dropdown w-100">
+                        <input
+                            className={`form-control border-0 ${errorFuncionario ? 'is-invalid' : formData.profissional_Nome ? 'is-valid' : ''}`}
+                            type="text"
+                            id="profissional_Nome"
+                            name="profissional_Nome"
+                            value={formData.profissional_Nome || ''}
+                            onChange={handleChange}
+                            onFocus={handleFocus}
+                            autoComplete="off"
+                            required={true}
+                            aria-expanded={selectFuncionarioShow}
+                            onClick={() => {
+                                setSelectFuncionarioShow(true);
+                                setListFuncionarios(guardaFuncionarios);
+                            }}
+                        />
+                        <div
+                            ref={funcionarioRef}
+                            className={`dropdown-menu w-100  border border-1 border-top-0 border-dark mt-2 ${selectFuncionarioShow ? 'show' : ''}`}
+                        >
+                            <div className="m-0 p-0" style={{ height: "300px", overflowY: "auto", overflowX: "hidden" }}>
+                                {listFuncionarios.map((list_funcionarios, index) => (
+                                    <React.Fragment key={index}>
+                                        <input
+                                            type="radio"
+                                            className="btn-check"
+                                            name="funcionario-radio"
+                                            id={`funcionario-option${index}`}
+                                            autoComplete="off"
+                                            value={list_funcionarios.Nome}
+                                            data-campo="profissional_Nome"
+                                            checked={formData.profissional_Nome === list_funcionarios.Nome}
+                                            onChange={handleClick}
+                                        />
+                                        <label
+                                            className="btn w-100 text-start"
+                                            htmlFor={`funcionario-option${index}`}
+                                        >
+                                            {list_funcionarios.Nome}
+                                        </label>
+                                    </React.Fragment>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </>
+        );
+
+        {/* RENDER CAMPO ADOLESCENTE */ }
+        const renderCampoAdolescente = (tipoCampo, selectAdolescenteShow, setSelectAdolescenteShow) => (
+            <>
+                {(tipoCampo === 'drop_select') && (
+                    <div className="dropdown w-100">
+                        <input
+                            className={`form-control border-0 ${errorAdolescente ? 'is-invalid' : formData.adolescente_Nome ? 'is-valid' : ''}`}
+                            type="text"
+                            id="adolescente_Nome"
+                            name="adolescente_Nome"
+                            value={formData.adolescente_Nome || ''}
+                            onChange={handleChange}
+                            onFocus={handleFocus}
+                            autoComplete="off"
+                            required={true}
+                            aria-expanded={selectAdolescenteShow}
+                            onClick={() => {
+                                setSelectAdolescenteShow(true);
+                                setListAdolescentes(guardaAdolescentes);
+                            }}
+                        />
+                        <div
+                            ref={adolescenteRef}
+                            className={`dropdown-menu w-100  border border-1 border-top-0 border-dark mt-2 ${selectAdolescenteShow ? 'show' : ''}`}
+                        >
+                            <div className="m-0 p-0" style={{ height: "300px", overflowY: "auto", overflowX: "hidden" }}>
+                                {listAdolescentes.map((list_adolescentes, index) => (
+                                    <React.Fragment key={index}>
+                                        <input
+                                            type="radio"
+                                            className="btn-check"
+                                            name="adolescente-radio"
+                                            id={`adolescente-option${index}`}
+                                            autoComplete="off"
+                                            value={list_adolescentes.Nome}
+                                            data-campo="adolescente_Nome"
+                                            checked={formData.adolescente_Nome === list_adolescentes.Nome}
+                                            onChange={handleClick}
+                                        />
+                                        <label
+                                            className="btn w-100 text-start"
+                                            htmlFor={`adolescente-option${index}`}
+                                        >
+                                            {list_adolescentes.Nome}
+                                        </label>
+                                    </React.Fragment>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </>
+        );
+
         if (isLoading) {
             return (
                 <div className="d-flex justify-content-center align-items-center p-5 m-5">
@@ -1111,11 +1476,11 @@
         return (
             <div className="ms-3 me-3">
                 <div>
-                    {`Altura: ${altura}px | Largura: ${largura}px`}
+                    {debugMyPrint ? `Altura: ${altura}px | Largura: ${largura}px` : ''}
                 </div>
                 {/* Fomulário Prontuário */}
                 <form
-                    className="was-validated"
+                    className="needs-validation" noValidate
                     onSubmit={(e) => {
                         e.preventDefault();
                         submitAllForms(`filtro-${origemForm}`, formData);
@@ -1157,7 +1522,7 @@
                             <div className="row">
                                 <div className="col-12 col-sm-6">
                                     <form
-                                        className="was-validated"
+                                        className="needs-validation" noValidate
                                         onSubmit={(e) => {
                                             e.preventDefault();
                                             submitAllForms(`filtro-${origemForm}`, formData);
@@ -1168,22 +1533,17 @@
                                                 className="form-label">
                                                 Funcionário<strong style={requiredField}>*</strong>
                                             </label>
-                                            <select
-                                                id="profissional_id"
-                                                name="profissional_id"
-                                                value={formData.profissional_id || ''}
-                                                onChange={handleChange}
-                                                className="form-select"
-                                                required
-                                                readOnly={checkWordInArray(getURI, 'consultar') || checkWordInArray(getURI, 'atualizar')}
-                                            >
-                                                <option value="">Seleção Nula</option>
-                                                {profissionais.map((profissional) => (
-                                                    <option key={profissional.id} value={profissional.id}>
-                                                        {profissional.Nome}
-                                                    </option>
-                                                ))}
-                                            </select>
+                                            {(checkWordInArray(getURI, 'consultar')) && (
+                                                <div className="p-2">
+                                                    {formData.Nome || 'Funcionário selecionado'}
+                                                </div>
+                                            )}
+                                            {(!checkWordInArray(getURI, 'consultar')) && (
+                                                <>
+                                                    {/* CAMPO FUNCIONARIO */}
+                                                    {renderCampoFuncionario('drop_select', selectFuncionarioShow, setSelectFuncionarioShow)}
+                                                </>
+                                            )}
                                         </div>
                                     </form>
                                 </div>
@@ -1191,7 +1551,7 @@
 
                                     {/* Adolescente */}
                                     <form
-                                        className="was-validated"
+                                        className="needs-validation" noValidate
                                         onSubmit={(e) => {
                                             e.preventDefault();
                                             submitAllForms(`filtro-${origemForm}`, formData);
@@ -1208,24 +1568,9 @@
                                                     {formData.adolescente_Nome || 'Adolescente selecionado'}
                                                 </div>
                                             ) : (
-                                                <select
-                                                    data-api={`filtro-${origemForm}`}
-                                                    id="adolescente_id"
-                                                    name="adolescente_id"
-                                                    value={formData.adolescente_id || ''}
-                                                    onChange={handleChange}
-                                                    style={formControlStyle}
-                                                    className="form-select"
-                                                    aria-label="Default select"
-                                                    required
-                                                >
-                                                    <option value="">Seleção Nula</option>
-                                                    {adolescentes.map((adolescente_select) => (
-                                                        <option key={adolescente_select.id} value={(adolescente_select.id)}>
-                                                            {adolescente_select.Nome}
-                                                        </option>
-                                                    ))}
-                                                </select>
+                                                <>
+                                                    {renderCampoAdolescente('drop_select', selectAdolescenteShow, setSelectAdolescenteShow)}
+                                                </>
                                             )}
                                         </div>
                                     </form>
@@ -1264,7 +1609,7 @@
                                                                 placeholder="Informe"
                                                                 value={formData.prontuario_MedidasSocioEducativasDesc || ''}
                                                                 onChange={handleChange}
-                                                                disabled={checkWordInArray(getURI, 'consultar')}
+                                                                readOnly={checkWordInArray(getURI, 'consultar')}
                                                                 required>
                                                             </textarea>
                                                         )}
@@ -1299,7 +1644,7 @@
                                                                 placeholder="Informe"
                                                                 value={formData.prontuario_UsoDrogasDesc || ''}
                                                                 onChange={handleChange}
-                                                                disabled={checkWordInArray(getURI, 'consultar')}
+                                                                readOnly={checkWordInArray(getURI, 'consultar')}
                                                                 required>
                                                             </textarea>
                                                         )}
@@ -1336,7 +1681,7 @@
                                                                 placeholder="Informe"
                                                                 value={formData.prontuario_CadUnicoProgramaSocial || ''}
                                                                 onChange={handleChange}
-                                                                disabled={checkWordInArray(getURI, 'consultar')}
+                                                                readOnly={checkWordInArray(getURI, 'consultar')}
                                                                 required>
                                                             </textarea>
                                                         )}
@@ -1370,7 +1715,7 @@
                                                                 placeholder="Informe"
                                                                 value={formData.prontuario_EncaminhamentoOrgaoDesc || ''}
                                                                 onChange={handleChange}
-                                                                disabled={checkWordInArray(getURI, 'consultar')}
+                                                                readOnly={checkWordInArray(getURI, 'consultar')}
                                                                 required>
                                                             </textarea>
                                                         )}
@@ -1406,7 +1751,7 @@
                                                                 placeholder="Informe"
                                                                 value={formData.prontuario_DeficienciaDesc || ''}
                                                                 onChange={handleChange}
-                                                                disabled={checkWordInArray(getURI, 'consultar')}
+                                                                readOnly={checkWordInArray(getURI, 'consultar')}
                                                                 required>
                                                             </textarea>
                                                         )}
@@ -1440,7 +1785,7 @@
                                                                 placeholder="Informe"
                                                                 value={formData.prontuario_NecesMediadorTipoFamiliar || ''}
                                                                 onChange={handleChange}
-                                                                disabled={checkWordInArray(getURI, 'consultar')}
+                                                                readOnly={checkWordInArray(getURI, 'consultar')}
                                                                 required>
                                                             </textarea>
                                                         )}
@@ -1479,7 +1824,7 @@
                                 {/* Pontuação Idade */}
                                 <div style={formGroupStyle}>
                                     <label
-                                        htmlFor="vulnerabilidadeIdade"
+                                        htmlFor="ptsIdade"
                                         style={formLabelStyle}
                                         className="form-label"
                                     >
@@ -1488,12 +1833,12 @@
                                     <input
                                         data-api="form-prontuario"
                                         type="number"
-                                        value={vulnerabilidadeIdade || 0}
+                                        value={ptsIdade || 0}
                                         className="form-control"
                                         style={formControlStyle}
-                                        id="vulnerabilidadeIdade"
-                                        name="vulnerabilidadeIdade"
-                                        aria-describedby="vulnerabilidadeIdade"
+                                        id="ptsIdade"
+                                        name="ptsIdade"
+                                        aria-describedby="ptsIdade"
                                         readOnly
                                         required
                                     />
@@ -1503,7 +1848,7 @@
                                 {/* Pontuação escolaridade */}
                                 <div style={formGroupStyle}>
                                     <label
-                                        htmlFor="vulnerabilidadeEscolaridade"
+                                        htmlFor="ptsEscolaridade"
                                         style={formLabelStyle}
                                         className="form-label"
                                     >
@@ -1512,12 +1857,12 @@
                                     <input
                                         data-api="form-prontuario"
                                         type="number"
-                                        value={vulnerabilidadeEscolaridade || 0}
+                                        value={ptsEscolaridade || 0}
                                         className="form-control"
                                         style={formControlStyle}
-                                        id="vulnerabilidadeEscolaridade"
-                                        name="vulnerabilidadeEscolaridade"
-                                        aria-describedby="vulnerabilidadeEscolaridade"
+                                        id="ptsEscolaridade"
+                                        name="ptsEscolaridade"
+                                        aria-describedby="ptsEscolaridade"
                                         readOnly
                                         required
                                     />
@@ -1536,7 +1881,7 @@
                                     <input
                                         data-api="form-prontuario"
                                         type="number"
-                                        value={formData.prontuario_PontuacaoVulnerabilidade || 0}
+                                        value={formData.prontuario_PontuacaoVulnerabilidade || ptsVulnerabilidade}
                                         className="form-control"
                                         style={formControlStyle}
                                         id="prontuario_PontuacaoVulnerabilidade"
@@ -1563,7 +1908,7 @@
                                     <input
                                         data-api="form-prontuario"
                                         type="number"
-                                        value={formData.prontuario_PontuacaoTotal || 0}
+                                        value={formData.prontuario_PontuacaoTotal || ptsTotal}
                                         className="form-control"
                                         style={formControlStyle}
                                         id="prontuario_PontuacaoTotal"

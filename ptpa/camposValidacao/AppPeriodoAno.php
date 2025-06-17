@@ -19,6 +19,7 @@
         const waitOneSecond = () => new Promise((resolve) => setTimeout(resolve, 1000));
 
         // Estado para mensagens do sistema
+        const [error, setError] = React.useState('');
         const [message, setMessage] = React.useState({
             show: false,
             type: null,
@@ -74,6 +75,7 @@
                     type: 'light',
                     message: 'O Campo Ano deve conter apenas números.',
                 });
+                setError('O Campo Ano deve conter apenas números.');
 
                 // Aguarda 1 segundo para evitar novas execuções
                 await waitOneSecond();
@@ -97,6 +99,7 @@
                 [name]: filteredValue,
                 ano: filteredValue,
             }));
+            setError('');
         };
 
         // Função handleBlur para validação do ano
@@ -128,6 +131,7 @@
                     type: 'light',
                     message: 'O Campo Ano deve ter 4 dígitos.',
                 });
+                setError('O Campo Ano deve ter 4 dígitos.');
                 setFormData((prev) => ({ ...prev, [name]: null }));
                 validationTriggered = true;
             } else if (parseInt(filteredValue, 10) < limitePassado && message.show === false) {
@@ -136,6 +140,7 @@
                     type: 'light',
                     message: 'O Ano informado está em um passado não permitido.',
                 });
+                setError('O Ano informado está em um passado não permitido.');
                 setFormData((prev) => ({ ...prev, [name]: null }));
                 validationTriggered = true;
             } else if (parseInt(filteredValue, 10) > limiteFuturo && message.show === false) {
@@ -144,6 +149,7 @@
                     type: 'light',
                     message: 'O Ano informado não deve estar em um futuro tão distante.',
                 });
+                setError('O Ano informado não deve estar em um futuro tão distante.');
                 setFormData((prev) => ({ ...prev, [name]: null }));
                 validationTriggered = true;
             } else if (!validationTriggered) {
@@ -191,6 +197,7 @@
                         </div>
                     ) : (
                         <input
+                            className={`form-control form-control-sm ${error ? 'is-invalid' : formData.periodo_ano ? 'is-valid' : ''}`}
                             data-api={`filtro-${origemForm}`}
                             type="text"
                             id="periodo_ano"
@@ -200,7 +207,6 @@
                             onFocus={handleFocus}
                             onBlur={handleBlur}
                             style={formControlStyle}
-                            className="form-control form-control-sm"
                             required
                         />
                     )}

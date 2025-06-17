@@ -15,6 +15,7 @@ $parametros_backend = array(
     'base_url' => base_url(),
     'token_csrf' => $token_csrf,
     'atualizar_id' => $atualizar_id,
+    'api_get_adolescente' => 'index.php/fia/ptpa/adolescente/api/exibir',
     'api_post_cadastrar_prontuariopsicosocial' => 'index.php/fia/ptpa/prontuariopsicosocial/api/cadastrar',
     'api_post_atualizar_prontuariopsicosocial' => 'index.php/fia/ptpa/prontuariopsicosocial/api/atualizar',
     'api_post_filtrar_profissional' => 'index.php/fia/ptpa/profissional/api/filtrar',
