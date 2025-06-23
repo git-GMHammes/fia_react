@@ -15,7 +15,7 @@
         const api_get_sexo = parametros.api_get_sexo;
         const api_get_municipio = parametros.api_get_municipio;
         const api_get_periodo = parametros.api_get_periodo;
-        const api_post_filter_responsaveis = parametros.api_post_filter_responsaveis;
+        const api_post_filter_responsaveis = parametros.api_p  ost_filter_responsaveis;
         const api_post_atualizar_adolescente = parametros.api_post_atualizar_adolescente || '';
         const api_post_cadastrar_adolescente = parametros.api_post_cadastrar_adolescente || '';
         const api_get_atualizar_adolescente = parametros.api_get_atualizar_adolescente || '';
@@ -260,6 +260,8 @@
         const [guardaMunicipios, setGuardaMunicipios] = React.useState([]);
         const [guardaEtnias, setGuardaEtnias] = React.useState(etniasNoBrasil);
         const [guardaEscolaridades, setGuardaEscolaridades] = React.useState(etniasNoBrasil);
+        const [ufCertidao, setUfCertidao] = React.useState([]);
+        const [municipioCertidao, setMunicipioCertidao] = React.useState([]);
 
         // Cadastro Sem Numero no endereço -  Estado para armazenar o valor Y/N diretamente
         // const [responsaveis, setResponsaveis] = React.useState([]);
@@ -306,7 +308,7 @@
                     unidade_id: 'Unidade',
                     genero_identidade: 'Gênero',
                     Etnia: 'Etnia',
-                    SexoBiologico: 'Sexo',
+                    sexo_biologico: 'Sexo',
                     TipoEscola: 'Tipo de Escola',
                     NomeEscola: 'Nome da Escola',
                     Escolaridade: 'Escolaridade',
@@ -346,7 +348,7 @@
                     unidade_id: 'Unidade',
                     genero_identidade: 'Gênero',
                     Etnia: 'Etnia',
-                    SexoBiologico: 'Sexo',
+                    sexo_biologico: 'Sexo',
                     TipoEscola: 'Tipo de Escola',
                     NomeEscola: 'Nome da Escola',
                     Escolaridade: 'Escolaridade',
@@ -471,7 +473,7 @@
             perfil_id: '1',
             PerfilDescricao: null,
             sexo_biologico_id: debugMyPrint ? '1' : null,
-            SexoBiologico: debugMyPrint ? randomSexoBiologico : null,
+            sexo_biologico: debugMyPrint ? randomSexoBiologico : null,
             genero_identidade: debugMyPrint ? identidadeGeneroRandom : null,
             GeneroIdentidadeDescricao: null,
             AcessoCadastroID: null,
@@ -633,7 +635,7 @@
                 }, 0);
             }
             {/* CAMPO SEXO */ }
-            if (name === "SexoBiologico") {
+            if (name === "sexo_biologico") {
                 setSelectSexoShow(true);
                 setListSexos(guardaSexos);
                 setTimeout(() => {
@@ -1047,10 +1049,10 @@
                 setErrorMunicipio(false);
             }
             {/* CAMPO SEXO*/ }
-            if (campo === "SexoBiologico") {
+            if (campo === "sexo_biologico") {
                 setFormData(prev => ({
                     ...prev,
-                    SexoBiologico: value
+                    sexo_biologico: value
                 }));
                 setErrorSexo(false);
             }
@@ -1307,7 +1309,7 @@
                         UF: 'UF',
                         genero_identidade: 'Gênero',
                         Etnia: 'Etnia',
-                        sexo_biologico_id: 'Sexo',
+                        sexo_biologico: 'Sexo',
                         TipoEscola: 'Tipo de Escola',
                         NomeEscola: 'Nome da Escola',
                         Escolaridade: 'Escolaridade',
@@ -1559,6 +1561,68 @@
             }
         };
 
+        {/* Fetch para GET UF */ }
+        const fetchGetCertidaoUf = async (custonBaseURL = base_url, custonApiGetObjeto = 'index.php/fia/ptpa/ibgeestadocod/api/get', customPage = '?page=1&limit=30') => {
+            const url = custonBaseURL + custonApiGetObjeto + customPage;
+            console.log('fetchGetCertidaoUf url: ', url);
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.result && Array.isArray(data.result) && data.result.length > 0) {
+                    const dbResponse = data.result;
+                    // 
+                    setUfCertidao(dbResponse);
+
+                } else {
+                    setMessage({
+                        show: true,
+                        type: 'light',
+                        message: 'Erro na Tabela do IBGE/UF'
+                    });
+                    setIsLoading(false);
+                }
+
+            } catch (error) {
+                console.error('Erro ao enviar dados:', error);
+                setMessage({
+                    show: true,
+                    type: 'light',
+                    message: 'Erro ao carregar Unidades: ' + error.message
+                });
+            }
+        };
+
+        {/* Fetch para GET Municipio */ }
+        const fetchGetCertidaoMunicipio = async (custonBaseURL = base_url, custonApiGetObjeto = 'index.php/fia/ptpa/ibgemunicipiocod/api/get', customPage = '?page=1&limit=6000') => {
+            const url = custonBaseURL + custonApiGetObjeto + customPage;
+            console.log('fetchGetCertidaoMunicipio url: ', url);
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.result && Array.isArray(data.result) && data.result.length > 0) {
+                    const dbResponse = data.result;
+                    // 
+                    setMunicipioCertidao(dbResponse);
+
+                } else {
+                    setMessage({
+                        show: true,
+                        type: 'light',
+                        message: 'Erro na Tabela do IBGE/Município'
+                    });
+                    setIsLoading(false);
+                }
+
+            } catch (error) {
+                console.error('Erro ao enviar dados:', error);
+                setMessage({
+                    show: true,
+                    type: 'light',
+                    message: 'Erro ao carregar Unidades: ' + error.message
+                });
+            }
+        };
+
         // Função para redirecionar após 4 segundos
         const redirectTo = (url) => {
             const uri = base_url + url;
@@ -1572,22 +1636,26 @@
             setIsLoading(true);
 
             Promise.all([
-                fetchAdolescentes(),
+                fetchGetCertidaoMunicipio(),
                 fetchGetIdentidadeGenero(),
                 fetchGetEscolaridade(),
+                fetchGetCertidaoUf(),
                 fetchGetMunicipios(),
+                fetchAdolescentes(),
                 fetchGetUnidade(),
                 fetchGetSexo(),
             ])
                 .then(([
-                    adolescentesData,
+                    certidaoMunicipioData,
                     generosData,
-                    EscolaridadeData,
+                    escolaridadeData,
+                    certidaoData,
                     municipiosData,
+                    adolescentesData,
                     unidadesData,
-                    sexosData,
+                    sexosData
                 ]) => {
-                    // Processar dados aqui
+                    console.debug('Promise.all');
                 })
                 .catch(error => {
                     console.error('Erro ao carregar dados:', error);
@@ -1598,10 +1666,12 @@
                     }, 500);
                 });
         }, []);
+
         {/* formData.termo */ }
         React.useEffect(() => {
             setTermoAceito(formData.termo || false);
         }, [formData.termo]);
+
         {/* listPeriodos - formData.Nascimento */ }
         React.useEffect(() => {
             if (listPeriodos.length > 0) {
@@ -1683,7 +1753,6 @@
             setGuardaUnidades(orderedUnits);
             return orderedUnits;
         };
-
         React.useEffect(() => {
             async function loadUnits() {
                 const response = await fetchGetUnidade(); // ou outro método que você use
@@ -1696,7 +1765,6 @@
 
             loadUnits();
         }, []);
-
         {/* CAMPO CEP */ }
         React.useEffect(() => {
             // Só executa se houver um CEP válido no formData
@@ -1732,7 +1800,6 @@
                     setOpcional16(false);
                 }
             }, 100);
-
         }, [formData['Nascimento']]);
         {/* CAMPO UNIDADE */ }
         React.useEffect(() => {
@@ -1854,6 +1921,13 @@
         const dropdownStyle = {
             ...formGroupStyle, // Reaproveita o estilo base
             cursor: 'pointer',
+        };
+
+        const parametrosComArrays = {
+            ...parametros,
+            ufCertidao,
+            municipioCertidao,
+            // ... outros arrays
         };
 
         {/* RENDER CAMPO MUNICIPIO */ }
@@ -2020,15 +2094,15 @@
         const renderCampoSexo = (tipoCampo, selectSexoShow, setSelectSexoShow) => {
             return (
                 <>
-                    {false ? formData.SexoBiologico : ''}
+                    {false ? formData.sexo_biologico : ''}
                     {(tipoCampo === 'text_list') && (
                         <>
                             <input
                                 type="text"
                                 className="form-control w-100"
-                                id="SexoBiologico"
-                                name="SexoBiologico"
-                                value={formData.SexoBiologico || ''}
+                                id="sexo_biologico"
+                                name="sexo_biologico"
+                                value={formData.sexo_biologico || ''}
                                 onChange={handleChange}
                                 onFocus={handleFocus}
                                 list="sexos"
@@ -2049,9 +2123,9 @@
                         <>
                             <select
                                 data-api={`filtro-${origemForm}`}
-                                id="SexoBiologico"
-                                name="SexoBiologico"
-                                value={formData.SexoBiologico || ''}
+                                id="sexo_biologico"
+                                name="sexo_biologico"
+                                value={formData.sexo_biologico || ''}
                                 onFocus={handleFocus}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
@@ -2074,10 +2148,10 @@
                         <div className="dropdown w-100">
                             <input
                                 type="text"
-                                className={`form-control border-0 ${errorSexo ? 'is-invalid' : formData.SexoBiologico ? 'is-valid' : ''}`}
-                                id="SexoBiologico_off"
-                                name="SexoBiologico_off"
-                                value={formData.SexoBiologico || ''}
+                                className={`form-control border-0 ${errorSexo ? 'is-invalid' : formData.sexo_biologico ? 'is-valid' : ''}`}
+                                id="sexo_biologico_off"
+                                name="sexo_biologico_off"
+                                value={formData.sexo_biologico || ''}
                                 onChange={handleChange}
                                 onFocus={handleFocus}
                                 autoComplete="off"
@@ -2105,8 +2179,8 @@
                                                 id={`sexo-option${index}`}
                                                 autoComplete="off"
                                                 value={list_sexo.sexo_biologico}
-                                                data-campo="SexoBiologico"
-                                                checked={formData.SexoBiologico === list_sexo.sexo_biologico}
+                                                data-campo="sexo_biologico"
+                                                checked={formData.sexo_biologico === list_sexo.sexo_biologico}
                                                 onChange={handleClick}
 
                                             />
@@ -3097,7 +3171,7 @@
         }
 
         {/* RENDER CERTIDÃO BK*/ }
-        const renderCertidao = () => {
+        const renderCertidao = (parametrosComArrays) => {
             return (
                 <div className="border border-top-0 mb-4 p-4">
                     <div className="row">
@@ -3109,7 +3183,7 @@
                                     submitAllForms(`filtro-${origemForm}`);
                                 }}>
                                 {/* CERTIDÃO */}
-                                <AppText parametros={parametros} formData={formData} setFormData={setFormData}
+                                <AppText parametros={parametrosComArrays} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
                                         attributeOrigemForm: `${origemForm}`,
                                         labelField: 'Certidão',
@@ -3803,9 +3877,12 @@
         }
 
         {/* RENDER ATUALIZAR BK*/ }
-        const renderAtualizar = () => {
+        const renderAtualizar = (parametrosComArrays) => {
             return (
                 <div className="border border-top-0 mb-4 p-4">
+                    <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+                        {false ? JSON.stringify(parametrosComArrays, null, 2) : ''}
+                    </pre>
                     <div className="row">
                         <div className="col-12 col-sm-4">
                             <form
@@ -3815,7 +3892,7 @@
                                     submitAllForms(`filtro-${origemForm}`);
                                 }}>
 
-                                <AppText parametros={parametros} formData={formData} setFormData={setFormData}
+                                <AppText parametros={parametrosComArrays} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
                                         attributeOrigemForm: `${origemForm}`,
                                         labelField: 'Certidão',
@@ -3823,13 +3900,13 @@
                                         nameField: 'Certidao',
                                         errorMessage: '', // Mensagem de Erro personalizada
                                         attributePlaceholder: '', // placeholder 
-                                        attributeMinlength: 16, // minlength 
-                                        attributeMaxlength: 40, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22, Certdao: 39
+                                        attributeMinlength: 31, // minlength 
+                                        attributeMaxlength: 32, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22, Certdao: 39
                                         attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
                                         attributeAutocomplete: 'on', // on, off ]
                                         attributeRequired: true,
                                         attributeReadOnly: false,
-                                        attributeDisabled: false,
+                                        attributeDisabled: parametrosComArrays.ufCertidao.length === 0 || parametrosComArrays.municipioCertidao.length === 0,
                                         attributeMask: 'Certidao', // CPF, Telefone, CEP, SEI, Processo, Certidao.
                                     }}
                                 />
@@ -4899,9 +4976,7 @@
                                         Sexo
                                     </label>
                                     <div className="m-2">
-                                        {listSexos.find(item => item.id == formData.sexo_biologico_id)?.sexo_biologico || (
-                                            <span className="text-muted">Não informado</span>
-                                        )}
+                                        {formData.sexo_biologico || "Não informado"}
                                     </div>
                                 </div>
                             </div>
@@ -5327,7 +5402,7 @@
                                     onSubmit={(e) => {
                                         e.preventDefault();
                                         // console.log("Atualizar form submitted");
-                                        submitAllForms(`filtro-${origemForm}`);
+                                        submitAllForms(`filtro-adolescente`);
                                     }}
                                 >
                                     <div className="m-1">
@@ -5544,7 +5619,7 @@
                                 <a className="nav-link active" aria-current="page" >Dados Pessoais do Adolescente</a>
                             </li>
                         </ul>
-                        {renderAtualizar()}
+                        {renderAtualizar(parametrosComArrays)}
                         {/* Formulário de Escolaridade */}
                         <ul className="nav nav-tabs">
                             <li className="nav-item">
@@ -5586,7 +5661,7 @@
                         )}
                         {(isChoiceMade === 'certidao') && (
                             <div>
-                                {renderCertidao()}
+                                {renderCertidao(parametrosComArrays)}
                             </div>
                         )}
 

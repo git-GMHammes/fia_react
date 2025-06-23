@@ -17,8 +17,11 @@
 
         const getURI = parametros.getURI || [];
         const base_url = parametros.base_url || '';
+        const ufCertidao = parametros.ufCertidao || [];
+        const municipioCertidao = parametros.municipioCertidao || [];
         const [InitialValue, setInitialValue] = React.useState('');
-
+        // console.log('ufCertidao :: ', ufCertidao);
+        // console.log('municipioCertidao :: ', municipioCertidao);
         const labelField = fieldAttributes.labelField || 'AppTextLabel';
         const nameField = fieldAttributes.nameField || 'AppTextName';
         const labelColor = fieldAttributes.labelColor || 'gray';
@@ -61,6 +64,66 @@
         });
 
         const [internalDisabled, setInternalDisabled] = React.useState(false);
+
+        const [certidaoNova, setCertidaoNova] = React.useState({
+            cert_nova_p_01_06: '',
+            cert_nova_p_07: '',
+            cert_nova_p_08_15: '',
+            cert_nova_p_16_17: '',
+            cert_nova_p_18_21: '',
+            cert_nova_p_22_23: '',
+            cert_nova_p_24_26: '',
+            cert_nova_p_27_32: '',
+        });
+
+        {/* Data Registro (AAAAMMDD) / IBGE UF / IBGE Municipio */ }
+        const [validP0815NovaDataRegistro, setValidP0815NovaDataRegistro] = React.useState(false);
+        const [validP1617NovaUfIbge, setValidP1617NovaUfIbge] = React.useState(false);
+        const [validP1821NovaMunicipioIbge, setValidP1821NovaMunicipioIbge] = React.useState(false);
+
+        const [certidaoAntiga, setCertidaoAntiga] = React.useState({
+            cert_antiga_p_01_06: '',
+            cert_antiga_p_07_08: '',
+            cert_antiga_p_09_12: '',
+            cert_antiga_p_13: '',
+            cert_antiga_p_14_18: '',
+            cert_antiga_p_19_21: '',
+            cert_antiga_p_22_28: '',
+            cert_antiga_p_29_30: '',
+            cert_antiga_p_31_32: '',
+        });
+
+        {/* IBGE UF / Ano Registro (1900 > ) / Tipo Certidão 1 */ }
+        const [validP0708AntigaUfIbge, setValidP0708AntigaUfIbge] = React.useState(false);
+        const [validP0912AntigaAnoRegistro, setValidP0912AntigaAnoRegistro] = React.useState(false);
+        const [validP13AntigaTipoCertidao, setValidP13AntigaTipoCertidao] = React.useState(false);
+
+        const atualizarCertidaoNova = (input = '') => ({
+            cert_nova_p_01_06: input.length >= 6 ? input.slice(0, 6) : '',
+            cert_nova_p_07: input.length >= 7 ? input.slice(6, 7) : '',
+            cert_nova_p_08_15: input.length >= 15 ? input.slice(7, 15) : '',
+            cert_nova_p_16_17: input.length >= 17 ? input.slice(15, 17) : '',
+            cert_nova_p_18_21: input.length >= 21 ? input.slice(17, 21) : '',
+            cert_nova_p_22_23: input.length >= 23 ? input.slice(21, 23) : '',
+            cert_nova_p_24_26: input.length >= 26 ? input.slice(23, 24) : '',
+            cert_nova_p_27_32: input.length >= 32 ? input.slice(24, 32) : '',
+        });
+
+
+        const atualizarCertidaoAntiga = (input = '') => ({
+            cert_antiga_p_01_06: input.length >= 6 ? input.slice(0, 6) : '',
+            cert_antiga_p_07_08: input.length >= 8 ? input.slice(6, 8) : '',
+            cert_antiga_p_09_12: input.length >= 12 ? input.slice(8, 12) : '',
+            cert_antiga_p_13: input.length >= 13 ? input.slice(12, 13) : '',
+            cert_antiga_p_14_18: input.length >= 18 ? input.slice(13, 18) : '',
+            cert_antiga_p_19_21: input.length >= 21 ? input.slice(18, 21) : '',
+            cert_antiga_p_22_28: input.length >= 28 ? input.slice(21, 28) : '',
+            cert_antiga_p_29_30: input.length >= 30 ? input.slice(28, 30) : '',
+            cert_antiga_p_31_32: input.length >= 32 ? input.slice(30, 32) : '',
+        });
+
+        // const [ufCertidao, setUfCertidao] = React.useState([]);
+        // const [municipioCertidao, setMunicipioCertidao] = React.useState([]);
 
         React.useEffect(() => {
             const timer1 = setInterval(() => {
@@ -292,9 +355,9 @@
 
         {/* CERTIDÃO (ANTIGO/NOVO) */ }
         const certidaoAntigoNovo = (nCertidao) => {
-            console.log('Iniciando análise do número:', nCertidao)
+            // console.log('Iniciando análise do número:', nCertidao)
             if (typeof nCertidao !== 'string' || nCertidao.length !== 32) {
-                console.log('Tamanho incorreto:', nCertidao.length)
+                // console.log('Tamanho incorreto:', nCertidao.length)
                 return 'erro'
             }
             let antigo = true
@@ -303,13 +366,13 @@
             let anoAtual = new Date().getFullYear()
 
             // Modelo Novo
-            console.log('-----Modelo Novo-----')
+            // console.log('-----Modelo Novo-----')
             let p16 = nCertidao.substring(0, 6)
-            console.log('Novo [1–6] Código da Serventia:', p16, /^\d{6}$/.test(p16) ? 'certo' : 'errado')
+            // console.log('Novo [1–6] Código da Serventia:', p16, /^\d{6}$/.test(p16) ? 'certo' : 'errado')
             if (!/^\d{6}$/.test(p16)) novo = false
 
             let p7 = nCertidao.substring(6, 7)
-            console.log('Novo [7] Dígito verificador:', p7, /^\d$/.test(p7) ? 'certo' : 'errado')
+            // console.log('Novo [7] Dígito verificador:', p7, /^\d$/.test(p7) ? 'certo' : 'errado')
             if (!/^\d$/.test(p7)) novo = false
 
             let p815 = nCertidao.substring(7, 15)
@@ -323,141 +386,73 @@
                 dataValidaNovo = data.getFullYear() === anoNovo && data.getMonth() === mesNovo - 1 && data.getDate() === diaNovo
                 if (anoNovo < 2000 || anoNovo > anoAtual) dataValidaNovo = false
             }
-            console.log('Novo [8–15] Data do Registro (AAAAMMDD):', p815, dataValidaNovo ? 'certo' : 'errado')
+            // console.log('Novo [8–15] Data do Registro (AAAAMMDD):', p815, dataValidaNovo ? 'certo' : 'errado')
             if (!dataValidaNovo) novo = false
 
             let p1617 = nCertidao.substring(15, 17)
-            console.log('Novo [16–17] UF (código IBGE):', p1617, /^\d{2}$/.test(p1617) ? 'certo' : 'errado')
+            // console.log('Novo [16–17] UF (código IBGE):', p1617, /^\d{2}$/.test(p1617) ? 'certo' : 'errado')
             if (!/^\d{2}$/.test(p1617)) novo = false
 
             let p1821 = nCertidao.substring(17, 21)
-            console.log('Novo [18–21] Município (código IBGE):', p1821, /^\d{4}$/.test(p1821) ? 'certo' : 'errado')
+            // console.log('Novo [18–21] Município (código IBGE):', p1821, /^\d{4}$/.test(p1821) ? 'certo' : 'errado')
             if (!/^\d{4}$/.test(p1821)) novo = false
 
             let p2223 = nCertidao.substring(21, 23)
-            console.log('Novo [22–23] Livro:', p2223, /^\d{2}$/.test(p2223) ? 'certo' : 'errado')
+            // console.log('Novo [22–23] Livro:', p2223, /^\d{2}$/.test(p2223) ? 'certo' : 'errado')
             if (!/^\d{2}$/.test(p2223)) novo = false
 
             let p2426 = nCertidao.substring(23, 26)
-            console.log('Novo [24–26] Folha:', p2426, /^\d{3}$/.test(p2426) ? 'certo' : 'errado')
+            // console.log('Novo [24–26] Folha:', p2426, /^\d{3}$/.test(p2426) ? 'certo' : 'errado')
             if (!/^\d{3}$/.test(p2426)) novo = false
 
             let p2732 = nCertidao.substring(26, 32)
-            console.log('Novo [27–32] Termo de Registro:', p2732, /^\d{6}$/.test(p2732) ? 'certo' : 'errado')
+            // console.log('Novo [27–32] Termo de Registro:', p2732, /^\d{6}$/.test(p2732) ? 'certo' : 'errado')
             if (!/^\d{6}$/.test(p2732)) novo = false
 
             // Modelo Antigo
-            console.log('-----Modelo Antigo-----')
+            // console.log('-----Modelo Antigo-----')
             let a16 = nCertidao.substring(0, 6)
-            console.log('Antigo [1–6] Zona/Cartório:', a16, /^\d{6}$/.test(a16) ? 'certo' : 'errado')
+            // console.log('Antigo [1–6] Zona/Cartório:', a16, /^\d{6}$/.test(a16) ? 'certo' : 'errado')
             if (!/^\d{6}$/.test(a16)) antigo = false
 
             let a78 = nCertidao.substring(6, 8)
-            console.log('Antigo [7–8] UF:', a78, /^\d{2}$/.test(a78) ? 'certo' : 'errado')
+            // console.log('Antigo [7–8] UF:', a78, /^\d{2}$/.test(a78) ? 'certo' : 'errado')
             if (!/^\d{2}$/.test(a78)) antigo = false
 
             let a912 = nCertidao.substring(8, 12)
             let anoAntigo = parseInt(a912)
             let anoAntigoValido = /^\d{4}$/.test(a912) && anoAntigo >= 1900 && anoAntigo <= anoAtual
-            console.log('Antigo [9–12] Ano de registro:', a912, anoAntigoValido ? 'certo' : 'errado')
+            // console.log('Antigo [9–12] Ano de registro:', a912, anoAntigoValido ? 'certo' : 'errado')
             if (!anoAntigoValido) antigo = false
 
             let a13 = nCertidao.substring(12, 13)
-            console.log('Antigo [13] Tipo de certidão:', a13, /^[1-9]$/.test(a13) ? 'certo' : 'errado')
+            // console.log('Antigo [13] Tipo de certidão:', a13, /^[1-9]$/.test(a13) ? 'certo' : 'errado')
             if (!/^[1-9]$/.test(a13)) antigo = false
 
             let a1418 = nCertidao.substring(13, 18)
-            console.log('Antigo [14–18] Livro:', a1418, /^\d{5}$/.test(a1418) ? 'certo' : 'errado')
+            // console.log('Antigo [14–18] Livro:', a1418, /^\d{5}$/.test(a1418) ? 'certo' : 'errado')
             if (!/^\d{5}$/.test(a1418)) antigo = false
 
             let a1921 = nCertidao.substring(18, 21)
-            console.log('Antigo [19–21] Folha:', a1921, /^\d{3}$/.test(a1921) ? 'certo' : 'errado')
+            // console.log('Antigo [19–21] Folha:', a1921, /^\d{3}$/.test(a1921) ? 'certo' : 'errado')
             if (!/^\d{3}$/.test(a1921)) antigo = false
 
             let a2228 = nCertidao.substring(21, 28)
-            console.log('Antigo [22–28] Termo de Registro:', a2228, /^\d{7}$/.test(a2228) ? 'certo' : 'errado')
+            // console.log('Antigo [22–28] Termo de Registro:', a2228, /^\d{7}$/.test(a2228) ? 'certo' : 'errado')
             if (!/^\d{7}$/.test(a2228)) antigo = false
 
             let a2930 = nCertidao.substring(28, 30)
             let dvOk = a2930 === '' || /^\d{2}$/.test(a2930)
-            console.log('Antigo [29–30] DV (Dígito Verificador):', a2930, dvOk ? 'certo' : 'errado')
+            // console.log('Antigo [29–30] DV (Dígito Verificador):', a2930, dvOk ? 'certo' : 'errado')
             if (!(a2930 === '' || /^\d{2}$/.test(a2930))) antigo = false
 
             let a3132 = nCertidao.substring(30, 32)
-            console.log('Antigo [31–32] Reservado:', a3132, 'ignorado')
+            // console.log('Antigo [31–32] Reservado:', a3132, 'ignorado')
 
             if (novo && !antigo) return 'novo'
             if (antigo && !novo) return 'antigo'
             return 'erro'
         }
-
-        const certidaoAntigoNovo1 = (nCertidao) => {
-            try {
-                // Normalização rigorosa
-                const certidao = String(nCertidao).replace(/[^\d]/g, '');
-
-                // Verificação básica
-                if (certidao.length !== 32) return "formato_invalido";
-
-                // Função auxiliar à prova de erros
-                const isValidDate = (year, month, day) => {
-                    try {
-                        if (month < 1 || month > 12) return false;
-                        if (day < 1 || day > 31) return false;
-                        const date = new Date(year, month - 1, day);
-                        return date.getFullYear() === year &&
-                            date.getMonth() === month - 1 &&
-                            date.getDate() === day;
-                    } catch {
-                        return false;
-                    }
-                };
-
-                /* 
-                 * Verificação do Modelo NOVO (prioridade máxima)
-                 * Estrutura esperada: [1-6:cartório][7:ignorado][8-15:AAAAMMDD][16-17:UF]...
-                 */
-                const dataNovo = certidao.slice(7, 15);
-                const ufNovo = parseInt(certidao.slice(15, 17));
-
-                if (/^\d{8}$/.test(dataNovo)) {
-                    const ano = parseInt(dataNovo.slice(0, 4));
-                    const mes = parseInt(dataNovo.slice(4, 6));
-                    const dia = parseInt(dataNovo.slice(6, 8));
-
-                    if (ano >= 2024 &&
-                        ufNovo >= 10 && ufNovo <= 53 &&  // UF válida (10-53)
-                        isValidDate(ano, mes, dia)) {
-                        return "novo";
-                    }
-                }
-
-                /*
-                 * Verificação do Modelo ANTIGO
-                 * Estrutura esperada: [1-6:cartório][7-8:UF][9-12:ano][13:tipo]...
-                 */
-                const ufAntigo = parseInt(certidao.slice(6, 8));
-                const anoAntigo = parseInt(certidao.slice(8, 12));
-                const tipo = certidao.slice(12, 13);
-
-                if (!isNaN(anoAntigo) && !isNaN(ufAntigo)) {
-                    const anoAtual = new Date().getFullYear();
-
-                    if (anoAntigo >= 1900 &&
-                        anoAntigo <= anoAtual &&
-                        ['1', '2', '3'].includes(tipo) &&  // 1=Nasc, 2=Cas, 3=Óbito
-                        ufAntigo >= 11 && ufAntigo <= 53) {  // UFs antigas (11-53)
-                        return "antigo";
-                    }
-                }
-
-                return "formato_invalido";
-
-            } catch (error) {
-                console.error("Erro na validação:", error);
-                return "erro_validacao";
-            }
-        };
 
         // Máscara Telefone
         const applyMaskTelefone = (telefone) => {
@@ -714,12 +709,15 @@
                 case 'Certidao':
                     // console.log('case - handleFocus \'Certidão\'');
 
-                    const maskedValueCert = applyMaskCertidao(value);
+                    // const maskedValueCert = applyMaskCertidao(value);
+                    const maskedValueCert = cleanInputOnlyNumber(value);
                     setFormData((prev) => ({
                         ...prev,
                         [name]: maskedValueCert,
                     }));
 
+                    setCertidaoNova(atualizarCertidaoNova(maskedValueCert));
+                    setCertidaoAntiga(atualizarCertidaoAntiga(maskedValueCert));
                     break;
 
                 default:
@@ -730,11 +728,11 @@
         const handleBlur = async (event) => {
             // setModalMessage({ show: false, type: 'light', message: '' });
             const { name, value } = event.target;
-            console.log("-------------------------");
-            console.log("handleBlur");
-            console.log("-------------------------");
-            console.log("name :: ", name);
-            console.log("value :: ", value);
+            // console.log("-------------------------");
+            // console.log("handleBlur");
+            // console.log("-------------------------");
+            // console.log("name :: ", name);
+            // console.log("value :: ", value);
             // console.log("attributeMinlength :: ", attributeMinlength);
             let message = errorMessage === '' ? `Por favor, informe um ${attributeMask} válido.` : errorMessage;
             let isValid = true;
@@ -993,13 +991,13 @@
                     if (
                         cleanedValue.length === 0 || cleanedValue.length === 32
                     ) {
-                        console.log('------------------------');
-                        console.log('Certidao');
-                        console.log('cleanedValue.length === 32');
+                        // console.log('------------------------');
+                        // console.log('Certidao');
+                        // console.log('cleanedValue.length === 32');
 
                         const resposta = certidaoAntigoNovo(cleanedValue);
-                        console.log('certidao (Novo / Antigo) :: ', cleanedValue);
-                        console.log('resposta (Novo / Antigo) :: ', resposta);
+                        // console.log('certidao (Novo / Antigo) :: ', cleanedValue);
+                        // console.log('resposta (Novo / Antigo) :: ', resposta);
 
                         break;
 
@@ -1254,6 +1252,165 @@
             }
         };
 
+        const funcValidNova0815 = function (dataFormData = '') {
+            if (!dataFormData || dataFormData.length !== 10) return false;
+
+            // Extrai ano, mês e dia como number
+            var ano = parseInt(dataFormData.slice(0, 4), 10);
+            var mes = parseInt(dataFormData.slice(5, 7), 10);
+            var dia = parseInt(dataFormData.slice(8, 10), 10);
+
+            // O Date usa mês 0-11, por isso mes-1
+            var dataObj = new Date(ano, mes - 1, dia);
+
+            // Verifica se a data bate certinho
+            return (
+                dataObj.getFullYear() === ano &&
+                (dataObj.getMonth() + 1) === mes &&
+                dataObj.getDate() === dia
+            );
+        };
+
+        const funcValidAntiga0912 = function (valor = '') {
+            // Esperado: valor com 4 dígitos representando o ano
+            if (!valor || valor.length !== 4) return false;
+            var ano = parseInt(valor, 10);
+            var anoAtual = new Date().getFullYear();
+            return ano >= 1900 && ano <= anoAtual;
+        };
+
+        React.useEffect(() => {
+            // --- Validação da data nova ---
+            const valorNova = certidaoNova.cert_nova_p_08_15;
+            if (valorNova && valorNova.length === 8) {
+                const ano = valorNova.slice(0, 4);
+                const mes = valorNova.slice(4, 6);
+                const dia = valorNova.slice(6, 8);
+                var dataFormatada = ano + '-' + mes + '-' + dia;
+                const dataValida = funcValidNova0815(dataFormatada);
+                setValidP0815NovaDataRegistro(dataValida);
+                // (Opcional) console.log
+            }
+
+            // --- Valida IBGE UF Nova ---
+            const novoIbgeUF = certidaoNova.cert_nova_p_16_17;
+            if (novoIbgeUF !== '') {
+                const validaUfNovo = checkWordInArray(ufCertidao, novoIbgeUF);
+                setValidP1617NovaUfIbge(validaUfNovo);
+            }
+
+            // --- Valida IBGE Municipio Nova ---
+            const novoIbgeMunicipio = certidaoNova.cert_nova_p_18_21
+            if (novoIbgeMunicipio !== '') {
+                const validaMunicipioNovo = checkWordInArray(municipioCertidao, novoIbgeMunicipio);
+                console.log('validaMunicipioNovo :: ', validaMunicipioNovo);
+                setValidP1821NovaMunicipioIbge(validaMunicipioNovo);
+            }
+
+            // --- Valida IBGE UF Antiga ---
+            const antigaIbgeUF = certidaoAntiga.cert_antiga_p_07_08;
+            if (antigaIbgeUF !== '') {
+                const validaUfAntiga = checkWordInArray(ufCertidao, antigaIbgeUF);
+                setValidP0708AntigaUfIbge(validaUfAntiga);
+            }
+
+            // --- Ano Registro do ano antiga ---
+            const anoRegistroAntiga = certidaoAntiga.cert_antiga_p_09_12;
+            const anoRegistroValido = funcValidAntiga0912(anoRegistroAntiga);
+            setValidP0912AntigaAnoRegistro(anoRegistroValido);
+
+            // --- Validação do anoRegistro antiga ---
+            const TipoCertidaoAntiga = certidaoAntiga.cert_antiga_p_13;
+            const tipoCertidaoValida = TipoCertidaoAntiga === '1';
+            console.log('tipoCertidaoValida : ', tipoCertidaoValida);
+            setValidP13AntigaTipoCertidao(tipoCertidaoValida);
+
+            // Preenchimento Antiga Nova
+            if (
+                validP0708AntigaUfIbge
+                && validP0912AntigaAnoRegistro
+                && validP13AntigaTipoCertidao
+            ) {
+                console.log('Preenchimento Antiga');
+                setFormData((prev) => ({
+                    ...prev,
+                    NumRegistro: certidaoAntiga.cert_antiga_p_22_28,
+                    Zona: certidaoAntiga.cert_antiga_p_01_06,
+                    Folha: certidaoAntiga.cert_antiga_p_19_21,
+                    Livro: certidaoAntiga.cert_antiga_p_14_18,
+                    Circunscricao: '',
+                }));
+            } else if (
+                validP0815NovaDataRegistro
+                && validP1617NovaUfIbge
+                && validP1821NovaMunicipioIbge
+            ) {
+                console.log('Preenchimento Nova');
+                setFormData((prev) => ({
+                    ...prev,
+                    NumRegistro: certidaoNova.cert_nova_p_27_32,
+                    Zona: certidaoNova.cert_nova_p_16_17,
+                    Folha: certidaoNova.cert_nova_p_24_26,
+                    Livro: certidaoNova.cert_nova_p_22_23,
+                    Circunscricao: certidaoNova.cert_nova_p_18_21,
+                }));
+            } else {
+                console.log('Certidão Indefinida')
+            }
+        }, [
+            certidaoNova.cert_nova_p_08_15,
+            certidaoNova.cert_nova_p_16_17,
+            certidaoNova.cert_nova_p_18_21,
+            certidaoAntiga.cert_antiga_p_07_08,
+            certidaoAntiga.cert_antiga_p_09_12,
+            certidaoAntiga.cert_antiga_p_13
+        ]);
+
+        React.useEffect(() => {
+            if (
+                validP0708AntigaUfIbge
+                && validP0912AntigaAnoRegistro
+                && validP13AntigaTipoCertidao
+            ) {
+                setFormData((prev) => ({
+                    ...prev,
+                    NumRegistro: certidaoAntiga.cert_antiga_p_22_28,
+                    Zona: certidaoAntiga.cert_antiga_p_01_06,
+                    Folha: certidaoAntiga.cert_antiga_p_19_21,
+                    Livro: certidaoAntiga.cert_antiga_p_14_18,
+                    Circunscricao: '',
+                }));
+            } else if (
+                validP0815NovaDataRegistro
+                && validP1617NovaUfIbge
+                && validP1821NovaMunicipioIbge
+            ) {
+                setFormData((prev) => ({
+                    ...prev,
+                    NumRegistro: certidaoNova.cert_nova_p_27_32,
+                    Zona: certidaoNova.cert_nova_p_16_17,
+                    Folha: certidaoNova.cert_nova_p_24_26,
+                    Livro: certidaoNova.cert_nova_p_22_23,
+                    Circunscricao: certidaoNova.cert_nova_p_18_21,
+                }));
+            } else {
+                console.log('Certidão Indefinida')
+            }
+        }, [
+            validP0708AntigaUfIbge,
+            validP0912AntigaAnoRegistro,
+            validP13AntigaTipoCertidao,
+            certidaoAntiga.cert_antiga_p_14_18,
+            certidaoAntiga.cert_antiga_p_19_21,
+            certidaoAntiga.cert_antiga_p_22_28,
+            validP0815NovaDataRegistro,
+            validP1617NovaUfIbge,
+            validP1821NovaMunicipioIbge,
+            certidaoNova.cert_nova_p_22_23,
+            certidaoNova.cert_nova_p_24_26,
+            certidaoNova.cert_nova_p_27_32
+        ]);
+
         // Style 
         const formGroupStyle = {
             position: 'relative',
@@ -1321,6 +1478,49 @@
                     <datalist id={`${name}-options`}>
                         <option value=""></option>
                     </datalist>
+                    {/* CERTIDÃO NOVA */}
+                    {(false && certidaoNova.cert_nova_p_01_06.length === 6) && (
+                        <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+                            Certidao Nova: {certidaoNova.cert_nova_p_01_06.length === 6 ? JSON.stringify(certidaoNova, null, 2) : ''}
+                        </pre>
+                    )}
+                    {(false && validP0815NovaDataRegistro) && (
+                        <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+                            Valida Nova [08-15] Data Registro: {validP0815NovaDataRegistro ? JSON.stringify(validP0815NovaDataRegistro, null, 2) : ''}
+                        </pre>
+                    )}
+                    {(false && validP1617NovaUfIbge) && (
+                        <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+                            Valida Nova [16-17] Uf IBGE: {validP1617NovaUfIbge ? JSON.stringify(validP1617NovaUfIbge, null, 2) : ''}
+                        </pre>
+                    )}
+                    {(false && validP1821NovaMunicipioIbge) && (
+                        <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+                            Valida Nova [18-21] Municipio IBGE: {validP1821NovaMunicipioIbge ? JSON.stringify(validP1821NovaMunicipioIbge, null, 2) : ''}
+                        </pre>
+                    )}
+
+                    {/* CERTIDÃO ANTIGA */}
+                    {(false && certidaoAntiga.cert_antiga_p_01_06.length === 6) && (
+                        <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+                            Certidao Antiga: {certidaoAntiga.cert_antiga_p_01_06.length === 6 ? JSON.stringify(certidaoAntiga, null, 2) : ''}
+                        </pre>
+                    )}
+                    {(false && validP0708AntigaUfIbge) && (
+                        <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+                            Valid Antiga [07-08] Uf IBGE: {validP0708AntigaUfIbge ? JSON.stringify(validP0708AntigaUfIbge, null, 2) : ''}
+                        </pre>
+                    )}
+                    {(false && validP0912AntigaAnoRegistro) && (
+                        <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+                            Valida Antiga [09-12] Ano Registro: {validP0912AntigaAnoRegistro ? JSON.stringify(validP0912AntigaAnoRegistro, null, 2) : ''}
+                        </pre>
+                    )}
+                    {(false && validP13AntigaTipoCertidao) && (
+                        <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+                            Valida Antiga [13] Tipo Certidao: {validP13AntigaTipoCertidao ? JSON.stringify(validP13AntigaTipoCertidao, null, 2) : ''}
+                        </pre>
+                    )}
                 </div>
                 {(
                     msgError &&
@@ -1349,6 +1549,7 @@
                             <p className="text-danger">AppMessageCard não lacançado.</p>
                         </div>
                     )}
+
             </div>
         );
     };
