@@ -37,6 +37,8 @@
         const [prontuario, setProntuarios] = React.useState([]);
 
         // Variáveis Uteis
+        const [resumoConfirmado, setResumoConfirmado] = React.useState(false);
+        const [isChoiceMade, setIsChoiceMade] = React.useState(false);
         const [pagination, setPagination] = React.useState(null);
         const [isLoading, setIsLoading] = React.useState(true);
         const [idade, setIdade] = React.useState([0, 0]);
@@ -1205,14 +1207,14 @@
             return (
                 checkWordInArray(getURI, 'consultar') ? (
                     <div className="p-2">
-                        {formData.prontuario_ReferenciaNaRede === "Y" ? "Sim" : "Não"}
+                        {formData.prontuario_ReferenciadoNaRede === "Y" ? "Sim" : "Não"}
                     </div>
                 ) : (
                     <div className={`${largura < 415 ? 'd-flex justify-content-evenly p-4' : 'p-2'} `}>
                         <div className="form-check">
-                            <input data-api="form-prontuario" type="radio" className="form-check-input" id="prontuario_ReferenciaNaRede1" name="prontuario_ReferenciaNaRede"
+                            <input data-api="form-prontuario" type="radio" className="form-check-input" id="prontuario_ReferenciaNaRede1" name="prontuario_ReferenciadoNaRede"
                                 value="Y"
-                                checked={formData.prontuario_ReferenciaNaRede === "Y"}
+                                checked={formData.prontuario_ReferenciadoNaRede === "Y"}
                                 onChange={handleRadioChange}
                             />
                             <label className="form-check-label" htmlFor="prontuario_ReferenciaNaRede1">Sim</label>
@@ -1223,9 +1225,9 @@
                                 type="radio"
                                 className="form-check-input"
                                 id="prontuario_ReferenciaNaRede2"
-                                name="prontuario_ReferenciaNaRede"
+                                name="prontuario_ReferenciadoNaRede"
                                 value="N"
-                                checked={formData.prontuario_ReferenciaNaRede === "N"}
+                                checked={formData.prontuario_ReferenciadoNaRede === "N"}
                                 onChange={handleRadioChange}
                             />
                             <label className="form-check-label" htmlFor="prontuario_ReferenciaNaRede2">Não</label>
@@ -1275,14 +1277,14 @@
             return (
                 checkWordInArray(getURI, 'consultar') ? (
                     <div className="p-2">
-                        {formData.prontuario_ParticipacaoProgramasSociais === "Y" ? "Sim" : "Não"}
+                        {formData.prontuario_ParticipacaoProg === "Y" ? "Sim" : "Não"}
                     </div>
                 ) : (
                     <div className={`${largura < 415 ? 'd-flex justify-content-evenly p-4' : 'p-2'} `}>
                         <div className="form-check">
-                            <input data-api="form-prontuario" type="radio" className="form-check-input" id="prontuario_ParticipacaoProgramasSociais1" name="prontuario_ParticipacaoProgramasSociais"
+                            <input data-api="form-prontuario" type="radio" className="form-check-input" id="prontuario_ParticipacaoProgramasSociais1" name="prontuario_ParticipacaoProg"
                                 value="Y"
-                                checked={formData.prontuario_ParticipacaoProgramasSociais === "Y"}
+                                checked={formData.prontuario_ParticipacaoProg === "Y"}
                                 onChange={handleRadioChange}
                             />
                             <label className="form-check-label" htmlFor="prontuario_ParticipacaoProgramasSociais1">Sim</label>
@@ -1293,9 +1295,9 @@
                                 type="radio"
                                 className="form-check-input"
                                 id="prontuario_ParticipacaoProgramasSociais2"
-                                name="prontuario_ParticipacaoProgramasSociais"
+                                name="prontuario_ParticipacaoProg"
                                 value="N"
-                                checked={formData.prontuario_ParticipacaoProgramasSociais === "N"}
+                                checked={formData.prontuario_ParticipacaoProg === "N"}
                                 onChange={handleRadioChange}
                             />
                             <label className="form-check-label" htmlFor="prontuario_ParticipacaoProgramasSociais2">Não</label>
@@ -1385,6 +1387,98 @@
                 )
             );
         }
+
+        const renderComandosResumo = () => {
+            if (checkWordInArray(getURI, 'detalhar')) return null;
+            return (
+                <div className="ms-3 me-3">
+                    <div className="row">
+                        <div className="col-12">
+
+                            {checkWordInArray(getURI, 'atualizar') && isChoiceMade && (
+                                <AppResumo
+                                    parametros={parametros}
+                                    formData={formData}
+                                    setFormData={setFormData}
+                                    setResumoConfirmado={setResumoConfirmado}
+                                />
+                            )}
+
+                            <form
+                                className="was-validated d-flex justify-content-between align-items-center"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+
+                                    // Evita envio se estiver no modo atualizar sem aceite
+                                    if (checkWordInArray(getURI, 'atualizar')) {
+                                        if (!isChoiceMade || !resumoConfirmado) return;
+                                    }
+
+                                    submitAllForms(`filtro-${origemForm}`, formData);
+                                }}
+                            >
+                                <div className="d-flex gap-2">
+                                    {/* BOTÃO VOLTAR */}
+                                    <a
+                                        className="btn btn-danger"
+                                        href={`${base_url}index.php/fia/ptpa/prontuariopsicosocial/endpoint/exibir`}
+                                        role="button"
+                                    >
+                                        Voltar
+                                    </a>
+
+                                    {/* BOTÃO SALVAR (somente em cadastrar) */}
+                                    {checkWordInArray(getURI, 'cadastrar') && (
+                                        <input
+                                            className="btn btn-success"
+                                            type="submit"
+                                            value="Salvar"
+                                        />
+                                    )}
+
+                                    {/* BOTÃO SALVAR (somente em atualizar, após resumo aceito) */}
+                                    {checkWordInArray(getURI, 'atualizar') &&
+                                        isChoiceMade &&
+                                        resumoConfirmado && (
+                                            <input
+                                                className="btn btn-success"
+                                                type="submit"
+                                                value="Salvar"
+                                            />
+                                        )}
+                                </div>
+                            </form>
+
+                            {/* BOTÃO ATUALIZAR (inicia resumo) */}
+                            {checkWordInArray(getURI, 'atualizar') && !isChoiceMade && (
+                                <button
+                                    type="button"
+                                    className="btn btn-primary mt-3"
+                                    onClick={() => setIsChoiceMade(true)}
+                                >
+                                    Atualizar
+                                </button>
+                            )}
+
+                            {/* BOTÃO CANCELAR REVISÃO */}
+                            {checkWordInArray(getURI, 'atualizar') && isChoiceMade && (
+                                <button
+                                    type="button"
+                                    className="btn btn-danger mt-3"
+                                    onClick={() => {
+                                        setIsChoiceMade(false);
+                                        setResumoConfirmado(false);
+                                    }}
+                                >
+                                    Cancelar revisão
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
 
         if (debugMyPrint && error) {
             return <div className="d-flex justify-content-center align-items-center min-vh-100">
@@ -2061,7 +2155,7 @@
                                         <div className="col-12 col-sm-6">
                                             <div style={formGroupStyle}>
                                                 <label
-                                                    htmlFor="prontuario_ReferenciaNaRede" style={formLabelStyle} className="form-label">
+                                                    htmlFor="prontuario_ReferenciadoNaRede" style={formLabelStyle} className="form-label">
                                                     Referência na Rede?<strong style={requiredField}>*</strong>
                                                 </label>
                                                 <div>
@@ -2074,13 +2168,13 @@
                                                         </div>
                                                         <div className="col-12 col-sm-9">
                                                             <div className="border-0" style={{ height: '150px' }}>
-                                                                {(formData.prontuario_ReferenciaNaRede === 'Y') && (
+                                                                {(formData.prontuario_ReferenciadoNaRede === 'Y') && (
                                                                     <textarea
                                                                         className="form-control m-0 p-2 w-100 h-100"
-                                                                        id="prontuario_ReferenciaNaRedeDesc"
-                                                                        name="prontuario_ReferenciaNaRedeDesc"
+                                                                        id="prontuario_ReferenciadoNaRedeDesc"
+                                                                        name="prontuario_ReferenciadoNaRedeDesc"
                                                                         placeholder="Informe"
-                                                                        value={formData.prontuario_ReferenciaNaRede || ''}
+                                                                        value={formData.prontuario_ReferenciadoNaRedeDesc || ''}
                                                                         onChange={handleChange}
                                                                         readOnly={checkWordInArray(getURI, 'consultar')}
                                                                         required>
@@ -2108,17 +2202,24 @@
                                                         </div>
                                                         <div className="col-12 col-sm-9">
                                                             <div className="border-0" style={{ height: '150px' }}>
-                                                                {(formData.prontuario_TipoFamiliar === 'Y') && (
-                                                                    <textarea
-                                                                        className="form-control m-0 p-2 w-100 h-100"
+                                                                {formData.prontuario_TipoFamiliar === 'Y' && (
+                                                                    <select
+                                                                        className="form-select m-0 p-2 w-100 h-100"
                                                                         id="prontuario_TipoFamiliarDesc"
                                                                         name="prontuario_TipoFamiliarDesc"
-                                                                        placeholder="Informe"
-                                                                        value={formData.prontuario_TipoFamiliar || ''}
+                                                                        value={formData.prontuario_TipoFamiliarDesc || ''}
                                                                         onChange={handleChange}
                                                                         readOnly={checkWordInArray(getURI, 'consultar')}
-                                                                        required>
-                                                                    </textarea>
+                                                                        required
+                                                                    >
+                                                                        <option value="">Selecione o tipo familiar</option>
+                                                                        <option value="nuclear">Nuclear</option>
+                                                                        <option value="extensa">Extensa</option>
+                                                                        <option value="monoparental">Monoparental</option>
+                                                                        <option value="adotiva">Adotiva</option>
+                                                                        <option value="homoparental">Homoparental</option>
+                                                                        <option value="reconstituída">Reconstituída</option>
+                                                                    </select>
                                                                 )}
                                                             </div>
                                                         </div>
@@ -2144,13 +2245,13 @@
                                                         </div>
                                                         <div className="col-12 col-sm-9">
                                                             <div className="border-0" style={{ height: '150px' }}>
-                                                                {(formData.prontuario_ParticipacaoProgramasSociais === 'Y') && (
+                                                                {(formData.prontuario_ParticipacaoProgDesc === 'Y') && (
                                                                     <textarea
                                                                         className="form-control m-0 p-2 w-100 h-100"
-                                                                        id="prontuario_ParticipacaoProgramasSociaisDesc"
-                                                                        name="prontuario_ParticipacaoProgramasSociaisDesc"
+                                                                        id="prontuario_ParticipacaoProgDesc"
+                                                                        name="prontuario_ParticipacaoProgDesc"
                                                                         placeholder="Informe"
-                                                                        value={formData.prontuario_ParticipacaoProgramasSociais || ''}
+                                                                        value={formData.prontuario_ParticipacaoProgDesc || ''}
                                                                         onChange={handleChange}
                                                                         readOnly={checkWordInArray(getURI, 'consultar')}
                                                                         required>
@@ -2292,7 +2393,7 @@
                     </div>
                 </div>
 
-                {/* Botão de voltar e salvar */}
+                {/* Botão de voltar e salvar 
                 {
                     !checkWordInArray(getURI, 'detalhar') && (
                         <div className="ms-3 me-3">
@@ -2306,7 +2407,7 @@
                                         }}
                                     >
                                         <div className="d-flex gap-2">
-                                            {/* Botão Voltar */}
+                                            
                                             {!checkWordInArray(getURI, 'alocarfuncionario') && (
                                                 <a
                                                     className="btn btn-danger"
@@ -2316,8 +2417,7 @@
                                                     Voltar
                                                 </a>
                                             )}
-
-                                            {/* Botão Salvar */}
+                                            
                                             {!checkWordInArray(getURI, 'consultar') && (
                                                 <input
                                                     className="btn btn-success"
@@ -2331,7 +2431,7 @@
                             </div>
                         </div>
                     )
-                }
+                } */}
 
                 {
                     typeof AppJson !== "undefined" ? (
@@ -2350,10 +2450,13 @@
                     )
                 }
 
+                {/* RENDER COMANDOS E RESUMO */}
+                {renderComandosResumo()}
+
                 {/* Exibe o componente de alerta */}
                 <AppMessageCard
-                    parametros={message} modalId={'modal_form'}
-
+                    parametros={message}
+                    modalId={'modal_form'}
                 />
 
             </div >

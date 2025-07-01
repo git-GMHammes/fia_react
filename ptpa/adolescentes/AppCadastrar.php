@@ -89,7 +89,7 @@ $parametros_backend['api_get_atualizar_adolescente'] = ($atualizar_id !== 'erro'
 
                 {typeof AppForm !== "undefined" ? (
                     <div>
-                        <AppForm parametros={parametros} />
+                        <AppForm getParametros={parametros} />
                     </div>
                 ) : (
                     <div>

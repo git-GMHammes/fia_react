@@ -1,10 +1,12 @@
 <script type="text/babel">
-    const AppForm = ({ parametros = {} }) => {
+    const AppForm = ({ getParametros = {} }) => {
+
+        const [parametros, setParametros] = React.useState(getParametros);
 
         const checkWordInArray = (array, word) => array.includes(word) ? true : false;
         // Prepara as Variáveis do REACT recebidas pelo BACKEND
         const getURI = parametros.getURI;
-        const debugMyPrint = parametros.DEBUG_MY_PRINT || false;
+        const [debugMyPrint, setDebugMyPrint] = React.useState(parametros.DEBUG_MY_PRINT || false);
         const base_url = parametros.base_url;
         const token_csrf = parametros.token_csrf || 'erro';
         const json = '1';
@@ -15,7 +17,7 @@
         const api_get_sexo = parametros.api_get_sexo;
         const api_get_municipio = parametros.api_get_municipio;
         const api_get_periodo = parametros.api_get_periodo;
-        const api_post_filter_responsaveis = parametros.api_p  ost_filter_responsaveis;
+        const api_post_filter_responsaveis = parametros.api_post_filter_responsaveis;
         const api_post_atualizar_adolescente = parametros.api_post_atualizar_adolescente || '';
         const api_post_cadastrar_adolescente = parametros.api_post_cadastrar_adolescente || '';
         const api_get_atualizar_adolescente = parametros.api_get_atualizar_adolescente || '';
@@ -206,6 +208,19 @@
                 : `${nome}${separador}${sobrenome}`;
 
             return `${emailLocal}@${dominio}`;
+        };
+
+        {/* debugMyPrint para Certidão */ }
+        const [checked, setChecked] = React.useState(false);
+        const handleSwitch = (e) => {
+            // console.log('--- debugMyPrint para Certidão ---')
+            // console.log(e.target.checked);
+            setChecked(e.target.checked);
+            setDebugMyPrint(e.target.checked);
+            setParametros(prev => ({
+                ...prev,
+                DEBUG_MY_PRINT: e.target.checked
+            }));
         };
 
         // Função para selecionar um órgão aleatório
@@ -409,6 +424,10 @@
             type: null,
             message: null,
         });
+
+        // Largura
+        const [width, setWidth] = React.useState(window.innerWidth);
+        const [labelEndSN, setLabelEndSN] = React.useState('Sem Número');
 
         // Função para verificar campos obrigatórios
         const validarCamposObrigatorios = (dados, camposObrigatorios) => {
@@ -1564,7 +1583,7 @@
         {/* Fetch para GET UF */ }
         const fetchGetCertidaoUf = async (custonBaseURL = base_url, custonApiGetObjeto = 'index.php/fia/ptpa/ibgeestadocod/api/get', customPage = '?page=1&limit=30') => {
             const url = custonBaseURL + custonApiGetObjeto + customPage;
-            console.log('fetchGetCertidaoUf url: ', url);
+            // console.log('fetchGetCertidaoUf url: ', url);
             try {
                 const response = await fetch(url);
                 const data = await response.json();
@@ -1595,7 +1614,7 @@
         {/* Fetch para GET Municipio */ }
         const fetchGetCertidaoMunicipio = async (custonBaseURL = base_url, custonApiGetObjeto = 'index.php/fia/ptpa/ibgemunicipiocod/api/get', customPage = '?page=1&limit=6000') => {
             const url = custonBaseURL + custonApiGetObjeto + customPage;
-            console.log('fetchGetCertidaoMunicipio url: ', url);
+            // console.log('fetchGetCertidaoMunicipio url: ', url);
             try {
                 const response = await fetch(url);
                 const data = await response.json();
@@ -1711,8 +1730,8 @@
 
         {/* CAMPO UNIDAE CAMPO CEP */ }
         const orderUnitsByCEPProximity = (userCEP) => {
-            console.log('userCEP:', userCEP);
-            console.log('units:', units);
+            // console.log('userCEP:', userCEP);
+            // console.log('units:', units);
             if (
                 !userCEP ||
                 userCEP.length < 9 ||
@@ -1891,6 +1910,24 @@
                 document.removeEventListener("mousedown", handleClickOutside);
             };
         }, [selectEscolaridadeShow]);
+        {/* LABEL LARGURA */ }
+        React.useEffect(() => {
+            if (width < 1500) {
+                setLabelEndSN('S/Número');
+            } else {
+                setLabelEndSN('Sem Número');
+            }
+        }, [width]);
+        {/* formData.Numero muda */ }
+        React.useEffect(() => {
+            if (formData.Numero === "S/N") {
+                setSemNumeroValue("Y");
+                setIsCheckedSemNumero(true);
+            } else {
+                setSemNumeroValue("N");
+                setIsCheckedSemNumero(false);
+            }
+        }, [formData.Numero]);
 
         {/* Styles */ }
         const formGroupStyle = {
@@ -4306,7 +4343,7 @@
                                     style={formLabelStyle}
                                     className="form-label"
                                 >
-                                    {`Sem número`}
+                                    {labelEndSN}
                                     <strong style={requiredField}> *</strong>
                                 </label>
                                 <div className="d-flex justify-content-center p-1">
@@ -5466,6 +5503,21 @@
 
         return (
             <>
+                {(true) && (
+                    <>
+                        <input
+                            className="form-check-input"
+                            type="checkbox"
+                            role="switch"
+                            id="switchCheckDefault"
+                            checked={checked}
+                            onChange={handleSwitch}
+                        />
+                        <label className="form-check-label" htmlFor="switchCheckDefault">
+                            <div className="ms-2">debugMyPrint (Certidão)</div>
+                        </label>
+                    </>
+                )}
                 {/* CADASTRAR E ATUALIZAR */}
                 {(checkWordInArray(getURI, 'consultar')) && (
                     <div>

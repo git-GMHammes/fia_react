@@ -33,6 +33,7 @@
         // Largura
         const [width, setWidth] = React.useState(window.innerWidth);
         const [labelFieldTermino, setLabelFieldTermino] = React.useState('Fim Consulta');
+        const [labelResponsavelCPF, setLabelResponsavelCPF] = React.useState('CPF (Responsável)');
 
         // Definindo mensagens do Sistema
         const [tabNav, setTabNav] = React.useState('form');
@@ -270,8 +271,10 @@
         React.useEffect(() => {
             if (width < 1500) {
                 setLabelFieldTermino('Término');
+                setLabelResponsavelCPF('Resp. CPF');
             } else {
                 setLabelFieldTermino('Fim Consulta');
+                setLabelResponsavelCPF('CPF (Responsável)');
             }
         }, [width]);
 
@@ -437,6 +440,9 @@
                         </div>
                     </div>
                 ) : null}
+                <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+                    {JSON.stringify(width, null, 2)}
+                </pre>
 
                 <div className="d-flex justify-content-start">
                     <div className="ms-4" style={verticalBarStyle}></div>
@@ -555,7 +561,7 @@
                                             <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                                 fieldAttributes={{
                                                     attributeOrigemForm: `${origemForm}`,
-                                                    labelField: 'Responsável CPF',
+                                                    labelField: `${labelResponsavelCPF}`,
                                                     labelColor: 'gray', // gray, red, black
                                                     nameField: 'Responsavel_CPF',
                                                     errorMessage: '', // Mensagem de Erro personalizada

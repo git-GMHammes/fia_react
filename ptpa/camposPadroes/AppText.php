@@ -19,6 +19,7 @@
         const base_url = parametros.base_url || '';
         const ufCertidao = parametros.ufCertidao || [];
         const municipioCertidao = parametros.municipioCertidao || [];
+        const debugMyPrint = parametros.DEBUG_MY_PRINT || false;
         const [InitialValue, setInitialValue] = React.useState('');
         // console.log('ufCertidao :: ', ufCertidao);
         // console.log('municipioCertidao :: ', municipioCertidao);
@@ -105,10 +106,9 @@
             cert_nova_p_16_17: input.length >= 17 ? input.slice(15, 17) : '',
             cert_nova_p_18_21: input.length >= 21 ? input.slice(17, 21) : '',
             cert_nova_p_22_23: input.length >= 23 ? input.slice(21, 23) : '',
-            cert_nova_p_24_26: input.length >= 26 ? input.slice(23, 24) : '',
-            cert_nova_p_27_32: input.length >= 32 ? input.slice(24, 32) : '',
+            cert_nova_p_24_26: input.length >= 26 ? input.slice(23, 26) : '',
+            cert_nova_p_27_32: input.length >= 32 ? input.slice(26, 32) : '',
         });
-
 
         const atualizarCertidaoAntiga = (input = '') => ({
             cert_antiga_p_01_06: input.length >= 6 ? input.slice(0, 6) : '',
@@ -122,8 +122,7 @@
             cert_antiga_p_31_32: input.length >= 32 ? input.slice(30, 32) : '',
         });
 
-        // const [ufCertidao, setUfCertidao] = React.useState([]);
-        // const [municipioCertidao, setMunicipioCertidao] = React.useState([]);
+        const [tipoCertidao, setTipoCertidao] = React.useState('indefinido');
 
         React.useEffect(() => {
             const timer1 = setInterval(() => {
@@ -198,6 +197,40 @@
                     message: message
                 });
                 setError(message);
+
+                setTimeout(() => {
+                    setError('');
+                }, 4000);
+            }
+
+            return cleanedInput;
+        };
+
+        {/* APENAS NÚMEROS, PONTO e HÍFEN */ }
+        const cleanInputMask = (input) => {
+
+            // Verifica se o último caractere digitado é inválido
+            const lastChar = input.slice(-1);
+
+            // Apenas números, ponto e hífen
+            const lastCharIsInvalid = !/^[0-9.\-]$/.test(lastChar) && lastChar !== '';
+
+            // Remove caracteres inválidos (agora permite só números, ponto e hífen)
+            let cleanedInput = input.replace(/[^0-9.\-]/g, '');
+
+            // Se o último caractere for inválido, mostra mensagem
+            if (lastCharIsInvalid) {
+                // console.log('ERRO - APENAS LETRAS, NÚMEROS, PONTO E HÍFEN');
+                let message = errorMessage === '' ? `O Campo ${labelField} aceita apenas, números, ponto (.) e hífen (-)` : errorMessage;
+                setError(message);
+                setAttributeDisabled(true);
+                setModalId(`modal_form_${gerarContagemAleatoria(6)}`);
+                setMsgError(message);
+                setModalMessage({
+                    show: true,
+                    type: 'light',
+                    message: message
+                });
 
                 setTimeout(() => {
                     setError('');
@@ -308,8 +341,7 @@
         };
 
         {/* Máscara Certidão */ }
-        {/* SSSSSS.AA.BB.AAAA.T.LLLLL.FFF.TTTTTTT-DD */ }
-        const applyMaskCertidao = (certidao) => {
+        const applyMaskCertidaoNova = (certidao) => {
             // Remover caracteres não numéricos
             // let cleaned = certidao.replace(/\D/g, '');
             let cleaned = cleanInputOnlyNumber(certidao);
@@ -318,7 +350,7 @@
             cleaned = cleaned.substring(0, 32);
 
             // Array com as posições onde adicionar cada separador
-            const positions = [6, 8, 10, 14, 15, 20, 23, 30];
+            const positions = [6, 7, 15, 17, 21, 23, 26, 32];
             const separators = ['.', '.', '.', '.', '.', '.', '.', '-'];
 
             let resultado = '';
@@ -353,7 +385,51 @@
             return resultado;
         }
 
-        {/* CERTIDÃO (ANTIGO/NOVO) */ }
+        const applyMaskCertidaoAntiga = (certidao) => {
+            // Remover caracteres não numéricos
+            // let cleaned = certidao.replace(/\D/g, '');
+            let cleaned = cleanInputOnlyNumber(certidao);
+
+            // Limitar a 32 dígitos
+            cleaned = cleaned.substring(0, 32);
+
+            // Array com as posições onde adicionar cada separador
+            const positions = [6, 8, 12, 13, 18, 21, 28, 30, 32];
+            const separators = ['.', '.', '.', '.', '.', '.', '.', '-'];
+
+            let resultado = '';
+            let lastPos = 0;
+
+            // Percorrer cada posição e adicionar o separador correspondente
+            for (let i = 0; i < positions.length; i++) {
+                const pos = positions[i];
+
+                // Só adiciona se tivermos dígitos suficientes
+                if (cleaned.length > lastPos) {
+                    // Adiciona os dígitos até esta posição
+                    resultado += cleaned.substring(lastPos, Math.min(pos, cleaned.length));
+
+                    // Adiciona o separador se não for o último grupo ou se tivermos mais dígitos
+                    if (cleaned.length > pos) {
+                        resultado += separators[i];
+                    }
+
+                    // Atualiza a última posição processada
+                    lastPos = pos;
+                } else {
+                    break;
+                }
+            }
+
+            // Adiciona qualquer dígito restante (após a última posição)
+            if (cleaned.length > lastPos) {
+                resultado += cleaned.substring(lastPos);
+            }
+
+            return resultado;
+        }
+
+        {/* CERTIDÃO (ANTIGO/NOVO) - DECREPTO*/ }
         const certidaoAntigoNovo = (nCertidao) => {
             // console.log('Iniciando análise do número:', nCertidao)
             if (typeof nCertidao !== 'string' || nCertidao.length !== 32) {
@@ -538,20 +614,30 @@
         // Função handleFocus para receber foco
         const handleFocus = (event) => {
             const { name, value } = event.target;
+            setFormData((prev) => ({ ...prev, [name]: value }));
             // console.log('src/app/Views/fia/ptpa/camposPadroes/AppText.php')
             // console.log('handleFocus: ', name, value);
             {/* CPF */ }
-            if (name == 'CPF' && value !== '') {
+            if (name === 'CPF' && value !== '') {
                 // console.log('handleFocus / CPF: ', name, value);
                 setInitialValue(value);
+                return true;
             }
 
-            if (name == 'Certidao' && value !== '') {
+            if (name === 'Certidao' && value !== '') {
                 // console.log('handleFocus / Certidao: ', name, value);
-                setInitialValue(value);
+                const maskedValueCert = cleanInputOnlyNumber(value);
+                setInitialValue(maskedValueCert);
+                setFormData((prev) => ({
+                    ...prev,
+                    [name]: maskedValueCert,
+                }));
+                console.log(' --- --- --- --- --- ');
+                console.log('name :: ', name);
+                console.log('maskedValueCert :: ', maskedValueCert);
+                return true;
             }
 
-            setFormData((prev) => ({ ...prev, [name]: value }));
         };
 
         // handleChange
@@ -707,9 +793,22 @@
                     break;
 
                 case 'Certidao':
+                    console.log(' --- --- --- ---');
+                    console.log('DEBUG - Certidão');
+                    console.log('labelColor :: ', labelColor);
+                    console.log('name :: ', name);
+                    if (
+                        labelColor === 'gray'
+                        && name === 'Certidao'
+                    ) {
+                        const maskedValueProc = cleanInputMask(value);
+                        setFormData((prev) => ({
+                            ...prev,
+                            [name]: maskedValueProc,
+                        }));
+                        break;
+                    }
                     // console.log('case - handleFocus \'Certidão\'');
-
-                    // const maskedValueCert = applyMaskCertidao(value);
                     const maskedValueCert = cleanInputOnlyNumber(value);
                     setFormData((prev) => ({
                         ...prev,
@@ -728,11 +827,12 @@
         const handleBlur = async (event) => {
             // setModalMessage({ show: false, type: 'light', message: '' });
             const { name, value } = event.target;
-            // console.log("-------------------------");
-            // console.log("handleBlur");
-            // console.log("-------------------------");
-            // console.log("name :: ", name);
-            // console.log("value :: ", value);
+            console.log("-------------------------");
+            console.log("handleBlur");
+            console.log("-------------------------");
+            console.log("name :: ", name);
+            console.log("value :: ", value);
+            console.log("attributeMask :: ", attributeMask);
             // console.log("attributeMinlength :: ", attributeMinlength);
             let message = errorMessage === '' ? `Por favor, informe um ${attributeMask} válido.` : errorMessage;
             let isValid = true;
@@ -974,6 +1074,32 @@
                 // Certidao
                 case 'Certidao':
 
+                    const cleanedValue = cleanInputOnlyNumber(value);
+                    setCertidaoNova(atualizarCertidaoNova(cleanedValue));
+                    setCertidaoAntiga(atualizarCertidaoAntiga(cleanedValue));
+                    console.log('tipoCertidao :: ', tipoCertidao);
+                    setTimeout(() => {
+                        if (tipoCertidao === 'nova') {
+                            console.log("tipoCertidao === 'nova'");
+                            setFormData((prev) => ({
+                                ...prev,
+                                [name]: applyMaskCertidaoNova(cleanedValue),
+                            }));
+                        } else if (tipoCertidao === 'antiga') {
+                            console.log("tipoCertidao === 'antiga'");
+                            setFormData((prev) => ({
+                                ...prev,
+                                [name]: applyMaskCertidaoAntiga(cleanedValue),
+                            }));
+                        } else {
+                            console.log("tipoCertidao === 'indefinido'");
+                            setFormData((prev) => ({
+                                ...prev,
+                                [name]: value,
+                            }));
+                        }
+                    }, 100);
+
                     if (
                         labelColor === 'gray' ||
                         InitialValue == value
@@ -986,18 +1112,12 @@
                         break;
                     }
 
-                    const cleanedValue = cleanInputOnlyNumber(value);
-
                     if (
                         cleanedValue.length === 0 || cleanedValue.length === 32
                     ) {
                         // console.log('------------------------');
                         // console.log('Certidao');
-                        // console.log('cleanedValue.length === 32');
-
-                        const resposta = certidaoAntigoNovo(cleanedValue);
-                        // console.log('certidao (Novo / Antigo) :: ', cleanedValue);
-                        // console.log('resposta (Novo / Antigo) :: ', resposta);
+                        console.log('cleanedValue.length === 32');
 
                         break;
 
@@ -1303,7 +1423,7 @@
             const novoIbgeMunicipio = certidaoNova.cert_nova_p_18_21
             if (novoIbgeMunicipio !== '') {
                 const validaMunicipioNovo = checkWordInArray(municipioCertidao, novoIbgeMunicipio);
-                console.log('validaMunicipioNovo :: ', validaMunicipioNovo);
+                // console.log('validaMunicipioNovo :: ', validaMunicipioNovo);
                 setValidP1821NovaMunicipioIbge(validaMunicipioNovo);
             }
 
@@ -1322,7 +1442,7 @@
             // --- Validação do anoRegistro antiga ---
             const TipoCertidaoAntiga = certidaoAntiga.cert_antiga_p_13;
             const tipoCertidaoValida = TipoCertidaoAntiga === '1';
-            console.log('tipoCertidaoValida : ', tipoCertidaoValida);
+            // console.log('tipoCertidaoValida : ', tipoCertidaoValida);
             setValidP13AntigaTipoCertidao(tipoCertidaoValida);
 
             // Preenchimento Antiga Nova
@@ -1331,7 +1451,7 @@
                 && validP0912AntigaAnoRegistro
                 && validP13AntigaTipoCertidao
             ) {
-                console.log('Preenchimento Antiga');
+                // console.log('Preenchimento Antiga');
                 setFormData((prev) => ({
                     ...prev,
                     NumRegistro: certidaoAntiga.cert_antiga_p_22_28,
@@ -1345,7 +1465,7 @@
                 && validP1617NovaUfIbge
                 && validP1821NovaMunicipioIbge
             ) {
-                console.log('Preenchimento Nova');
+                // console.log('Preenchimento Nova');
                 setFormData((prev) => ({
                     ...prev,
                     NumRegistro: certidaoNova.cert_nova_p_27_32,
@@ -1355,7 +1475,7 @@
                     Circunscricao: certidaoNova.cert_nova_p_18_21,
                 }));
             } else {
-                console.log('Certidão Indefinida')
+                // console.log('Certidão Indefinida')
             }
         }, [
             certidaoNova.cert_nova_p_08_15,
@@ -1372,6 +1492,7 @@
                 && validP0912AntigaAnoRegistro
                 && validP13AntigaTipoCertidao
             ) {
+                setTipoCertidao('antiga');
                 setFormData((prev) => ({
                     ...prev,
                     NumRegistro: certidaoAntiga.cert_antiga_p_22_28,
@@ -1385,6 +1506,7 @@
                 && validP1617NovaUfIbge
                 && validP1821NovaMunicipioIbge
             ) {
+                setTipoCertidao('nova');
                 setFormData((prev) => ({
                     ...prev,
                     NumRegistro: certidaoNova.cert_nova_p_27_32,
@@ -1394,7 +1516,8 @@
                     Circunscricao: certidaoNova.cert_nova_p_18_21,
                 }));
             } else {
-                console.log('Certidão Indefinida')
+                setTipoCertidao('indefinido');
+                // console.log('Certidão Indefinida')
             }
         }, [
             validP0708AntigaUfIbge,
@@ -1479,44 +1602,44 @@
                         <option value=""></option>
                     </datalist>
                     {/* CERTIDÃO NOVA */}
-                    {(false && certidaoNova.cert_nova_p_01_06.length === 6) && (
+                    {(debugMyPrint && certidaoNova.cert_nova_p_01_06.length === 6) && (
                         <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
                             Certidao Nova: {certidaoNova.cert_nova_p_01_06.length === 6 ? JSON.stringify(certidaoNova, null, 2) : ''}
                         </pre>
                     )}
-                    {(false && validP0815NovaDataRegistro) && (
+                    {(debugMyPrint && validP0815NovaDataRegistro) && (
                         <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
                             Valida Nova [08-15] Data Registro: {validP0815NovaDataRegistro ? JSON.stringify(validP0815NovaDataRegistro, null, 2) : ''}
                         </pre>
                     )}
-                    {(false && validP1617NovaUfIbge) && (
+                    {(debugMyPrint && validP1617NovaUfIbge) && (
                         <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
                             Valida Nova [16-17] Uf IBGE: {validP1617NovaUfIbge ? JSON.stringify(validP1617NovaUfIbge, null, 2) : ''}
                         </pre>
                     )}
-                    {(false && validP1821NovaMunicipioIbge) && (
+                    {(debugMyPrint && validP1821NovaMunicipioIbge) && (
                         <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
                             Valida Nova [18-21] Municipio IBGE: {validP1821NovaMunicipioIbge ? JSON.stringify(validP1821NovaMunicipioIbge, null, 2) : ''}
                         </pre>
                     )}
 
                     {/* CERTIDÃO ANTIGA */}
-                    {(false && certidaoAntiga.cert_antiga_p_01_06.length === 6) && (
+                    {(debugMyPrint && certidaoAntiga.cert_antiga_p_01_06.length === 6) && (
                         <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
                             Certidao Antiga: {certidaoAntiga.cert_antiga_p_01_06.length === 6 ? JSON.stringify(certidaoAntiga, null, 2) : ''}
                         </pre>
                     )}
-                    {(false && validP0708AntigaUfIbge) && (
+                    {(debugMyPrint && validP0708AntigaUfIbge) && (
                         <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
                             Valid Antiga [07-08] Uf IBGE: {validP0708AntigaUfIbge ? JSON.stringify(validP0708AntigaUfIbge, null, 2) : ''}
                         </pre>
                     )}
-                    {(false && validP0912AntigaAnoRegistro) && (
+                    {(debugMyPrint && validP0912AntigaAnoRegistro) && (
                         <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
                             Valida Antiga [09-12] Ano Registro: {validP0912AntigaAnoRegistro ? JSON.stringify(validP0912AntigaAnoRegistro, null, 2) : ''}
                         </pre>
                     )}
-                    {(false && validP13AntigaTipoCertidao) && (
+                    {(debugMyPrint && validP13AntigaTipoCertidao) && (
                         <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
                             Valida Antiga [13] Tipo Certidao: {validP13AntigaTipoCertidao ? JSON.stringify(validP13AntigaTipoCertidao, null, 2) : ''}
                         </pre>
