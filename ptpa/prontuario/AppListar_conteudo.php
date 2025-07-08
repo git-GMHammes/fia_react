@@ -391,7 +391,7 @@
         React.useEffect(() => {
 
             const loadData = async () => {
-                // sconsole.log('loadData iniciando...');
+                // console.log('loadData iniciando...');
 
                 try {
                     // Chama as funções de fetch para carregar os dados

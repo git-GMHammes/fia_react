@@ -20,6 +20,7 @@
         const token_csrf = parametros.token_csrf || '';
 
         // Variáveis de Estado
+        const [labelPermitir, setLabelPermitir] = React.useState('N/S');
         const [modalData, setModalData] = React.useState(null);
         const [submitselectPermission, setSubmitselectPermission] = React.useState(false);
         const [submitPermission, setSubmitPermission] = React.useState(false);
@@ -32,6 +33,11 @@
             show: false,
             type: null,
             message: null
+        });
+
+        const [size, setSize] = React.useState({
+            width: window.innerWidth,
+            height: window.innerHeight
         });
 
         // Declare Todos os Campos do Formulário Aqui
@@ -574,6 +580,25 @@
             }
         }, [formData, submitPermission, submitselectPermission]);
 
+        // Tamanho da Janeia
+        React.useEffect(() => {
+            const handleResize = () => {
+                setSize({
+                    width: window.innerWidth,
+                    height: window.innerHeight
+                });
+            };
+
+            if (size.width < 1080) {
+                setLabelPermitir('');
+            }
+
+            window.addEventListener('resize', handleResize);
+
+            // Limpeza do event listener ao desmontar
+            return () => window.removeEventListener('resize', handleResize);
+        }, []);
+
         // Renderização do modal (com ID fixo)
         const renderModalExclusaoPerfil = () => {
             return (
@@ -647,6 +672,12 @@
 
         return (
             <div>
+                <div className="container">
+                    <div className="label">Largura da janela:</div>
+                    <div className="value">{size.width}px</div>
+                    <div className="label">Altura da janela:</div>
+                    <div className="value">{size.height}px</div>
+                </div>
                 <div className="row g-2 mb-2">
                     <div className="col-12 col-sm-6">
 
@@ -807,7 +838,7 @@
                                                     <td>{var_list_api_coluna.id || ''}</td>
                                                     <td>{var_list_api_coluna.cargo_funcao || ''}</td>
                                                     <td>
-                                                    <div className="d-flex justify-content-center">
+                                                        <div className="d-flex justify-content-center">
                                                             {/* Botão do Modal */}
                                                             <button
                                                                 type="button"
@@ -831,7 +862,7 @@
                                             </tr>
                                         </tfoot>
                                     </table>
-                                    
+
                                     {/* Modal (renderizado uma única vez, fora da tabela) */}
                                     {renderModalExclusaoCargoFuncao()}
 
@@ -865,7 +896,7 @@
                                                 onBlur={handleBlur}
                                                 checked={formData.permitido === 'Y'}
                                             />
-                                            <label className="form-check-label" htmlFor="flexSwitchCheckChecked">Permitido</label>
+                                            <label className="form-check-label" htmlFor="flexSwitchCheckChecked">{labelPermitir}</label>
                                         </div>
                                     </form>
                                 </div>

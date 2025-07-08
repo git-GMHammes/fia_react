@@ -118,6 +118,22 @@
             setMessage({ show: false, type: null, message: null });
         }
 
+        const traduzirValor = (valor) => {
+            if (valor === 'Y') return 'Sim';
+            if (valor === 'N') return 'Não';
+            return valor;
+        };
+
+        const formatarVulnerabilidade = (valor) => {
+            const mapa = {
+                'vulneravel': 'Vulnerável',
+                'muito-vulneravel': 'Muito Vulnerável',
+                'extremamente-vulneravel': 'Extremamente Vulnerável',
+            };
+            return mapa[valor] || valor;
+        };
+
+
         // console.log("AppResumo :: ", parametros);
         // return false;
 
@@ -156,7 +172,7 @@
                                 </label>
                                 {/* Button trigger modal */}
                                 <button type="button" className="btn m-0 p-0 text-primary fw-bold" data-bs-toggle="modal" data-bs-target="#modalResumoAlteracoes">
-                                    Clique aqui para ler o resumo das alterações.
+                                    Clique aqui para revisar os campos.
                                 </button>
                             </div>
                         </div>
@@ -166,7 +182,6 @@
                             <div className="modal-dialog modal-dialog-centered">
                                 <div className="modal-content">
                                     <div className="modal-header">
-                                        <h5 className="modal-title" id="modalResumoAlteracoesLabel">Resumo das Alterações</h5>
                                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
                                     </div>
                                     <div className="modal-body">
@@ -177,23 +192,23 @@
                                                 </div>
                                                 <div className="card-body shadow-lg">
                                                     <div className="card-body">
-                                                        <h2 className="card-title text-center mb-4">Campos Alterados</h2>
+                                                        <h2 className="card-title text-center mb-4">Revise os campos</h2>
                                                     </div>
                                                     <form>
                                                         <div className="modal-body">
                                                             <p><strong>Nome do Adolescente:</strong> {formData.adolescente_Nome}</p>
-                                                            <p><strong>Medidas Socioeducativas:</strong> {formData.prontuario_MedidasSocioEducativas}</p>
-                                                            <p><strong>Uso de Drogas:</strong> {formData.prontuario_UsodeDrogas}</p>
-                                                            <p><strong>Cadastro Único:</strong> {formData.prontuario_CadUnico}</p>
-                                                            <p><strong>Encaminhamento de Orgão:</strong> {formData.prontuario_EncaminhamentoOrgao}</p>
-                                                            <p><strong>Possui Deficiência:</strong> {formData.prontuario_Deficiencia}</p>
-                                                            <p><strong>Necessita de Mediador:</strong> {formData.prontuario_NecesMediador}</p>
-                                                            <p><strong>Diagnóstico Psicológico:</strong> {formData.prontuario_Diagnostico}</p>
-                                                            <p><strong>Renda Familiar:</strong> {formData.prontuario_RendaFamiliar}</p>
-                                                            <p><strong>Referência na Rede:</strong> {formData.prontuario_ReferenciaNaRede}</p>
-                                                            <p><strong>Tipo familiar:</strong> {formData.prontuario_TipoFamiliar}</p>
-                                                            <p><strong>Participação em Programas Sociais:</strong> {formData.prontuario_ParticipacaoProg}</p>
-                                                            <p><strong>Vulnerabilidade:</strong> {formData.prontuario_Vulnerabilidade}</p>
+                                                            <p><strong>Medidas Socioeducativas:</strong> {traduzirValor(formData.prontuario_MedidasSocioEducativas)}</p>
+                                                            <p><strong>Uso de Drogas:</strong> {traduzirValor(formData.prontuario_UsodeDrogas)}</p>
+                                                            <p><strong>Cadastro Único:</strong> {traduzirValor(formData.prontuario_CadUnico)}</p>
+                                                            <p><strong>Encaminhamento de Orgão:</strong> {traduzirValor(formData.prontuario_EncaminhamentoOrgao)}</p>
+                                                            <p><strong>Possui Deficiência:</strong> {traduzirValor(formData.prontuario_Deficiencia)}</p>
+                                                            <p><strong>Necessita de Mediador:</strong> {traduzirValor(formData.prontuario_NecesMediador)}</p>
+                                                            <p><strong>Diagnóstico Psicológico:</strong> {traduzirValor(formData.prontuario_Diagnostico)}</p>
+                                                            <p><strong>Renda Familiar:</strong> {traduzirValor(formData.prontuario_RendaFamiliar)}</p>
+                                                            <p><strong>Referência na Rede:</strong> {traduzirValor(formData.prontuario_ReferenciadoNaRede)}</p>
+                                                            <p><strong>Tipo familiar:</strong> {traduzirValor(formData.prontuario_TipoFamiliar)}</p>
+                                                            <p><strong>Participação em Programas Sociais:</strong> {traduzirValor(formData.prontuario_ParticipacaoProg)}</p>
+                                                            <p><strong>Vulnerabilidade:</strong> {formatarVulnerabilidade(formData.prontuario_Vulnerabilidade)}</p>
                                                             <p><strong>Pontuação Total:</strong> {formData.prontuario_PontuacaoTotal}</p>
                                                         </div>
                                                     </form>

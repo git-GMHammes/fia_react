@@ -7,14 +7,6 @@
         fieldAttributes = {}
     }) => {
 
-        // Script que aceita parâmetros, formulário de dados, função de configuração de dados e atributos de campo
-
-        // CEP, CPF, Telefone, Processo
-
-        // console.log('AppText:', parametros, formData, setFormData, fieldAttributes);
-
-        // console.log('src/app/Views/fia/ptpa/camposPadroes/AppText.php')
-
         const getURI = parametros.getURI || [];
         const base_url = parametros.base_url || '';
         const ufCertidao = parametros.ufCertidao || [];
@@ -33,10 +25,13 @@
         const attributeMaxlength = fieldAttributes.attributeMaxlength || 2;
         const attributePattern = fieldAttributes.attributePattern || '';
         const attributeAutocomplete = fieldAttributes.attributeAutocomplete || 'off';
-        const attributeRequired = fieldAttributes.attributeRequired || false;
-        const attributeReadOnly = fieldAttributes.attributeReadOnly || false;
-        const [attributeDisabled, setAttributeDisabled] = React.useState(fieldAttributes.attributeDisabled || false);
+        const [attributeRequired, setAttributeRequired] = React.useState(false);
+        const [attributeReadOnly, setAttributeReadOnly] = React.useState(false);
+        const [attributeDisabled, setAttributeDisabled] = React.useState(false);
         const attributeMask = fieldAttributes.attributeMask || false;
+
+        const [constMinlength, setConstMinlength] = React.useState(attributeMinlength);
+        const [constMaxlength, setConstMaxlength] = React.useState(attributeMaxlength);
 
         const checkWordInArray = (array, word) => array.includes(word) ? true : false;
 
@@ -122,7 +117,7 @@
             cert_antiga_p_31_32: input.length >= 32 ? input.slice(30, 32) : '',
         });
 
-        const [tipoCertidao, setTipoCertidao] = React.useState('indefinido');
+        const [tipoCertidao, setTipoCertidao] = React.useState('certIndefinida');
 
         React.useEffect(() => {
             const timer1 = setInterval(() => {
@@ -623,18 +618,21 @@
                 setInitialValue(value);
                 return true;
             }
+            if (name === 'Certidao') {
+                setConstMaxlength(32);
+            }
 
             if (name === 'Certidao' && value !== '') {
                 // console.log('handleFocus / Certidao: ', name, value);
-                const maskedValueCert = cleanInputOnlyNumber(value);
-                setInitialValue(maskedValueCert);
+                const certCleanInput = cleanInputOnlyNumber(value);
+                setInitialValue(certCleanInput);
                 setFormData((prev) => ({
                     ...prev,
-                    [name]: maskedValueCert,
+                    [name]: certCleanInput,
                 }));
-                console.log(' --- --- --- --- --- ');
-                console.log('name :: ', name);
-                console.log('maskedValueCert :: ', maskedValueCert);
+                // console.log(' --- --- --- --- --- ');
+                // console.log('name :: ', name);
+                // console.log('certCleanInput :: ', certCleanInput);
                 return true;
             }
 
@@ -643,10 +641,17 @@
         // handleChange
         const handleChange = (event) => {
             const { name, value } = event.target;
-            setError('');
             // console.log('name, value :: ', name, value);
+            if (name === 'Certidao') {
+                // console.log('--- --- --- --- --- ---');
+                // console.log('handleChange / Certidao: ', value.length);
+                const certCleanInput = cleanInputOnlyNumber(value);
+                const limitedValue = certCleanInput.slice(0, 32);
+                setFormData((prev) => ({ ...prev, [name]: limitedValue }));
+            }
 
             // Fecha qualquer modal aberto antes de fazer a validação
+            setError('');
             if (!value) {
                 setFormData((prev) => ({ ...prev, [name]: '' }));
                 setMsgError(false);
@@ -655,7 +660,7 @@
 
             // Trata ExpedidorRG
             if (name === 'ExpedidorRG') {
-                console.log(`name === 'ExpedidorRG'`);
+                // console.log(`name === 'ExpedidorRG'`);
                 const cleanedValue = cleanInputOnlyLetter(value);
                 setFormData((prev) => ({
                     ...prev,
@@ -793,10 +798,11 @@
                     break;
 
                 case 'Certidao':
-                    console.log(' --- --- --- ---');
-                    console.log('DEBUG - Certidão');
-                    console.log('labelColor :: ', labelColor);
-                    console.log('name :: ', name);
+
+                    // console.log(' --- --- --- ---');
+                    // console.log('DEBUG - Certidão');
+                    // console.log('labelColor :: ', labelColor);
+                    // console.log('name :: ', name);
                     if (
                         labelColor === 'gray'
                         && name === 'Certidao'
@@ -808,6 +814,7 @@
                         }));
                         break;
                     }
+
                     // console.log('case - handleFocus \'Certidão\'');
                     const maskedValueCert = cleanInputOnlyNumber(value);
                     setFormData((prev) => ({
@@ -827,13 +834,13 @@
         const handleBlur = async (event) => {
             // setModalMessage({ show: false, type: 'light', message: '' });
             const { name, value } = event.target;
-            console.log("-------------------------");
-            console.log("handleBlur");
-            console.log("-------------------------");
-            console.log("name :: ", name);
-            console.log("value :: ", value);
-            console.log("attributeMask :: ", attributeMask);
-            // console.log("attributeMinlength :: ", attributeMinlength);
+            // console.log("-------------------------");
+            // console.log("handleBlur");
+            // console.log("-------------------------");
+            // console.log("name :: ", name);
+            // console.log("value :: ", value);
+            // console.log("attributeMask :: ", attributeMask);
+            // console.log("constMinlength :: ", constMinlength);
             let message = errorMessage === '' ? `Por favor, informe um ${attributeMask} válido.` : errorMessage;
             let isValid = true;
             let dataColuna = {};
@@ -848,15 +855,15 @@
                 const countValue = value;
                 if (
                     countValue.length > 0 &&
-                    countValue.length < attributeMinlength
+                    countValue.length < constMinlength
                 ) {
                     // console.log('------------------------');
-                    // console.log('countValue.length < attributeMinlength');
+                    // console.log('countValue.length < constMinlength');
 
                     if (errorMessage !== '') {
                         message = errorMessage;
                     } else {
-                        message = `O Campo ${labelField} devem ter entre ${attributeMinlength} e ${attributeMaxlength} caracteres`;
+                        message = `O Campo ${labelField} devem ter entre ${constMinlength} e ${constMaxlength} caracteres`;
                     }
 
                     setAttributeDisabled(true);
@@ -1073,29 +1080,32 @@
 
                 // Certidao
                 case 'Certidao':
-
+                    setConstMaxlength(40);
                     const cleanedValue = cleanInputOnlyNumber(value);
                     setCertidaoNova(atualizarCertidaoNova(cleanedValue));
                     setCertidaoAntiga(atualizarCertidaoAntiga(cleanedValue));
-                    console.log('tipoCertidao :: ', tipoCertidao);
+
                     setTimeout(() => {
-                        if (tipoCertidao === 'nova') {
-                            console.log("tipoCertidao === 'nova'");
+                        if (tipoCertidao === 'certNova') {
+                            // console.log("tipoCertidao === 'certNova'");
                             setFormData((prev) => ({
                                 ...prev,
-                                [name]: applyMaskCertidaoNova(cleanedValue),
+                                Certidao: applyMaskCertidaoNova(cleanedValue),
+                                constTipoCertidao: 'certNova'
                             }));
-                        } else if (tipoCertidao === 'antiga') {
-                            console.log("tipoCertidao === 'antiga'");
+                        } else if (tipoCertidao === 'certAntiga') {
+                            // console.log("tipoCertidao === 'certAntiga'");
                             setFormData((prev) => ({
                                 ...prev,
-                                [name]: applyMaskCertidaoAntiga(cleanedValue),
+                                Certidao: applyMaskCertidaoAntiga(cleanedValue),
+                                constTipoCertidao: 'certAntiga'
                             }));
-                        } else {
-                            console.log("tipoCertidao === 'indefinido'");
+                        } else if (tipoCertidao === 'certIndefinida') {
+                            // console.log("tipoCertidao === 'certIndefinida'");
                             setFormData((prev) => ({
                                 ...prev,
-                                [name]: value,
+                                Certidao: applyMaskCertidaoAntiga(cleanedValue),
+                                constTipoCertidao: 'certIndefinida'
                             }));
                         }
                     }, 100);
@@ -1117,7 +1127,7 @@
                     ) {
                         // console.log('------------------------');
                         // console.log('Certidao');
-                        console.log('cleanedValue.length === 32');
+                        // console.log('cleanedValue.length === 32');
 
                         break;
 
@@ -1398,7 +1408,7 @@
             var anoAtual = new Date().getFullYear();
             return ano >= 1900 && ano <= anoAtual;
         };
-
+        {/* VALIDA CERTIDAO */ }
         React.useEffect(() => {
             // --- Validação da data nova ---
             const valorNova = certidaoNova.cert_nova_p_08_15;
@@ -1445,38 +1455,6 @@
             // console.log('tipoCertidaoValida : ', tipoCertidaoValida);
             setValidP13AntigaTipoCertidao(tipoCertidaoValida);
 
-            // Preenchimento Antiga Nova
-            if (
-                validP0708AntigaUfIbge
-                && validP0912AntigaAnoRegistro
-                && validP13AntigaTipoCertidao
-            ) {
-                // console.log('Preenchimento Antiga');
-                setFormData((prev) => ({
-                    ...prev,
-                    NumRegistro: certidaoAntiga.cert_antiga_p_22_28,
-                    Zona: certidaoAntiga.cert_antiga_p_01_06,
-                    Folha: certidaoAntiga.cert_antiga_p_19_21,
-                    Livro: certidaoAntiga.cert_antiga_p_14_18,
-                    Circunscricao: '',
-                }));
-            } else if (
-                validP0815NovaDataRegistro
-                && validP1617NovaUfIbge
-                && validP1821NovaMunicipioIbge
-            ) {
-                // console.log('Preenchimento Nova');
-                setFormData((prev) => ({
-                    ...prev,
-                    NumRegistro: certidaoNova.cert_nova_p_27_32,
-                    Zona: certidaoNova.cert_nova_p_16_17,
-                    Folha: certidaoNova.cert_nova_p_24_26,
-                    Livro: certidaoNova.cert_nova_p_22_23,
-                    Circunscricao: certidaoNova.cert_nova_p_18_21,
-                }));
-            } else {
-                // console.log('Certidão Indefinida')
-            }
         }, [
             certidaoNova.cert_nova_p_08_15,
             certidaoNova.cert_nova_p_16_17,
@@ -1485,40 +1463,56 @@
             certidaoAntiga.cert_antiga_p_09_12,
             certidaoAntiga.cert_antiga_p_13
         ]);
-
+        {/* PREENCHE CERTIDAO */ }
         React.useEffect(() => {
+
+            console.log('--- --- --- ---');
             if (
                 validP0708AntigaUfIbge
                 && validP0912AntigaAnoRegistro
                 && validP13AntigaTipoCertidao
             ) {
-                setTipoCertidao('antiga');
+
+                setTimeout(() => {
+                    // console.log('setTimeout -- 500');
+                    setTipoCertidao('certAntiga');
+                }, 500);
+
                 setFormData((prev) => ({
                     ...prev,
+                    constTipoCertidao: 'certAntiga',
                     NumRegistro: certidaoAntiga.cert_antiga_p_22_28,
                     Zona: certidaoAntiga.cert_antiga_p_01_06,
                     Folha: certidaoAntiga.cert_antiga_p_19_21,
                     Livro: certidaoAntiga.cert_antiga_p_14_18,
                     Circunscricao: '',
                 }));
+
             } else if (
                 validP0815NovaDataRegistro
                 && validP1617NovaUfIbge
                 && validP1821NovaMunicipioIbge
             ) {
-                setTipoCertidao('nova');
+                setTimeout(() => {
+                    setTipoCertidao('certNova');
+                    // console.log('setTimeout -- 501');
+                }, 501);
                 setFormData((prev) => ({
                     ...prev,
+                    constTipoCertidao: 'certNova',
                     NumRegistro: certidaoNova.cert_nova_p_27_32,
                     Zona: certidaoNova.cert_nova_p_16_17,
                     Folha: certidaoNova.cert_nova_p_24_26,
                     Livro: certidaoNova.cert_nova_p_22_23,
                     Circunscricao: certidaoNova.cert_nova_p_18_21,
                 }));
+
             } else {
-                setTipoCertidao('indefinido');
-                // console.log('Certidão Indefinida')
+                setTimeout(() => {
+                    setTipoCertidao('certIndefinida');
+                }, 502);
             }
+
         }, [
             validP0708AntigaUfIbge,
             validP0912AntigaAnoRegistro,
@@ -1533,8 +1527,20 @@
             certidaoNova.cert_nova_p_24_26,
             certidaoNova.cert_nova_p_27_32
         ]);
+        {/* attributeRequired, attributeReadOnly, attributeDisabled */ }
+        React.useEffect(() => {
+            console.log('fieldAttributes.attributeRequired :: ', fieldAttributes.attributeRequired);
+            console.log('fieldAttributes.attributeReadOnly :: ', fieldAttributes.attributeReadOnly);
+            console.log('fieldAttributes.attributeDisabled :: ', fieldAttributes.attributeDisabled);
 
-        // Style 
+            if (fieldAttributes.attributeReadOnly === 'Y') {
+                setAttributeReadOnly(true);
+            } else {
+                setAttributeReadOnly(false);
+            }
+        }, [
+            fieldAttributes.attributeReadOnly,
+        ]);
         const formGroupStyle = {
             position: 'relative',
             marginTop: '20px',
@@ -1567,6 +1573,12 @@
 
         return (
             <div>
+                {/* && nameField === 'NumRegistro' */}
+                {(false) && (
+                    <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+                        -> {JSON.stringify(attributeReadOnly, null, 2)}
+                    </pre>
+                )}
                 <div style={formGroupStyle}>
                     <label
                         htmlFor={nameField}
@@ -1587,8 +1599,8 @@
                         name={nameField}
                         value={formData[nameField] || ''}
                         placeholder={attributePlaceholder}
-                        minLength={attributeMinlength}
-                        maxLength={attributeMaxlength}
+                        minLength={constMinlength}
+                        maxLength={constMaxlength}
                         autoComplete={attributeAutocomplete}
                         required={attributeRequired}
                         disabled={attributeDisabled}

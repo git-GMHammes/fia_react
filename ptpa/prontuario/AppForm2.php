@@ -19,7 +19,6 @@
         // console.log('debugMyPrint ::', debugMyPrint);
 
         //Base Cadastro Prontuario
-        const api_get_adolescente = parametros.api_get_adolescente || '';
         const api_get_exibir_adolescente = parametros.api_get_exibir_adolescente || '';
         const api_get_exibir_profissional = parametros.api_get_exibir_profissional || '';
         const api_post_filtrar_adolescente = parametros.api_post_filtrar_adolescente || '';
@@ -285,10 +284,10 @@
         const handleRadioChange = (event) => {
             const { name, value } = event.target;
 
-            console.log('--------------------');
-            console.log('handleRadioChange');
-            console.log('--------------------');
-            console.log('name, value :: ', name, value);
+            // console.log('--------------------');
+            // console.log('handleRadioChange');
+            // console.log('--------------------');
+            // console.log('name, value :: ', name, value);
 
             if (name === 'prontuario_Vulnerabilidade') {
                 switch (value) {
@@ -392,8 +391,8 @@
                     }
 
                     validationTimeoutRef.current = setTimeout(() => {
-                        console.log('adolescenteExato.Nome :: ', adolescenteExato.Nome);
-                        console.log('adolescenteExato.id :: ', adolescenteExato.id);
+                        // console.log('adolescenteExato.Nome :: ', adolescenteExato.Nome);
+                        // console.log('adolescenteExato.id :: ', adolescenteExato.id);
                         fetchGetAdolescente(adolescenteExato.id);
                     }, 400);
                 }
@@ -427,7 +426,7 @@
             prontuario_DeficienciaDesc: null,
             prontuario_NecesMediador: null,
             prontuario_NecesMediador_pts: null,
-            prontuario_NecesMediadorTipoFamiliar: null,
+            prontuario_NecesMediadorDesc: null,
             prontuario_DataCadPsicoSocial: null,
             prontuario_PontuacaoVulnerabilidade: null,
             prontuario_Vulnerabilidade: null,
@@ -576,6 +575,7 @@
             // Mapeamento dos campos com nomes amigáveis
             const camposObrigatorios = {
                 // profissional_id: 'Selecione um profissional',
+                profissional_id: 'Campo Profissional não encontrado',
                 adolescente_id: 'Selecione um adolescente',
                 prontuario_MedidasSocioEducativas: 'Medidas socioeducativas em branco',
                 prontuario_UsodeDrogas: 'Uso de Drogas em branco',
@@ -712,19 +712,28 @@
         };
 
         {/* SELECT CAMPO ADOLESCENTE */ }
-        const fetchAdolescentes = async (custonBaseURL = base_url, custonApiGetObjeto = api_get_adolescente, customPage = '?limit=100&page=1') => {
+        const fetchAdolescentes = async (custonBaseURL = base_url, custonApiGetObjeto = api_post_filtrar_adolescente, customPage = '?limit=100&page=1') => {
             // console.log('-------------------------------------');
             // console.log('fetchAdolescentes...');
             // console.log('-------------------------------------');
             // console.log('src/app/Views/fia/ptpa/prontuario/AppForm2.php');
             const url = custonBaseURL + custonApiGetObjeto + customPage;
-            // console.log('url :: ', url);
+            console.log('url :: ', url);
+
             try {
                 const response = await fetch(url);
-                const data = await response.json();
+                const text = await response.text();
+
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    console.error('Resposta não é JSON válido:', text);
+                    throw new Error('Resposta inválida do servidor (não é JSON)');
+                }
                 if (data.result && Array.isArray(data.result.dbResponse) && data.result.dbResponse.length > 0) {
                     const dbResponse = data.result.dbResponse;
-                    // console.log('dbResponse :: ', dbResponse);
+                    console.log('dbResponse :: ', dbResponse);
                     setAdolescentes(dbResponse);
                     setListAdolescentes(dbResponse);
                     setGuardaAdolescentes(dbResponse);
@@ -734,7 +743,7 @@
                 setMessage({
                     show: true,
                     type: 'light',
-                    message: 'Erro ao carregar Unidades: ' + error.message
+                    message: 'Erro ao carregar Adolecentes: ' + error.message
                 });
             }
         };
@@ -784,13 +793,13 @@
             if (id === null) {
                 return;
             }
-            console.log('-------------------------------------');
-            console.log('fetchGetAdolescente...');
-            console.log('-------------------------------------');
-            console.log('src/app/Views/fia/ptpa/prontuario/AppForm2.php');
+            // console.log('-------------------------------------');
+            // console.log('fetchGetAdolescente...');
+            // console.log('-------------------------------------');
+            // console.log('src/app/Views/fia/ptpa/prontuario/AppForm2.php');
 
             const url = base_url + api_get_exibir_adolescente + '/' + id;
-            console.log('url :: ', url);
+            // console.log('url :: ', url);
             try {
                 const response = await fetch(url, {
                     method: 'POST',
@@ -803,10 +812,10 @@
                 const data = await response.json();
                 if (data.result && data.result.dbResponse && data.result.dbResponse.length > 0) {
                     const adolescente = data.result.dbResponse[0];
-                    console.log('adolescente :: ', adolescente);
+                    // console.log('adolescente :: ', adolescente);
 
                     const meses_vida = calcularMesesDeVida(adolescente.Nascimento);
-                    console.log('meses_vida :: ', meses_vida);
+                    // console.log('meses_vida :: ', meses_vida);
 
 
                     setTimeout(() => {
@@ -814,7 +823,7 @@
                     }, 300);
 
                     const recebe_escolaridade = adolescente.Escolaridade;
-                    console.log('recebe_escolaridade :: ', recebe_escolaridade);
+                    // console.log('recebe_escolaridade :: ', recebe_escolaridade);
 
                     setTimeout(() => {
                         calcularVulnerabilidadeEscolaridade(recebe_escolaridade);
@@ -854,17 +863,17 @@
 
             if (idade >= 204 && idade <= 210) {
                 setPtsIdade(25);
-                console.log('setPtsIdade(25)');
+                // console.log('setPtsIdade(25)');
                 return 25;
             }
             if (idade >= 198 && idade <= 201) {
                 setPtsIdade(20);
-                console.log('setPtsIdade(20)');
+                // console.log('setPtsIdade(20)');
                 return 25
             }
             if (idade >= 192 && idade <= 197) {
                 setPtsIdade(10);
-                console.log('setPtsIdade(10)');
+                // console.log('setPtsIdade(10)');
                 return 10;
             }
 
@@ -888,7 +897,7 @@
                 pontuacao = 20;
             }
 
-            console.log("PontuacaoEscolaridade :: ", pontuacao);
+            // console.log("PontuacaoEscolaridade :: ", pontuacao);
 
             setPtsEscolaridade(Number(pontuacao));
 
@@ -1024,7 +1033,7 @@
             );
         }
 
-        {/* ENCAMINHAMENTO ÓRGÃOS */ }
+        {/* ENCAMINHAMENTO ORGAOS */ }
         const renderQstEncaminhamentoOrgao = () => {
             return (
                 checkWordInArray(getURI, 'consultar') ? (
@@ -1130,7 +1139,7 @@
             );
         }
 
-        // Campos novos aqui
+        {/* CAMPOS NOVOS AQUI */ }
 
         {/* DIAGNÓSTICO PSICOLÓGICO */ }
         const renderQstDiagnosticoPsicologico = () => {
@@ -1446,33 +1455,19 @@
                                                 value="Salvar"
                                             />
                                         )}
+
+                                    {/* BOTÃO ATUALIZAR (inicia resumo) */}
+                                    {checkWordInArray(getURI, 'atualizar') && !isChoiceMade && (
+                                        <button
+                                            type="button"
+                                            className="btn btn-primary"
+                                            onClick={() => setIsChoiceMade(true)}
+                                        >
+                                            Salvar
+                                        </button>
+                                    )}
                                 </div>
                             </form>
-
-                            {/* BOTÃO ATUALIZAR (inicia resumo) */}
-                            {checkWordInArray(getURI, 'atualizar') && !isChoiceMade && (
-                                <button
-                                    type="button"
-                                    className="btn btn-primary mt-3"
-                                    onClick={() => setIsChoiceMade(true)}
-                                >
-                                    Atualizar
-                                </button>
-                            )}
-
-                            {/* BOTÃO CANCELAR REVISÃO */}
-                            {checkWordInArray(getURI, 'atualizar') && isChoiceMade && (
-                                <button
-                                    type="button"
-                                    className="btn btn-danger mt-3"
-                                    onClick={() => {
-                                        setIsChoiceMade(false);
-                                        setResumoConfirmado(false);
-                                    }}
-                                >
-                                    Cancelar revisão
-                                </button>
-                            )}
                         </div>
                     </div>
                 </div>
@@ -1524,16 +1519,16 @@
         {/* FORMDATA.ADOLESCENTE_ID */ }
         React.useEffect(() => {
             // console.log('--------------------------------');
-            console.log('React.useEffect(()...');
+            // console.log('React.useEffect(()...');
             // console.log('--------------------------------');
             // console.log('src/app/Views/fia/ptpa/prontuario/AppForm2.php');
             if (!formData.adolescente_id) {
-                console.log('ID não fornecido');
+                // console.log('ID não fornecido');
                 return;
             }
 
             if (isNaN(Number(formData.adolescente_id))) {
-                console.log('ID não é um número válido');
+                // console.log('ID não é um número válido');
                 return;
             }
 
@@ -1556,14 +1551,14 @@
 
         {/* [ptsIdade, ptsEscolaridade, ptsVulnerabilidade] */ }
         React.useEffect(() => {
-            console.log('---------------');
-            console.log('ptsIdade :: ', Number(ptsIdade));
-            console.log('ptsEscolaridade :: ', Number(ptsEscolaridade));
-            console.log('ptsVulnerabilidade :: ', Number(ptsVulnerabilidade));
+            // console.log('---------------');
+            // console.log('ptsIdade :: ', Number(ptsIdade));
+            // console.log('ptsEscolaridade :: ', Number(ptsEscolaridade));
+            // console.log('ptsVulnerabilidade :: ', Number(ptsVulnerabilidade));
 
             const total = Number(ptsIdade) + Number(ptsEscolaridade) + Number(ptsVulnerabilidade);
             // console.log('--------------------------------');
-            console.log('total :: ', total);
+            // console.log('total :: ', total);
             setPtsTotal(Number(total));
 
             setFormData(prev => ({
@@ -1814,14 +1809,13 @@
                                             <label htmlFor="profissional_id"
                                                 style={formLabelStyle}
                                                 className="form-label">
-                                                Funcionário<strong style={requiredField}>*</strong>
+                                                Funcionário{checkWordInArray(getURI, 'consultar') || checkWordInArray(getURI, 'atualizar') ? (null) : (<strong style={requiredField}>*</strong>)}
                                             </label>
-                                            {(checkWordInArray(getURI, 'consultar')) && (
+                                            {checkWordInArray(getURI, 'consultar') || checkWordInArray(getURI, 'atualizar') ? (
                                                 <div className="p-2">
-                                                    {formData.Nome || 'Funcionário selecionado'}
+                                                    {formData.profissional_Nome || 'Funcionário selecionado'}
                                                 </div>
-                                            )}
-                                            {(!checkWordInArray(getURI, 'consultar')) && (
+                                            ) : (
                                                 <>
                                                     {/* CAMPO FUNCIONARIO */}
                                                     {renderCampoFuncionario('drop_select', selectFuncionarioShow, setSelectFuncionarioShow)}
@@ -2063,10 +2057,10 @@
                                                         {(formData.prontuario_NecesMediador === 'Y') && (
                                                             <textarea
                                                                 className="form-control m-0 p-2 w-100 h-100"
-                                                                id="prontuario_NecesMediadorTipoFamiliar"
-                                                                name="prontuario_NecesMediadorTipoFamiliar"
+                                                                id="prontuario_NecesMediadorDesc"
+                                                                name="prontuario_NecesMediadorDesc"
                                                                 placeholder="Informe"
-                                                                value={formData.prontuario_NecesMediadorTipoFamiliar || ''}
+                                                                value={formData.prontuario_NecesMediadorDesc || ''}
                                                                 onChange={handleChange}
                                                                 readOnly={checkWordInArray(getURI, 'consultar')}
                                                                 required>
@@ -2079,193 +2073,209 @@
                                     </div>
                                 </div>
                             </div>
-                            {checkWordInArray(getURI, 'atualizar') && (
-                                <>
-                                    <div className="row">
-                                        <div className="col-12 col-sm-6">
-                                            <div style={formGroupStyle}>
-                                                <label
-                                                    htmlFor="prontuario_Diagnostico" style={formLabelStyle} className="form-label">
-                                                    Diagnóstico Psicológico?<strong style={requiredField}>*</strong>
-                                                </label>
-                                                <div>
-                                                    {/* CAMPO / DESCRIÇÃO */}
-                                                    <div className="row g-1">
-                                                        <div className="col-12 col-sm-3">
-                                                            <div className="border-0" style={{ height: '75px' }}>
-                                                                {renderQstDiagnosticoPsicologico()}
+                            {(
+                                checkWordInArray(getURI, 'atualizar')
+                                && checkWordInArray(user_session.PerfilId, '4')
+                                && checkWordInArray(user_session.CargoFuncaoId, '5')
+                                
+                                || checkWordInArray(getURI, 'atualizar')
+                                && checkWordInArray(user_session.PerfilId, '3')
+                                && checkWordInArray(user_session.CargoFuncaoId, '4')
+                            ) && (
+                                    <>
+                                        <div className="row">
+                                            <div className="col-12 col-sm-6">
+
+                                                {/* DIAGNÓSTICO PSICOLÓGICO */}
+                                                <div style={formGroupStyle}>
+                                                    <label
+                                                        htmlFor="prontuario_Diagnostico" style={formLabelStyle} className="form-label">
+                                                        Diagnóstico Psicológico?<strong style={requiredField}>*</strong>
+                                                    </label>
+                                                    <div>
+                                                        {/* CAMPO / DESCRIÇÃO */}
+                                                        <div className="row g-1">
+                                                            <div className="col-12 col-sm-3">
+                                                                <div className="border-0" style={{ height: '75px' }}>
+                                                                    {renderQstDiagnosticoPsicologico()}
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-12 col-sm-9">
+                                                                <div className="border-0" style={{ height: '150px' }}>
+                                                                    {(formData.prontuario_Diagnostico === 'Y') && (
+                                                                        <textarea
+                                                                            className="form-control m-0 p-2 w-100 h-100"
+                                                                            id="prontuario_DiagnosticoDesc"
+                                                                            name="prontuario_DiagnosticoDesc"
+                                                                            placeholder="Informe"
+                                                                            value={formData.prontuario_DiagnosticoDesc || ''}
+                                                                            onChange={handleChange}
+                                                                            readOnly={checkWordInArray(getURI, 'consultar')}
+                                                                            required>
+                                                                        </textarea>
+                                                                    )}
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                        <div className="col-12 col-sm-9">
-                                                            <div className="border-0" style={{ height: '150px' }}>
-                                                                {(formData.prontuario_Diagnostico === 'Y') && (
-                                                                    <textarea
-                                                                        className="form-control m-0 p-2 w-100 h-100"
-                                                                        id="prontuario_DiagnosticoDesc"
-                                                                        name="prontuario_DiagnosticoDesc"
-                                                                        placeholder="Informe"
-                                                                        value={formData.prontuario_Diagnostico || ''}
-                                                                        onChange={handleChange}
-                                                                        readOnly={checkWordInArray(getURI, 'consultar')}
-                                                                        required>
-                                                                    </textarea>
-                                                                )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="col-12 col-sm-6">
+
+                                                {/* RENDA FAMILIAR */}
+                                                <div style={formGroupStyle}>
+                                                    <label
+                                                        htmlFor="prontuario_RendaFamiliar" style={formLabelStyle} className="form-label">
+                                                        Renda Familiar?<strong style={requiredField}>*</strong>
+                                                    </label>
+                                                    <div>
+                                                        {/* CAMPO / DESCRIÇÃO */}
+                                                        <div className="row g-1">
+                                                            <div className="col-12 col-sm-3">
+                                                                <div className="border-0" style={{ height: '75px' }}>
+                                                                    {renderQstRenderFamiliar()}
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-12 col-sm-9">
+                                                                <div className="border-0" style={{ height: '150px' }}>
+                                                                    {(formData.prontuario_RendaFamiliar === 'Y') && (
+                                                                        <textarea
+                                                                            className="form-control m-0 p-2 w-100 h-100"
+                                                                            id="prontuario_RendaFamiliarDesc"
+                                                                            name="prontuario_RendaFamiliarDesc"
+                                                                            placeholder="Informe"
+                                                                            value={formData.prontuario_RendaFamiliarDesc || ''}
+                                                                            onChange={handleChange}
+                                                                            readOnly={checkWordInArray(getURI, 'consultar')}
+                                                                            required>
+                                                                        </textarea>
+                                                                    )}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="col-12 col-sm-6">
-                                            <div style={formGroupStyle}>
-                                                <label
-                                                    htmlFor="prontuario_RendaFamiliar" style={formLabelStyle} className="form-label">
-                                                    Renda Familiar?<strong style={requiredField}>*</strong>
-                                                </label>
-                                                <div>
-                                                    {/* CAMPO / DESCRIÇÃO */}
-                                                    <div className="row g-1">
-                                                        <div className="col-12 col-sm-3">
-                                                            <div className="border-0" style={{ height: '75px' }}>
-                                                                {renderQstRenderFamiliar()}
+                                        <div className="row">
+                                            <div className="col-12 col-sm-6">
+
+                                                {/* REFERÊNCIA NA REDE */}
+                                                <div style={formGroupStyle}>
+                                                    <label
+                                                        htmlFor="prontuario_ReferenciadoNaRede" style={formLabelStyle} className="form-label">
+                                                        Referência na Rede?<strong style={requiredField}>*</strong>
+                                                    </label>
+                                                    <div>
+                                                        {/* CAMPO / DESCRIÇÃO */}
+                                                        <div className="row g-1">
+                                                            <div className="col-12 col-sm-3">
+                                                                <div className="border-0" style={{ height: '75px' }}>
+                                                                    {renderQstReferenciaRede()}
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-12 col-sm-9">
+                                                                <div className="border-0" style={{ height: '150px' }}>
+                                                                    {(formData.prontuario_ReferenciadoNaRede === 'Y') && (
+                                                                        <textarea
+                                                                            className="form-control m-0 p-2 w-100 h-100"
+                                                                            id="prontuario_ReferenciadoNaRedeDesc"
+                                                                            name="prontuario_ReferenciadoNaRedeDesc"
+                                                                            placeholder="Informe"
+                                                                            value={formData.prontuario_ReferenciadoNaRedeDesc || ''}
+                                                                            onChange={handleChange}
+                                                                            readOnly={checkWordInArray(getURI, 'consultar')}
+                                                                            required>
+                                                                        </textarea>
+                                                                    )}
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                        <div className="col-12 col-sm-9">
-                                                            <div className="border-0" style={{ height: '150px' }}>
-                                                                {(formData.prontuario_RendaFamiliar === 'Y') && (
-                                                                    <textarea
-                                                                        className="form-control m-0 p-2 w-100 h-100"
-                                                                        id="prontuario_RendaFamiliarDesc"
-                                                                        name="prontuario_RendaFamiliarDesc"
-                                                                        placeholder="Informe"
-                                                                        value={formData.prontuario_RendaFamiliar || ''}
-                                                                        onChange={handleChange}
-                                                                        readOnly={checkWordInArray(getURI, 'consultar')}
-                                                                        required>
-                                                                    </textarea>
-                                                                )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="col-12 col-sm-6">
+
+                                                {/* TIPO FAMILIAR */}
+                                                <div style={formGroupStyle}>
+                                                    <label
+                                                        htmlFor="prontuario_TipoFamiliar" style={formLabelStyle} className="form-label">
+                                                        Tipo Familiar?<strong style={requiredField}>*</strong>
+                                                    </label>
+                                                    <div>
+                                                        {/* CAMPO / DESCRIÇÃO */}
+                                                        <div className="row g-1">
+                                                            <div className="col-12 col-sm-3">
+                                                                <div className="border-0" style={{ height: '75px' }}>
+                                                                    {renderQstTipoFamiliar()}
+                                                                </div>
+                                                            </div>
+                                                            <div className="col-12 col-sm-9">
+                                                                <div className="border-0" style={{ height: '150px' }}>
+                                                                    {formData.prontuario_TipoFamiliar === 'Y' && (
+                                                                        <select
+                                                                            className="form-select m-0 p-2 w-100 h-100"
+                                                                            id="prontuario_TipoFamiliarDesc"
+                                                                            name="prontuario_TipoFamiliarDesc"
+                                                                            value={formData.prontuario_TipoFamiliarDesc || ''}
+                                                                            onChange={handleChange}
+                                                                            readOnly={checkWordInArray(getURI, 'consultar')}
+                                                                            required
+                                                                        >
+                                                                            <option value="">Selecione o tipo familiar</option>
+                                                                            <option value="nuclear">Nuclear</option>
+                                                                            <option value="extensa">Extensa</option>
+                                                                            <option value="monoparental">Monoparental</option>
+                                                                            <option value="adotiva">Adotiva</option>
+                                                                            <option value="homoparental">Homoparental</option>
+                                                                            <option value="reconstituída">Reconstituída</option>
+                                                                        </select>
+                                                                    )}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div className="row">
-                                        <div className="col-12 col-sm-6">
-                                            <div style={formGroupStyle}>
-                                                <label
-                                                    htmlFor="prontuario_ReferenciadoNaRede" style={formLabelStyle} className="form-label">
-                                                    Referência na Rede?<strong style={requiredField}>*</strong>
-                                                </label>
-                                                <div>
-                                                    {/* CAMPO / DESCRIÇÃO */}
-                                                    <div className="row g-1">
-                                                        <div className="col-12 col-sm-3">
-                                                            <div className="border-0" style={{ height: '75px' }}>
-                                                                {renderQstReferenciaRede()}
+                                        <div className="row">
+                                            <div className="col-12 col-sm-6">
+                                                <div style={formGroupStyle}>
+                                                    <label
+                                                        htmlFor="prontuario_ParticipacaoProgramasSociais" style={formLabelStyle} className="form-label">
+                                                        Participação em Programas Sociais?<strong style={requiredField}>*</strong>
+                                                    </label>
+                                                    <div>
+                                                        {/* CAMPO / DESCRIÇÃO */}
+                                                        <div className="row g-1">
+                                                            <div className="col-12 col-sm-3">
+                                                                <div className="border-0" style={{ height: '75px' }}>
+                                                                    {renderQstParticipacaoProgramasSociais()}
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div className="col-12 col-sm-9">
-                                                            <div className="border-0" style={{ height: '150px' }}>
-                                                                {(formData.prontuario_ReferenciadoNaRede === 'Y') && (
-                                                                    <textarea
-                                                                        className="form-control m-0 p-2 w-100 h-100"
-                                                                        id="prontuario_ReferenciadoNaRedeDesc"
-                                                                        name="prontuario_ReferenciadoNaRedeDesc"
-                                                                        placeholder="Informe"
-                                                                        value={formData.prontuario_ReferenciadoNaRedeDesc || ''}
-                                                                        onChange={handleChange}
-                                                                        readOnly={checkWordInArray(getURI, 'consultar')}
-                                                                        required>
-                                                                    </textarea>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-12 col-sm-6">
-                                            <div style={formGroupStyle}>
-                                                <label
-                                                    htmlFor="prontuario_TipoFamiliar" style={formLabelStyle} className="form-label">
-                                                    Tipo Familiar?<strong style={requiredField}>*</strong>
-                                                </label>
-                                                <div>
-                                                    {/* CAMPO / DESCRIÇÃO */}
-                                                    <div className="row g-1">
-                                                        <div className="col-12 col-sm-3">
-                                                            <div className="border-0" style={{ height: '75px' }}>
-                                                                {renderQstTipoFamiliar()}
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-12 col-sm-9">
-                                                            <div className="border-0" style={{ height: '150px' }}>
-                                                                {formData.prontuario_TipoFamiliar === 'Y' && (
-                                                                    <select
-                                                                        className="form-select m-0 p-2 w-100 h-100"
-                                                                        id="prontuario_TipoFamiliarDesc"
-                                                                        name="prontuario_TipoFamiliarDesc"
-                                                                        value={formData.prontuario_TipoFamiliarDesc || ''}
-                                                                        onChange={handleChange}
-                                                                        readOnly={checkWordInArray(getURI, 'consultar')}
-                                                                        required
-                                                                    >
-                                                                        <option value="">Selecione o tipo familiar</option>
-                                                                        <option value="nuclear">Nuclear</option>
-                                                                        <option value="extensa">Extensa</option>
-                                                                        <option value="monoparental">Monoparental</option>
-                                                                        <option value="adotiva">Adotiva</option>
-                                                                        <option value="homoparental">Homoparental</option>
-                                                                        <option value="reconstituída">Reconstituída</option>
-                                                                    </select>
-                                                                )}
+                                                            <div className="col-12 col-sm-9">
+                                                                <div className="border-0" style={{ height: '150px' }}>
+                                                                    {(formData.prontuario_ParticipacaoProg === 'Y') && (
+                                                                        <textarea
+                                                                            className="form-control m-0 p-2 w-100 h-100"
+                                                                            id="prontuario_ParticipacaoProgDesc"
+                                                                            name="prontuario_ParticipacaoProgDesc"
+                                                                            placeholder="Informe"
+                                                                            value={formData.prontuario_ParticipacaoProgDesc || ''}
+                                                                            onChange={handleChange}
+                                                                            readOnly={checkWordInArray(getURI, 'consultar')}
+                                                                            required>
+                                                                        </textarea>
+                                                                    )}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div className="row">
-                                        <div className="col-12 col-sm-6">
-                                            <div style={formGroupStyle}>
-                                                <label
-                                                    htmlFor="prontuario_ParticipacaoProgramasSociais" style={formLabelStyle} className="form-label">
-                                                    Participação em Programas Sociais?<strong style={requiredField}>*</strong>
-                                                </label>
-                                                <div>
-                                                    {/* CAMPO / DESCRIÇÃO */}
-                                                    <div className="row g-1">
-                                                        <div className="col-12 col-sm-3">
-                                                            <div className="border-0" style={{ height: '75px' }}>
-                                                                {renderQstParticipacaoProgramasSociais()}
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-12 col-sm-9">
-                                                            <div className="border-0" style={{ height: '150px' }}>
-                                                                {(formData.prontuario_ParticipacaoProgDesc === 'Y') && (
-                                                                    <textarea
-                                                                        className="form-control m-0 p-2 w-100 h-100"
-                                                                        id="prontuario_ParticipacaoProgDesc"
-                                                                        name="prontuario_ParticipacaoProgDesc"
-                                                                        placeholder="Informe"
-                                                                        value={formData.prontuario_ParticipacaoProgDesc || ''}
-                                                                        onChange={handleChange}
-                                                                        readOnly={checkWordInArray(getURI, 'consultar')}
-                                                                        required>
-                                                                    </textarea>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
+                                    </>
+                                )}
                             <div className="row">
                                 <div className="col-12 col-sm-12">
                                     <div style={formGroupStyle}>
@@ -2393,46 +2403,6 @@
                     </div>
                 </div>
 
-                {/* Botão de voltar e salvar 
-                {
-                    !checkWordInArray(getURI, 'detalhar') && (
-                        <div className="ms-3 me-3">
-                            <div className="row">
-                                <div className="col-12">
-                                    <form
-                                        className="was-validated d-flex justify-content-between align-items-center"
-                                        onSubmit={(e) => {
-                                            e.preventDefault();
-                                            submitAllForms(`filtro-${origemForm}`, formData);
-                                        }}
-                                    >
-                                        <div className="d-flex gap-2">
-                                            
-                                            {!checkWordInArray(getURI, 'alocarfuncionario') && (
-                                                <a
-                                                    className="btn btn-danger"
-                                                    href={`${base_url}index.php/fia/ptpa/prontuariopsicosocial/endpoint/exibir`}
-                                                    role="button"
-                                                >
-                                                    Voltar
-                                                </a>
-                                            )}
-                                            
-                                            {!checkWordInArray(getURI, 'consultar') && (
-                                                <input
-                                                    className="btn btn-success"
-                                                    type="submit"
-                                                    value="Salvar"
-                                                />
-                                            )}
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    )
-                } */}
-
                 {
                     typeof AppJson !== "undefined" ? (
                         <div>
@@ -2458,6 +2428,8 @@
                     parametros={message}
                     modalId={'modal_form'}
                 />
+
+                {JSON.stringify(user_session, null, 2)}
 
             </div >
         );

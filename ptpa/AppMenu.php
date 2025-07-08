@@ -87,18 +87,6 @@ $parametros_backend = array(
                                         </a>
                                     </li>
                                 )}
-                                {(checkWordInArray(permissao_menu, 'Alocar Funcionário')) && (
-                                    <li className="nav-item">
-                                        <a
-                                            className="nav-link active"
-                                            aria-current="page"
-                                            href={`${base_url}index.php/fia/ptpa/alocarfuncionario/endpoint/exibir`}
-                                            style={linkStyle}
-                                        >
-                                            Alocar Funcionário
-                                        </a>
-                                    </li>
-                                )}
                                 {(checkWordInArray(permissao_menu, 'Funcionários')) && (
                                     <li className="nav-item">
                                         <a
@@ -108,6 +96,18 @@ $parametros_backend = array(
                                             style={linkStyle}
                                         >
                                             Funcionários
+                                        </a>
+                                    </li>
+                                )}
+                                {(checkWordInArray(permissao_menu, 'Alocar Funcionário')) && (
+                                    <li className="nav-item">
+                                        <a
+                                            className="nav-link active"
+                                            aria-current="page"
+                                            href={`${base_url}index.php/fia/ptpa/alocarfuncionario/endpoint/exibir`}
+                                            style={linkStyle}
+                                        >
+                                            Alocar Funcionário
                                         </a>
                                     </li>
                                 )}

@@ -294,6 +294,13 @@
         const [choice, setChoice] = React.useState(''); // CPF Obrigatorio
         const [camposObrigatorios, setCamposObrigatorios] = React.useState({});
         const [opcional16, setOpcional16] = React.useState(true);
+        // 
+        const [isReadOnlyNumRegistro, setIsReadOnlyNumRegistro] = React.useState(false);
+        const [isReadOnlyFolha, setIsReadOnlyFolha] = React.useState('N');
+        const [isReadOnlyLivro, setIsReadOnlyLivro] = React.useState('N');
+        const [isReadOnlyCircunscricao, setIsReadOnlyCircunscricao] = React.useState('N');
+        const [isReadOnlyZona, setIsReadOnlyZona] = React.useState('N');
+        const [isReadOnlyUFRegistro, setIsReadOnlyUFRegistro] = React.useState('N');
 
         {/* CAMPOS OBRIGATÓRIOS */ }
         const handleChoice = (option) => {
@@ -426,8 +433,13 @@
         });
 
         // Largura
-        const [width, setWidth] = React.useState(window.innerWidth);
-        const [labelEndSN, setLabelEndSN] = React.useState('Sem Número');
+        const [size, setSize] = React.useState({
+            width: window.innerWidth,
+            height: window.innerHeight
+        });
+        const [labelEndSN1, setLabelEndSN1] = React.useState('Sem Número');
+        const [labelEndSN2, setLabelEndSN2] = React.useState('Sem Número');
+        const [labelNumero, setLabelNumero] = React.useState('Número');
 
         // Função para verificar campos obrigatórios
         const validarCamposObrigatorios = (dados, camposObrigatorios) => {
@@ -470,7 +482,7 @@
             ExpedidorRG: debugMyPrint ? randomOrgaoExpedidor() : null,
             ExpedicaoRG: null,
             CEP: debugMyPrint ? `${getRandomCep()}` : null,
-
+            //
             Logradouro: null,
             Bairro: null,
             Municipio: null,
@@ -481,10 +493,10 @@
             IBGE: null,
             Regiao: null,
             SIAFI: null,
-
+            //
             Numero: debugMyPrint ? randomInt(4) : null,
             Complemento: debugMyPrint ? randomComplemento : null,
-
+            //
             Municipio: debugMyPrint ? escolherMunicipioAleatorio() : null,
             Nascimento: debugMyPrint ? randomDataAdolescente() : null,
             PeriodoId: debugMyPrint ? '2' : null,
@@ -507,7 +519,7 @@
             TelefoneMovel: null,
             TelefoneRecado: debugMyPrint ? randomCelular() : null,
             Email: debugMyPrint ? randomEmail() : null,
-
+            //
             Logradouro: null,
             Bairro: null,
             Municipio: null,
@@ -518,17 +530,20 @@
             IBGE: null,
             Regiao: null,
             SIAFI: null,
-
+            //
             NMatricula: null,
             Etnia: debugMyPrint ? randomEtinia : null,
             Escolaridade: debugMyPrint ? '1º Ano do Ensino Médio' : null,
-            Certidao: debugMyPrint ? randomInt(31) : null,
+            //
+            constTipoCertidao: null,
+            Certidao: debugMyPrint ? randomInt(32) : null,
             NumRegistro: null,
             Folha: null,
             Livro: null,
             Circunscricao: null,
             Zona: null,
             UFRegistro: null,
+            //
             TipoEscola: debugMyPrint ? 'Publica' : null,
             turno_escolar: debugMyPrint ? turnoAleatorio : null,
             NomeEscola: debugMyPrint ? randomEscola : null,
@@ -545,7 +560,7 @@
             Responsavel_TelefoneFixo: null,
             Responsavel_TelefoneMovel: debugMyPrint ? randomCelular() : null,
             Responsavel_TelefoneRecado: null,
-
+            //
             Responsavel_Logradouro: null,
             Responsavel_Numero: null,
             Responsavel_Complemento: null,
@@ -559,7 +574,7 @@
             Responsavel_Regiao: null,
             Responsavel_SIAFI: null,
             Responsavel_Unidade: null,
-
+            //
             ProfissaoCodigo: null,
             ProfissaoDescricao: null,
             ProfissaoFavorito: null,
@@ -831,6 +846,7 @@
                     }));
                 }, 4000);
             }
+
             {/* CAMPO UNIDADE */ }
             if (name === "Unidade") {
                 // console.log('name === "Unidade"');
@@ -1685,12 +1701,10 @@
                     }, 500);
                 });
         }, []);
-
         {/* formData.termo */ }
         React.useEffect(() => {
             setTermoAceito(formData.termo || false);
         }, [formData.termo]);
-
         {/* listPeriodos - formData.Nascimento */ }
         React.useEffect(() => {
             if (listPeriodos.length > 0) {
@@ -1727,7 +1741,6 @@
                 });
             }
         }, [listPeriodos, formData.Nascimento]);
-
         {/* CAMPO UNIDAE CAMPO CEP */ }
         const orderUnitsByCEPProximity = (userCEP) => {
             // console.log('userCEP:', userCEP);
@@ -1772,6 +1785,7 @@
             setGuardaUnidades(orderedUnits);
             return orderedUnits;
         };
+
         React.useEffect(() => {
             async function loadUnits() {
                 const response = await fetchGetUnidade(); // ou outro método que você use
@@ -1910,14 +1924,90 @@
                 document.removeEventListener("mousedown", handleClickOutside);
             };
         }, [selectEscolaridadeShow]);
-        {/* LABEL LARGURA */ }
+        {/* LARGURA AUTURA */ }
         React.useEffect(() => {
-            if (width < 1500) {
-                setLabelEndSN('S/Número');
-            } else {
-                setLabelEndSN('Sem Número');
+            function handleResize() {
+                setSize({
+                    width: window.innerWidth,
+                    height: window.innerHeight
+                });
             }
-        }, [width]);
+            window.addEventListener('resize', handleResize);
+            // Atualiza ao montar (caso o usuário já tenha redimensionado antes)
+            handleResize();
+            return () => window.removeEventListener('resize', handleResize);
+        }, []);
+        {/* DEFINE LABEL */ }
+        React.useEffect(() => {
+            if (
+                size.width === 800
+            ) {
+                // console.log(`==================`);
+                // console.log(`size.width === 800`);
+                setLabelEndSN1('S/N');
+                setLabelEndSN2('');
+                setLabelNumero('Núm');
+            } else if (
+                size.width > 500
+                && size.width < 1085
+            ) {
+                // console.log(`==================`);
+                // console.log(`size.width > 500 `, size.width);
+                setLabelEndSN1('S/N');
+                setLabelEndSN2('');
+                setLabelNumero('Núm');
+            } else if (
+                size.width < 500
+            ) {
+                // console.log(`==================`);
+                // console.log(`size.width < 500 `, size.width);
+                setLabelEndSN1('S/N');
+                setLabelEndSN2('');
+                setLabelNumero('Número');
+            } else {
+                // console.log(`==================`);
+                // console.log(`else `, size.width);
+                setLabelEndSN1('Sem Número');
+                setLabelEndSN2('S/N');
+                setLabelNumero('Número');
+            }
+        }, [size.width, size.height]);
+        {/* READ ONLY CERTIDÃO */ }
+        React.useEffect(() => {
+            if (
+                checkWordInArray(getURI, 'drupal')
+                && formData.constTipoCertidao === 'certNova'
+
+                || checkWordInArray(getURI, 'drupal')
+                && formData.constTipoCertidao === 'certAntiga'
+            ) {
+                console.log('certNova, certAntiga :: ', formData.constTipoCertidao);
+
+                setIsReadOnlyNumRegistro('Y');
+                setIsReadOnlyFolha('Y');
+                setIsReadOnlyLivro('Y');
+                setIsReadOnlyCircunscricao('Y');
+                setIsReadOnlyZona('Y');
+                setIsReadOnlyUFRegistro('Y');
+
+            }
+            if (checkWordInArray(getURI, 'drupal')
+                && formData.constTipoCertidao === 'certIndefinida'
+            ) {
+                console.log('certIndefinida :: ', formData.constTipoCertidao);
+
+                setIsReadOnlyNumRegistro('N');
+                setIsReadOnlyFolha('N');
+                setIsReadOnlyLivro('N');
+                setIsReadOnlyCircunscricao('N');
+                setIsReadOnlyZona('N');
+                setIsReadOnlyUFRegistro('N');
+
+            }
+
+        }, [
+            formData.constTipoCertidao
+        ]);
         {/* formData.Numero muda */ }
         React.useEffect(() => {
             if (formData.Numero === "S/N") {
@@ -2020,7 +2110,6 @@
                 )}
             </>
         );
-
         {/* RENDER CAMPO UNIDADE */ }
         const renderCampoUnidade = (tipoCampo, selectUnidadeShow, setSelectUnidadeShow) => {
             return (
@@ -2126,7 +2215,6 @@
                 </>
             );
         };
-
         {/* RENDER CAMPO SEXO */ }
         const renderCampoSexo = (tipoCampo, selectSexoShow, setSelectSexoShow) => {
             return (
@@ -2236,7 +2324,6 @@
                 </>
             );
         };
-
         {/* RENDER CAMPO GENERO */ }
         const renderCampoGenero = (tipoCampo, selectGeneroShow, setSelectGeneroShow) => {
             return (
@@ -2418,7 +2505,6 @@
                 </>
             );
         }
-
         {/* RENDER CAMPO ESCOLARIDADE */ }
         const renderCampoEscolaridade = (tipoCampo, selectEscolaridadeShow, setSelectEscolaridadeShow) => {
             return (
@@ -2523,7 +2609,6 @@
                 </>
             );
         }
-
         {/* RENDER CAMPO ETNIA */ }
         const renderCampoEtnia = (tipoCampo, selectEtniaShow, setSelectEtniaShow) => {
             return (
@@ -2628,7 +2713,6 @@
                 </>
             );
         }
-
         {/* RENDER CPF BK*/ }
         const renderCPF = () => {
             // console.log('listSexos :: ', listSexos);
@@ -2893,8 +2977,8 @@
                                     style={formLabelStyle}
                                     className="form-label"
                                 >
-                                    {`Sem número`}
-                                    <strong style={requiredField}> *</strong>
+                                    {labelEndSN1}
+                                    <strong style={requiredField}>{`${formData.checkSemNumero === 'N' ? '' : ' *'}`}</strong>
                                 </label>
                                 <div className="d-flex justify-content-center p-1">
                                     <input
@@ -2906,7 +2990,7 @@
                                         name="checkSemNumero"
                                     />
                                     <label className="form-check-label" htmlFor="checkSemNumero">
-                                        S/N
+                                        {labelEndSN2}
                                     </label>
                                 </div>
                             </div>
@@ -2922,7 +3006,7 @@
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
                                         attributeOrigemForm: `${origemForm}`,
-                                        labelField: 'Número',
+                                        labelField: labelNumero,
                                         labelColor: 'black', // gray, red, black,
                                         nameField: 'Numero',
                                         errorMessage: '', // Mensagem de Erro personalizada
@@ -2932,7 +3016,7 @@
                                         attributeMaxlength: 6, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
                                         attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
                                         attributeAutocomplete: 'on', // on, off ]
-                                        attributeRequired: false,
+                                        attributeRequired: formData.checkSemNumero === 'N' ? true : false,
                                         attributeReadOnly: readOnlyNumero,
                                         attributeDisabled: false,
                                         attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
@@ -3206,7 +3290,6 @@
                 </div >
             )
         }
-
         {/* RENDER CERTIDÃO BK*/ }
         const renderCertidao = (parametrosComArrays) => {
             return (
@@ -3228,7 +3311,7 @@
                                         nameField: 'Certidao',
                                         errorMessage: '', // Mensagem de Erro personalizada
                                         attributePlaceholder: '', // placeholder 
-                                        attributeMinlength: 16, // minlength 
+                                        attributeMinlength: 32, // minlength 
                                         attributeMaxlength: 40, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22, Certdao: 39
                                         attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
                                         attributeAutocomplete: 'on', // on, off ]
@@ -3248,7 +3331,15 @@
                                     submitAllForms(`filtro-${origemForm}`);
                                 }}>
                                 {/* REGISTRO */}
-                                <AppText parametros={parametros} formData={formData} setFormData={setFormData}
+                                {(false) && (
+                                    <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
+                                        {JSON.stringify(isReadOnlyNumRegistro, null, 2)}
+                                    </pre>
+                                )}
+                                <AppText
+                                    parametros={parametros}
+                                    formData={formData}
+                                    setFormData={setFormData}
                                     fieldAttributes={{
                                         attributeOrigemForm: `${origemForm}`,
                                         labelField: 'Registro',
@@ -3256,12 +3347,12 @@
                                         nameField: 'NumRegistro',
                                         errorMessage: '', // Mensagem de Erro personalizada
                                         attributePlaceholder: '', // placeholder 
-                                        attributeMinlength: 7, // minlength 
-                                        attributeMaxlength: 8, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22, Certdao: 39
+                                        attributeMinlength: 6, // minlength 
+                                        attributeMaxlength: 7, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22, Certdao: 39
                                         attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
                                         attributeAutocomplete: 'on', // on, off ]
                                         attributeRequired: true,
-                                        attributeReadOnly: false,
+                                        attributeReadOnly: isReadOnlyNumRegistro,
                                         attributeDisabled: false,
                                         attributeMask: '', // CPF, Telefone, CEP, SEI, Processo, Certidao.
                                     }}
@@ -3285,11 +3376,11 @@
                                         errorMessage: '', // Mensagem de Erro personalizada
                                         attributePlaceholder: '', // placeholder 
                                         attributeMinlength: 2, // minlength 
-                                        attributeMaxlength: 3, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22, Certdao: 39
+                                        attributeMaxlength: 6, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22, Certdao: 39
                                         attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
                                         attributeAutocomplete: 'on', // on, off ]
                                         attributeRequired: true,
-                                        attributeReadOnly: false,
+                                        attributeReadOnly: isReadOnlyZona,
                                         attributeDisabled: false,
                                         attributeMask: '', // CPF, Telefone, CEP, SEI, Processo, Certidao.
                                     }}
@@ -3315,11 +3406,11 @@
                                         errorMessage: '', // Mensagem de Erro personalizada
                                         attributePlaceholder: '', // placeholder 
                                         attributeMinlength: 3, // minlength 
-                                        attributeMaxlength: 4, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
+                                        attributeMaxlength: 3, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
                                         attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
                                         attributeAutocomplete: 'on', // on, off ]
                                         attributeRequired: true,
-                                        attributeReadOnly: false,
+                                        attributeReadOnly: isReadOnlyFolha,
                                         attributeDisabled: false,
                                         attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
                                     }}
@@ -3342,12 +3433,12 @@
                                         nameField: 'Livro',
                                         errorMessage: '', // Mensagem de Erro personalizada
                                         attributePlaceholder: '', // placeholder 
-                                        attributeMinlength: 5, // minlength 
-                                        attributeMaxlength: 6, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
+                                        attributeMinlength: 2, // minlength 
+                                        attributeMaxlength: 5, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
                                         attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
                                         attributeAutocomplete: 'on', // on, off ]
                                         attributeRequired: true,
-                                        attributeReadOnly: false,
+                                        attributeReadOnly: isReadOnlyLivro,
                                         attributeDisabled: false,
                                         attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
                                     }}
@@ -3375,7 +3466,7 @@
                                         attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
                                         attributeAutocomplete: 'on', // on, off ]
                                         attributeRequired: true,
-                                        attributeReadOnly: false,
+                                        attributeReadOnly: isReadOnlyCircunscricao,
                                         attributeDisabled: false,
                                         attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
                                     }}
@@ -3587,8 +3678,8 @@
                                     style={formLabelStyle}
                                     className="form-label"
                                 >
-                                    {`Sem número`}
-                                    <strong style={requiredField}> *</strong>
+                                    {labelEndSN1}
+                                    <strong style={requiredField}>{`${formData.checkSemNumero === 'N' ? '' : ' *'}`}</strong>
                                 </label>
                                 <div className="d-flex justify-content-center p-1">
                                     <input
@@ -3600,7 +3691,7 @@
                                         name="checkSemNumero"
                                     />
                                     <label className="form-check-label" htmlFor="checkSemNumero">
-                                        S/N
+                                        {labelEndSN2}
                                     </label>
                                 </div>
                             </div>
@@ -3616,7 +3707,7 @@
                                 <AppText parametros={parametros} formData={formData} setFormData={setFormData}
                                     fieldAttributes={{
                                         attributeOrigemForm: `${origemForm}`,
-                                        labelField: 'Número',
+                                        labelField: labelNumero,
                                         labelColor: 'black', // gray, red, black,
                                         nameField: 'Numero',
                                         errorMessage: '', // Mensagem de Erro personalizada
@@ -3625,7 +3716,7 @@
                                         attributeMaxlength: 6, // maxlength - Telefone: 14, CPF: 14, CEP: 9, Processo Judicial: 20, Processo SEI: 22
                                         attributePattern: 'Inteiro', // Inteiro, Caracter, Senha
                                         attributeAutocomplete: 'on', // on, off ]
-                                        attributeRequired: false,
+                                        attributeRequired: formData.checkSemNumero === 'N' ? true : false,
                                         attributeReadOnly: readOnlyNumero,
                                         attributeDisabled: false,
                                         attributeMask: '', // CPF, Telefone, CEP, SEI, Processo.
@@ -3806,39 +3897,32 @@
                                     submitAllForms(`filtro-${origemForm}`);
                                 }}>
                                 <div style={formGroupStyle}>
-                                    <form
-                                        className="needs-validation" noValidate
-                                        onSubmit={(e) => {
-                                            e.preventDefault();
-                                            submitAllForms(`filtro-${origemForm}`);
-                                        }}>
-                                        <label
-                                            htmlFor={`checkSemNumero`}
-                                            style={formLabelStyle}
-                                            className="form-label"
-                                        >
-                                            Identidade de Genero<strong style={requiredField}> *</strong>
-                                        </label>
-                                        <div>
-                                            {(
-                                                listGeneros.length === 0
-                                                && isLoading
-                                            ) && (
-                                                    <div className="p-2">
-                                                        <AppLoading parametros={{
-                                                            tipoLoading: "progress",
-                                                            carregando: dataLoading
-                                                        }} />
-                                                    </div>
-                                                )}
-                                            {(listGeneros.length > 0) && (
-                                                <>
-                                                    {/* CAMPO GENERO */}
-                                                    {renderCampoGenero('drop_check', selectGeneroShow, setSelectGeneroShow)}
-                                                </>
+                                    <label
+                                        htmlFor={`checkSemNumero`}
+                                        style={formLabelStyle}
+                                        className="form-label"
+                                    >
+                                        Identidade de Genero<strong style={requiredField}> *</strong>
+                                    </label>
+                                    <div>
+                                        {(
+                                            listGeneros.length === 0
+                                            && isLoading
+                                        ) && (
+                                                <div className="p-2">
+                                                    <AppLoading parametros={{
+                                                        tipoLoading: "progress",
+                                                        carregando: dataLoading
+                                                    }} />
+                                                </div>
                                             )}
-                                        </div>
-                                    </form>
+                                        {(listGeneros.length > 0) && (
+                                            <>
+                                                {/* CAMPO GENERO */}
+                                                {renderCampoGenero('drop_check', selectGeneroShow, setSelectGeneroShow)}
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -3912,7 +3996,6 @@
                 </div>
             )
         }
-
         {/* RENDER ATUALIZAR BK*/ }
         const renderAtualizar = (parametrosComArrays) => {
             return (
@@ -4343,7 +4426,7 @@
                                     style={formLabelStyle}
                                     className="form-label"
                                 >
-                                    {labelEndSN}
+                                    {labelEndSN1}
                                     <strong style={requiredField}> *</strong>
                                 </label>
                                 <div className="d-flex justify-content-center p-1">
@@ -4662,7 +4745,6 @@
                 </div >
             )
         }
-
         {/* RENDER CONSULTA BK*/ }
         const renderConsulta = () => {
             return (
@@ -5142,7 +5224,6 @@
                 </div>
             );
         }
-
         {/* RENDER DADOS ESCOLARES*/ }
         const renderEscolaridade = () => {
             return (
@@ -5285,7 +5366,6 @@
                 </div>
             );
         }
-
         {/* RENDER RESPONSÁVEL */ }
         const renderDadosResponsavel = () => {
             return (
@@ -5376,7 +5456,6 @@
                 </div>
             );
         }
-
         {/* RENDER COMANDOS E TERMO */ }
         const renderComandosTermo = () => {
             return (
@@ -5484,7 +5563,6 @@
                 </div>
             );
         }
-
         {/* CALCULA IDADE */ }
         const calcularIdade = (Nascimento) => {
             const hoje = new Date();
@@ -5503,27 +5581,38 @@
 
         return (
             <>
-                {(true) && (
+                {(false) && (
                     <>
-                        <input
-                            className="form-check-input"
-                            type="checkbox"
-                            role="switch"
-                            id="switchCheckDefault"
-                            checked={checked}
-                            onChange={handleSwitch}
-                        />
-                        <label className="form-check-label" htmlFor="switchCheckDefault">
-                            <div className="ms-2">debugMyPrint (Certidão)</div>
-                        </label>
+                        <div>
+                            <input
+                                className="form-check-input"
+                                type="checkbox"
+                                role="switch"
+                                id="switchCheckDefault"
+                                checked={checked}
+                                onChange={handleSwitch}
+                            />
+                            <label className="form-check-label" htmlFor="switchCheckDefault">
+                                <div className="ms-2">debug (Certidão)</div>
+                            </label>
+                        </div>
+                        <div>
+                            Largura: {size.width} px
+                        </div>
+                        <div>
+                            Tipo Certidão: {formData.constTipoCertidao}
+                        </div>
                     </>
-                )}
+                )
+                }
                 {/* CADASTRAR E ATUALIZAR */}
-                {(checkWordInArray(getURI, 'consultar')) && (
-                    <div>
-                        {renderConsulta()}
-                    </div>
-                )}
+                {
+                    (checkWordInArray(getURI, 'consultar')) && (
+                        <div>
+                            {renderConsulta()}
+                        </div>
+                    )
+                }
                 <form
                     className="needs-validation" noValidate
                     onSubmit={(e) => {
@@ -5634,10 +5723,11 @@
                 </form>
 
                 {/* CADASTRAR E ATUALIZAR */}
-                {(
-                    !isChoiceMade && checkWordInArray(getURI, 'cadastrar') ||
-                    !isChoiceMade && checkWordInArray(getURI, 'drupal')
-                ) && (
+                {
+                    (
+                        !isChoiceMade && checkWordInArray(getURI, 'cadastrar') ||
+                        !isChoiceMade && checkWordInArray(getURI, 'drupal')
+                    ) && (
                         // Interface Inicial para escolha de cadastro - apenas aparece para cadastro
                         <div className="choice-container text-center p-5">
                             <h3>Como deseja realizar o cadastro?</h3>
@@ -5660,79 +5750,84 @@
                                 Certidão de Nascimento
                             </button>
                         </div>
-                    )}
+                    )
+                }
 
                 {/* CADASTRAR E ATUALIZAR */}
-                {(!isChoiceMade && checkWordInArray(getURI, 'atualizar')) && (
-                    <div className="b-3 p-3">
-                        {/* Formulário de Adolescente (Atualizar) */}
-                        <ul className="nav nav-tabs">
-                            <li className="nav-item">
-                                <a className="nav-link active" aria-current="page" >Dados Pessoais do Adolescente</a>
-                            </li>
-                        </ul>
-                        {renderAtualizar(parametrosComArrays)}
-                        {/* Formulário de Escolaridade */}
-                        <ul className="nav nav-tabs">
-                            <li className="nav-item">
-                                <a className="nav-link active" aria-current="page" >Dados Escolares</a>
-                            </li>
-                        </ul>
-                        {renderEscolaridade()}
+                {
+                    (!isChoiceMade && checkWordInArray(getURI, 'atualizar')) && (
+                        <div className="b-3 p-3">
+                            {/* Formulário de Adolescente (Atualizar) */}
+                            <ul className="nav nav-tabs">
+                                <li className="nav-item">
+                                    <a className="nav-link active" aria-current="page" >Dados Pessoais do Adolescente</a>
+                                </li>
+                            </ul>
+                            {renderAtualizar(parametrosComArrays)}
+                            {/* Formulário de Escolaridade */}
+                            <ul className="nav nav-tabs">
+                                <li className="nav-item">
+                                    <a className="nav-link active" aria-current="page" >Dados Escolares</a>
+                                </li>
+                            </ul>
+                            {renderEscolaridade()}
 
-                        {/* Formulário Dados Responsável */}
-                        <ul className="nav nav-tabs">
-                            <li className="nav-item">
-                                <a className="nav-link active" aria-current="page" >Dados Responsável</a>
-                            </li>
-                        </ul>
-                        {renderDadosResponsavel()}
-                    </div>
-                )}
-                {(isChoiceMade && !checkWordInArray(getURI, 'consultar')) && (
-                    <div className="b-3 p-3">
-                        <form
-                            className="needs-validation" noValidate
-                            onSubmit={(e) => {
-                                e.preventDefault();
-                                submitAllForms(`filtro-${origemForm}`);
-                            }}>
-                            {(atualizar_id !== 'erro') && (
-                                <input type="hidden" id="id" name="id" value={atualizar_id} />
+                            {/* Formulário Dados Responsável */}
+                            <ul className="nav nav-tabs">
+                                <li className="nav-item">
+                                    <a className="nav-link active" aria-current="page" >Dados Responsável</a>
+                                </li>
+                            </ul>
+                            {renderDadosResponsavel()}
+                        </div>
+                    )
+                }
+                {
+                    (isChoiceMade && !checkWordInArray(getURI, 'consultar')) && (
+                        <div className="b-3 p-3">
+                            <form
+                                className="needs-validation" noValidate
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitAllForms(`filtro-${origemForm}`);
+                                }}>
+                                {(atualizar_id !== 'erro') && (
+                                    <input type="hidden" id="id" name="id" value={atualizar_id} />
+                                )}
+                            </form>
+                            <ul className="nav nav-tabs">
+                                <li className="nav-item">
+                                    <a className="nav-link active" aria-current="page" >Dados Pessoais do Adolescente</a>
+                                </li>
+                            </ul>
+                            {(isChoiceMade === 'cpf') && (
+                                <div>
+                                    {renderCPF()}
+                                </div>
                             )}
-                        </form>
-                        <ul className="nav nav-tabs">
-                            <li className="nav-item">
-                                <a className="nav-link active" aria-current="page" >Dados Pessoais do Adolescente</a>
-                            </li>
-                        </ul>
-                        {(isChoiceMade === 'cpf') && (
-                            <div>
-                                {renderCPF()}
-                            </div>
-                        )}
-                        {(isChoiceMade === 'certidao') && (
-                            <div>
-                                {renderCertidao(parametrosComArrays)}
-                            </div>
-                        )}
+                            {(isChoiceMade === 'certidao') && (
+                                <div>
+                                    {renderCertidao(parametrosComArrays)}
+                                </div>
+                            )}
 
-                        {/* Formulário de Escolaridade */}
-                        <ul className="nav nav-tabs">
-                            <li className="nav-item">
-                                <a className="nav-link active" aria-current="page" >Dados Escolares</a>
-                            </li>
-                        </ul>
-                        {renderEscolaridade()}
-                        {/* Formulário Dados Responsável */}
-                        <ul className="nav nav-tabs">
-                            <li className="nav-item">
-                                <a className="nav-link active" aria-current="page" >Dados Responsável</a>
-                            </li>
-                        </ul>
-                        {renderDadosResponsavel()}
-                    </div>
-                )}
+                            {/* Formulário de Escolaridade */}
+                            <ul className="nav nav-tabs">
+                                <li className="nav-item">
+                                    <a className="nav-link active" aria-current="page" >Dados Escolares</a>
+                                </li>
+                            </ul>
+                            {renderEscolaridade()}
+                            {/* Formulário Dados Responsável */}
+                            <ul className="nav nav-tabs">
+                                <li className="nav-item">
+                                    <a className="nav-link active" aria-current="page" >Dados Responsável</a>
+                                </li>
+                            </ul>
+                            {renderDadosResponsavel()}
+                        </div>
+                    )
+                }
 
                 {/* RENDER COMANDOS E TERMO */}
                 {renderComandosTermo()}
